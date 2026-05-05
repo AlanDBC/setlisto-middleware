@@ -39,14 +39,14 @@ public class EventoMusicalDAO {
 	                + " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
 	                + " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name, "
 	                // Artistas
-	                + " GROUP_CONCAT(DISTINCT art.id SEPARATOR ';;') AS artist_ids, "
-	                + " GROUP_CONCAT(DISTINCT art.name SEPARATOR ';;') AS artist_names, "
+	                + " GROUP_CONCAT(DISTINCT art.id ORDER BY art.id SEPARATOR ';;') AS artist_ids, " // order by para asegurar que los IDs y Nombres correspondan en orden siempre
+	                + " GROUP_CONCAT(DISTINCT art.name ORDER BY art.id SEPARATOR ';;') AS artist_names, "
 	                // Subgéneros
-	                + " GROUP_CONCAT(DISTINCT msg.id SEPARATOR ';;') AS subgenre_ids, "
-	                + " GROUP_CONCAT(DISTINCT msg.name SEPARATOR ';;') AS subgenre_names, "
+	                + " GROUP_CONCAT(DISTINCT msg.id ORDER BY msg.id SEPARATOR ';;') AS subgenre_ids, " 
+	                + " GROUP_CONCAT(DISTINCT msg.name ORDER BY msg.id SEPARATOR ';;') AS subgenre_names, "
 	                // Géneros
-	                + " GROUP_CONCAT(DISTINCT mg.id SEPARATOR ';;') AS genre_ids, "
-	                + " GROUP_CONCAT(DISTINCT mg.name SEPARATOR ';;') AS genre_names "
+	                + " GROUP_CONCAT(DISTINCT mg.id ORDER BY me.id SEPARATOR ';;') AS genre_ids, "
+	                + " GROUP_CONCAT(DISTINCT mg.name ORDER BY me.id SEPARATOR ';;') AS genre_names "
 	                + " FROM musical_event me "
 	                + " INNER JOIN organizer org ON me.organizer_id = org.id "
 	                + " INNER JOIN site st ON me.site_id = st.id "
