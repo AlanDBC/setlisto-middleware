@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.setlisto.model.SubGeneroMusical;
 import com.setlisto.model.SubGeneroMusicalDTO;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
@@ -58,6 +59,32 @@ public class SubGeneroMusicalDAO {
 			DAOUtils.setParameters(ps, generoId);
 			rs = ps.executeQuery();
 
+			
+			List<SubGeneroMusicalDTO> resultados = new ArrayList<>();
+			while (rs.next()) {	
+				resultados.add(loadNext(rs));
+			}
+			return resultados;	
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DAOUtils.close(rs, ps, c);
+		}
+		return null;
+	}
+	
+	public List<SubGeneroMusicalDTO> findAll() {
+		Connection c = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			c = JDBCUtils.getConnection();
+			StringBuilder sql = new StringBuilder(BASE_QUERY); 
+			sql.append(" ORDER BY ms.name ");
+			
+			ps = c.prepareStatement(sql.toString());
+
+			rs = ps.executeQuery();
 			
 			List<SubGeneroMusicalDTO> resultados = new ArrayList<>();
 			while (rs.next()) {	

@@ -44,6 +44,19 @@ public class SubGeneroMusicalServiceTest {
             System.out.println("No hay subgéneros para el género con ID: " + generoId);
         }
     }
+    
+    public void testFindAll () {
+    	System.out.println("\n--- Test: SubGeneroMusicalService.findAll() ---");
+		List<SubGeneroMusicalDTO> lista = service.findAll();
+		if (lista != null && !lista.isEmpty()) {
+			System.out.println("Se encontraron " + lista.size() + " subgéneros en total:");
+			for (SubGeneroMusicalDTO sg : lista) {
+				System.out.println("  - " + sg.getNombre() + " (Género: " + sg.getGeneroMusicalNombre() + ")");
+			}
+		} else {
+			System.out.println("No se encontraron subgéneros en el sistema.");
+		}
+    }
 
     public static void main(String[] args) {
         SubGeneroMusicalServiceTest test = new SubGeneroMusicalServiceTest();
@@ -51,7 +64,12 @@ public class SubGeneroMusicalServiceTest {
         // 1. Probar con un ID conocido (ID 2 es Pop Latino)
         test.testFindById(2L);
 
-        // 3. Buscar subgéneros del género Rock (ID 2)
+        // 2. Buscar subgéneros del género Rock (ID 2)
         test.testFindByGenero(2L);
+        
+        // 3. Encontrar todos
+        test.testFindAll();
+        
+        
     }
 }

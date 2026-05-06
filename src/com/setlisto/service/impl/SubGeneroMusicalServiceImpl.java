@@ -28,4 +28,9 @@ public class SubGeneroMusicalServiceImpl implements SubGeneroMusicalService {
         // Filtra los subgéneros según la tabla musical_subgenre [5]
         return subGeneroDAO.findByGeneroId(generoId);
     }
+
+	@Override
+	public List<SubGeneroMusicalDTO> findAll() {
+		return subGeneroDAO.findAll();
+	}
 }

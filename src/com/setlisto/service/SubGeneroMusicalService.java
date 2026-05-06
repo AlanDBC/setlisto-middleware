@@ -18,4 +18,9 @@ public interface SubGeneroMusicalService {
      * Recupera todos los subgéneros asociados a un género padre (ej. todos los de 'Rock').
      */
     public List<SubGeneroMusicalDTO> findByGenero(Long generoId);
+    
+    /**
+     * Recupera todos los subgéneros disponibles en el sistema.
+     */
+    public List<SubGeneroMusicalDTO> findAll();
 }
