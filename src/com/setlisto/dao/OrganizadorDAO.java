@@ -221,7 +221,7 @@ public class OrganizadorDAO {
 		try {
 			c = DAOUtils.getConnection();
 			String sql = "UPDATE organizer SET business_name = ?, verified = ?, email = ?, phone = ?, "
-					+ "name = ?, surname1 = ?, surname2 = ?. birth_date = ? WHERE id = ?";
+					+ "name = ?, surname1 = ?, surname2 = ?, birth_date = ? WHERE id = ?";
 
 			ps = c.prepareStatement(sql);
 			DAOUtils.setParameters(ps, 

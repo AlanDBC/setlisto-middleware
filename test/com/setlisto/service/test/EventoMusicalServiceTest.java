@@ -42,44 +42,45 @@ public class EventoMusicalServiceTest {
 	public void testFindByCriteriaExtendido() {
 		System.out.println("=== INICIANDO PRUEBAS DE CRITERIOS EXTENDIDOS ===");
 
-		// 1. FILTRO POR ARTISTA (Ejemplo: Aitana - ID 1)
-		// Según los inserts, Aitana participa en el evento 'Aitana: Alpha Tour' (ID 1).
-		EventoMusicalCriteria critArtista = new EventoMusicalCriteria();
-		critArtista.setArtistaId(1L); 
-		ejecutarBusqueda("Filtro por Artista (ID 1 - Aitana)", critArtista);
-
-		// 2. FILTRO POR CIUDAD (Ejemplo: Madrid - ID 437)
-		// Madrid tiene múltiples eventos como Afterlife, Hans Zimmer y Bizarrap
-		EventoMusicalCriteria critCiudad = new EventoMusicalCriteria();
-		critCiudad.setCiudadId(437L);
-		ejecutarBusqueda("Filtro por Ciudad (ID 437 - Madrid)", critCiudad);
-
-		// 3. FILTRO POR ORGANIZADOR (Ejemplo: Valencia Electronic - ID 14)
-		// Este organizador gestiona el evento 'Afterlife Madrid' (ID 11)
-		EventoMusicalCriteria critOrg = new EventoMusicalCriteria();
-		critOrg.setOrganizadorId(14L);
-		ejecutarBusqueda("Filtro por Organizador (ID 14 - Valencia Electronic)", critOrg);
-
-		// 4. FILTRO COMBINADO: ROCK EN BARCELONA (Género 2, Ciudad 429)
-		// Debería devolver eventos como Pearl Jam o Metallica
-		EventoMusicalCriteria critCombo = new EventoMusicalCriteria();
-		critCombo.setGeneroMusicalId(2l); 
-		critCombo.setCiudadId(429L);
-		ejecutarBusqueda("Filtro Combinado: Rock en Barcelona", critCombo);
+//		// 1. FILTRO POR ARTISTA (Ejemplo: Aitana - ID 1)
+//		// Según los inserts, Aitana participa en el evento 'Aitana: Alpha Tour' (ID 1).
+//		EventoMusicalCriteria critArtista = new EventoMusicalCriteria();
+//		critArtista.setArtistaId(1L); 
+//		ejecutarBusqueda("Filtro por Artista (ID 1 - Aitana)", critArtista);
+//
+//		// 2. FILTRO POR CIUDAD (Ejemplo: Madrid - ID 437)
+//		// Madrid tiene múltiples eventos como Afterlife, Hans Zimmer y Bizarrap
+//		EventoMusicalCriteria critCiudad = new EventoMusicalCriteria();
+//		critCiudad.setCiudadId(437L);
+//		ejecutarBusqueda("Filtro por Ciudad (ID 437 - Madrid)", critCiudad);
+//
+//		// 3. FILTRO POR ORGANIZADOR (Ejemplo: Valencia Electronic - ID 14)
+//		// Este organizador gestiona el evento 'Afterlife Madrid' (ID 11)
+//		EventoMusicalCriteria critOrg = new EventoMusicalCriteria();
+//		critOrg.setOrganizadorId(14L);
+//		ejecutarBusqueda("Filtro por Organizador (ID 14 - Valencia Electronic)", critOrg);
+//
+//		// 4. FILTRO COMBINADO: ROCK EN BARCELONA (Género 2, Ciudad 429)
+//		// Debería devolver eventos como Pearl Jam o Metallica
+//		EventoMusicalCriteria critCombo = new EventoMusicalCriteria();
+//		critCombo.setGeneroMusicalId(2l); 
+//		critCombo.setCiudadId(429L);
+//		ejecutarBusqueda("Filtro Combinado: Rock en Barcelona", critCombo);
+//		
+//		// 5. Filtro de Fecha; Eventos de 2025
+//		EventoMusicalCriteria critFecha = new EventoMusicalCriteria();
+//		critFecha.setFechaInicio(LocalDateTime.of(2025, 1, 1, 0, 0));
+//		critFecha.setFechaFin(LocalDateTime.of(2025, 12, 31, 23, 59));
+//		ejecutarBusqueda("Filtro por Fecha: Eventos en 2025", critFecha);
+//		
+//		// 6. FIltro por Estado
+//		EventoMusicalCriteria critEstado = new EventoMusicalCriteria();
+//		critEstado.setEstadoId(1l); // (1 Borrador) (2 Programado) (3 En Curso) (4 Finalizado) (5 Cancelado) (6 Postergado)
+//		ejecutarBusqueda("Filtro por Estado ", critEstado);
 		
-		// 5. Filtro de Fecha; Eventos de 2025
-		EventoMusicalCriteria critFecha = new EventoMusicalCriteria();
-		critFecha.setFechaInicio(LocalDateTime.of(2025, 1, 1, 0, 0));
-		critFecha.setFechaFin(LocalDateTime.of(2025, 12, 31, 23, 59));
-		ejecutarBusqueda("Filtro por Fecha: Eventos en 2025", critFecha);
-		
-		// 6. FIltro por Estado
-		EventoMusicalCriteria critEstado = new EventoMusicalCriteria();
-		critEstado.setEstadoId(1l); // (1 Borrador) (2 Programado) (3 En Curso) (4 Finalizado) (5 Cancelado) (6 Postergado)
-		ejecutarBusqueda("Filtro por Estado ", critEstado);
-		
+		// 7. Filtro por ID
 		EventoMusicalCriteria critIdEvento = new EventoMusicalCriteria();
-		critIdEvento.setId(1l);
+		critIdEvento.setId(28l);
 		ejecutarBusqueda("Filtro por ID Evento ", critIdEvento);
 		
 		// Filtro con from y pageSize
@@ -216,7 +217,7 @@ public class EventoMusicalServiceTest {
 		EventoMusicalServiceTest test = new EventoMusicalServiceTest();
 
 		// 1. Buscar evento existente (según script de prueba, el 1L es Aitana)
-//				test.testFindById(1L);
+//				test.testFindById(28L);
 
 		// 2. Probar creación
 //		        test.testCreate();

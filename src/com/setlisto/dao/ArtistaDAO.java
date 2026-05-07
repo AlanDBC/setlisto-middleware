@@ -85,6 +85,31 @@ public class ArtistaDAO {
         }
         return null;
     }
+    
+    public List<Artista> findAll() {
+        List<Artista> artistas = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            c = JDBCUtils.getConnection();
+            String sql = BASE_QUERY + " ORDER BY name ";
+            ps = c.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                artistas.add(loadNext(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DAOUtils.close(rs, ps, c);
+        }
+
+        return artistas;
+    }
+
 
     private Artista loadNext(ResultSet rs) throws SQLException {
         Artista a = new Artista();

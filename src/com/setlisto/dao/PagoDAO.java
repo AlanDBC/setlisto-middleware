@@ -296,7 +296,6 @@ public class PagoDAO {
 			if (!condiciones.isEmpty()) {
 				sql.append(" WHERE ");
 				sql.append(String.join(" AND ", condiciones) );
-				sql.append(" ORDER BY p.created_at DESC ");
 			}
 			
 			sql.append(" ORDER BY ");

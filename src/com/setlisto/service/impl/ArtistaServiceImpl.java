@@ -36,7 +36,6 @@ public class ArtistaServiceImpl implements ArtistaService {
 
     @Override
     public List<Artista> findAll() {
-        // En un caso real aquí llamaríamos a artistaDAO.getAll()
-        return null; 
+        return artistaDAO.findAll(); 
     }
 }
