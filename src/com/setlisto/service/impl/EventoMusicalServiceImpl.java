@@ -25,19 +25,9 @@ public class EventoMusicalServiceImpl implements EventoMusicalService {
         return eventoMusicalDAO.findByCriteria(criteria, from, pageSize);
     }
 
-//    @Override
-//    public List<EventoMusicalDTO> findAll() {
-//        // Al pasar un criteria vacío, el DAO devuelve todos los registros [1]
-//        return eventoMusicalDAO.findByCriteria(new EventoMusicalCriteria(), 0, Integer.MAX_VALUE);
-//    }
-
     @Override
-    public EventoMusical create(EventoMusical evento) {
-        // Validación: Un evento debe tener una capacidad positiva y fechas coherentes
-        if (evento.getCapacidad() != null && evento.getCapacidad() > 0) {
+    public EventoMusicalDTO create(EventoMusicalDTO evento) {
             return eventoMusicalDAO.create(evento);
-        }
-        return null;
     }
 
     @Override

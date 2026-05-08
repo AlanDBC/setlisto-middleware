@@ -21,11 +21,12 @@ public class LugarDAO {
 
 	private static Logger logger = LogManager.getLogger(LugarDAO.class.getName());
 
-	private static final String BASE_QUERY = " SELECT s.id, s.name, s.address, s.city_id, c.name "
+	private static final String BASE_QUERY = " SELECT s.id, s.name, s.address, s.city_id, c.name, s.time_zone_id, tz.name "
 			+ " FROM SITE s "
 			+ " JOIN CITY c ON s.city_id = c.id "
 			+ " JOIN REGION r ON c.region_id = r.id "
-			+ " JOIN COUNTRY co ON r.country_id = co.id ";
+			+ " JOIN COUNTRY co ON r.country_id = co.id "
+			+ " JOIN TIME_ZONE tz ON s.time_zone_id = tz.id ";
 
 	public LugarDAO() {
 	}
@@ -160,14 +161,15 @@ public class LugarDAO {
 		try {
 			c = JDBCUtils.getConnection();
 
-			String sql = "INSERT INTO site (name, address, city_id) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO site (name, address, city_id, time_zone_id) VALUES (?, ?, ?, ?)";
 
 			ps = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
 			DAOUtils.setParameters(ps,
 					lugar.getNombre(),
 					lugar.getDireccion(),
-					lugar.getCiudadId()
+					lugar.getCiudadId(),
+					lugar.getIdZonaHoraria()
 					); 
 
 			int rows = ps.executeUpdate(); 
@@ -194,13 +196,14 @@ public class LugarDAO {
 		try {
 			c = JDBCUtils.getConnection();
 
-			String sql = "UPDATE site SET name = ?, address = ?, city_id = ? WHERE id = ?";
+			String sql = "UPDATE site SET name = ?, address = ?, city_id = ?, time_zone_id = ? WHERE id = ?";
 			ps = c.prepareStatement(sql);
 
 			DAOUtils.setParameters(ps,
 					lugar.getNombre(),
 					lugar.getDireccion(),
 					lugar.getCiudadId(),
+					lugar.getIdZonaHoraria(),
 					lugar.getId()
 					);
 
@@ -241,6 +244,8 @@ public class LugarDAO {
 		lgr.setDireccion( rs.getString(i++));
 		lgr.setCiudadId( rs.getLong(i++));
 		lgr.setCiudadNombre(rs.getString(i++));
+		lgr.setIdZonaHoraria(rs.getLong(i++));
+		lgr.setZonaHorariaNombre(rs.getString(i++));
 		return lgr;
 	}
 } // class

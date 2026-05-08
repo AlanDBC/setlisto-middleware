@@ -28,7 +28,7 @@ public interface EventoMusicalService {
     /**
      * Registra un nuevo evento musical en el sistema.
      */
-    public EventoMusical create(EventoMusical evento);
+    public EventoMusicalDTO create(EventoMusicalDTO evento);
 
     /**
      * Actualiza los datos de un evento existente.

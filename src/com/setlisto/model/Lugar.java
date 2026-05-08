@@ -6,6 +6,7 @@ public class Lugar extends AbstractValueObject {
 	private String nombre;
 	private String direccion;
 	private Long ciudadId;
+	private Long idZonaHoraria;
 
 	public Lugar() {
 	}
@@ -40,5 +41,13 @@ public class Lugar extends AbstractValueObject {
 
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
+	}
+
+	public Long getIdZonaHoraria() {
+		return idZonaHoraria;
+	}
+
+	public void setIdZonaHoraria(Long idZonaHoraria) {
+		this.idZonaHoraria = idZonaHoraria;
 	}
 }

@@ -33,44 +33,44 @@ import com.setlisto.utils.SQLUtils;
 public class EventoMusicalDAO {
 
 	private static Logger logger = LogManager.getLogger(EventoMusicalDAO.class.getName()); // TODO
-	
+
 	private final String BASE_QUERY =
-	        " SELECT me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
-	                + " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
-	                + " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name, "
-	                // Artistas
-	                + " GROUP_CONCAT(DISTINCT art.id ORDER BY art.id SEPARATOR ';;') AS artist_ids, " // order by para asegurar que los IDs y Nombres correspondan en orden siempre
-	                + " GROUP_CONCAT(DISTINCT art.name ORDER BY art.id SEPARATOR ';;') AS artist_names, "
-	                // Subgéneros
-	                + " GROUP_CONCAT(DISTINCT msg.id ORDER BY msg.id SEPARATOR ';;') AS subgenre_ids, " 
-	                + " GROUP_CONCAT(DISTINCT msg.name ORDER BY msg.id SEPARATOR ';;') AS subgenre_names, "
-	                // Géneros
-	                + " GROUP_CONCAT(DISTINCT mg.id ORDER BY me.id SEPARATOR ';;') AS genre_ids, "
-	                + " GROUP_CONCAT(DISTINCT mg.name ORDER BY me.id SEPARATOR ';;') AS genre_names "
-	                + " FROM musical_event me "
-	                + " INNER JOIN organizer org ON me.organizer_id = org.id "
-	                + " INNER JOIN site st ON me.site_id = st.id "
-	                + " INNER JOIN city ct ON st.city_id = ct.id "
-	                + " INNER JOIN region rg ON ct.region_id = rg.id "      
-	                + " INNER JOIN country co ON rg.country_id = co.id "  
-	                + " INNER JOIN event_subtype es ON es.id = me.event_subtype_id "
-	                + " INNER JOIN event_type et ON es.event_type_id = et.id "
-	                // Relaciones de Géneros y Subgéneros
-	                + " LEFT JOIN musical_event_subgenre mes ON mes.musical_event_id = me.id "
-	                + " LEFT JOIN musical_subgenre msg ON msg.id = mes.musical_subgenre_id "
-	                + " LEFT JOIN musical_genre mg ON msg.musical_genre_id = mg.id "
-	                // Otras relaciones
-	                + " LEFT JOIN musical_event_artist mea ON mea.musical_event_id = me.id "
-	                + " LEFT JOIN artist art ON art.id = mea.artist_id "
-	                + " LEFT JOIN seat_of_musical_event som ON som.musical_event_id = me.id "
-	                + " LEFT JOIN ticket t ON t.seat_of_musical_event_id = som.id "
-	                + " INNER JOIN event_status evs ON evs.id = me.event_status_id "
-	                + " INNER JOIN time_zone tz ON tz.id = me.time_zone_id ";
-	
+			" SELECT me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
+					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
+					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name, "
+					// Artistas
+					+ " GROUP_CONCAT(DISTINCT art.id ORDER BY art.id SEPARATOR ';;') AS artist_ids, " // order by para asegurar que los IDs y Nombres correspondan en orden siempre
+					+ " GROUP_CONCAT(DISTINCT art.name ORDER BY art.id SEPARATOR ';;') AS artist_names, "
+					// Subgéneros
+					+ " GROUP_CONCAT(DISTINCT msg.id ORDER BY msg.id SEPARATOR ';;') AS subgenre_ids, " 
+					+ " GROUP_CONCAT(DISTINCT msg.name ORDER BY msg.id SEPARATOR ';;') AS subgenre_names, "
+					// Géneros
+					+ " GROUP_CONCAT(DISTINCT mg.id ORDER BY me.id SEPARATOR ';;') AS genre_ids, "
+					+ " GROUP_CONCAT(DISTINCT mg.name ORDER BY me.id SEPARATOR ';;') AS genre_names "
+					+ " FROM musical_event me "
+					+ " INNER JOIN organizer org ON me.organizer_id = org.id "
+					+ " INNER JOIN site st ON me.site_id = st.id "
+					+ " INNER JOIN city ct ON st.city_id = ct.id "
+					+ " INNER JOIN region rg ON ct.region_id = rg.id "      
+					+ " INNER JOIN country co ON rg.country_id = co.id "  
+					+ " INNER JOIN event_subtype es ON es.id = me.event_subtype_id "
+					+ " INNER JOIN event_type et ON es.event_type_id = et.id "
+					// Relaciones de Géneros y Subgéneros
+					+ " LEFT JOIN musical_event_subgenre mes ON mes.musical_event_id = me.id "
+					+ " LEFT JOIN musical_subgenre msg ON msg.id = mes.musical_subgenre_id "
+					+ " LEFT JOIN musical_genre mg ON msg.musical_genre_id = mg.id "
+					// Otras relaciones
+					+ " LEFT JOIN musical_event_artist mea ON mea.musical_event_id = me.id "
+					+ " LEFT JOIN artist art ON art.id = mea.artist_id "
+					+ " LEFT JOIN seat_of_musical_event som ON som.musical_event_id = me.id "
+					+ " LEFT JOIN ticket t ON t.seat_of_musical_event_id = som.id "
+					+ " INNER JOIN event_status evs ON evs.id = me.event_status_id "
+					+ " INNER JOIN time_zone tz ON tz.id = me.time_zone_id ";
+
 	private final String BASE_GROUP_BY = 
-	        " GROUP BY me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
-	        + " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
-	        + " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name ";
+			" GROUP BY me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
+					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
+					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name ";
 
 	public EventoMusicalDAO() {
 	}
@@ -109,9 +109,9 @@ public class EventoMusicalDAO {
 		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
+
 		Results<EventoMusicalDTO> results = new Results<EventoMusicalDTO>(); // TODO
-		
+
 		try {
 			c = JDBCUtils.getConnection();
 
@@ -129,20 +129,20 @@ public class EventoMusicalDAO {
 				SQLUtils.addClause(criteria.getCapacidadHasta(),condiciones," me.capacity <= ? ",parametros,criteria.getCapacidadHasta());
 				SQLUtils.addClause(criteria.getSubtipoEventoId(),condiciones," me.event_subtype_id = ? ",parametros,criteria.getSubtipoEventoId());
 				SQLUtils.addClause(criteria.getTipoEventoId(),condiciones," es.event_type_id = ? ",parametros,criteria.getTipoEventoId());
-				
+
 				// Filtro por Subgénero: Buscamos eventos que tengan asignado este subgénero específico sin excluir otros subgeneros
 				SQLUtils.addClause(criteria.getSubGeneroMusicalId(), condiciones, 
 						" me.id IN (SELECT mesg_filter.musical_event_id FROM musical_event_subgenre mesg_filter WHERE mesg_filter.musical_subgenre_id = ?) ", 
 						parametros, criteria.getSubGeneroMusicalId());
-				
+
 				// Filtro por Género: Buscamos eventos que tengan subgéneros que pertenezcan a este género sin excluir otros géneros 
 				SQLUtils.addClause(criteria.getGeneroMusicalId(), condiciones, 
-				    " me.id IN (SELECT mesg_filter.musical_event_id " +
-				    "           FROM musical_event_subgenre mesg_filter " +
-				    "           JOIN musical_subgenre msg_filter ON mesg_filter.musical_subgenre_id = msg_filter.id " +
-				    "           WHERE msg_filter.musical_genre_id = ?) ", 
-				    parametros, criteria.getGeneroMusicalId());
-				
+						" me.id IN (SELECT mesg_filter.musical_event_id " +
+								"           FROM musical_event_subgenre mesg_filter " +
+								"           JOIN musical_subgenre msg_filter ON mesg_filter.musical_subgenre_id = msg_filter.id " +
+								"           WHERE msg_filter.musical_genre_id = ?) ", 
+								parametros, criteria.getGeneroMusicalId());
+
 				SQLUtils.addClause(criteria.getOrganizadorId(), condiciones, " me.organizer_id = ? ", parametros, criteria.getOrganizadorId());
 				SQLUtils.addClause(criteria.getLugarId(), condiciones, " me.site_id = ? ", parametros, criteria.getLugarId());
 				SQLUtils.addClause(criteria.getCiudadId(), condiciones, " ct.id = ? ", parametros, criteria.getCiudadId());
@@ -150,19 +150,19 @@ public class EventoMusicalDAO {
 				SQLUtils.addClause(criteria.getPaisId(), condiciones, " co.id = ? ", parametros, criteria.getPaisId());
 				SQLUtils.addClause(criteria.getPrecioDesde(), condiciones, " t.price >= ? ", parametros, criteria.getPrecioDesde());
 				SQLUtils.addClause(criteria.getPrecioHasta(), condiciones, " t.price <= ? ", parametros, criteria.getPrecioHasta());
-				
+
 				// En lugar de filtrar por el alias 'art.id', filtramos por el ID del evento que contenga a dicho artista y no excluir artistas
 				SQLUtils.addClause(criteria.getArtistaId(), condiciones,
 						" me.id IN (SELECT mea_filter.musical_event_id FROM musical_event_artist mea_filter WHERE mea_filter.artist_id = ?) ",
 						parametros, criteria.getArtistaId());
-				
+
 				// De igual manera para el nombre del artista, se busca que el evento tenga asignado un artista con ese nombre sin excluir otros artistas
 				SQLUtils.addClause(criteria.getArtistaNombre(), condiciones, 
-					    " me.id IN (SELECT mea_f.musical_event_id FROM musical_event_artist mea_f " +
-					    "           JOIN artist art_f ON mea_f.artist_id = art_f.id " +
-					    "           WHERE UPPER(art_f.name) LIKE UPPER(?)) ", 
-					    parametros, "%" + criteria.getArtistaNombre() + "%");
-				
+						" me.id IN (SELECT mea_f.musical_event_id FROM musical_event_artist mea_f " +
+								"           JOIN artist art_f ON mea_f.artist_id = art_f.id " +
+								"           WHERE UPPER(art_f.name) LIKE UPPER(?)) ", 
+								parametros, "%" + criteria.getArtistaNombre() + "%");
+
 				SQLUtils.addClause(criteria.getEstadoId(), condiciones, " me.event_status_id = ? ", parametros, criteria.getEstadoId());
 				SQLUtils.addClause(criteria.getZonaHorariaId(), condiciones, " me.time_zone_id = ? ", parametros, criteria.getZonaHorariaId());
 			}
@@ -179,16 +179,16 @@ public class EventoMusicalDAO {
 			String orderBy = criteria.getOrderBy();
 			// Manejo especial para el precio por ser una relación 1:N
 			if (" t.price ".equals(orderBy)) {
-			    sql.append(" MIN(t.price) "); 
+				sql.append(" MIN(t.price) "); 
 			} else {
-			    sql.append(orderBy);
+				sql.append(orderBy);
 			}
 			sql.append(criteria.getAscDesc() ? " ASC " : " DESC "); // TODO
-			
+
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
 			} // TODO
-			
+
 			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); // TODO
 
 			DAOUtils.setParameters(ps, parametros);
@@ -197,7 +197,7 @@ public class EventoMusicalDAO {
 			List<EventoMusicalDTO> resultsPage = new ArrayList<EventoMusicalDTO>(); // TODO
 
 			int filaInicial = Math.max(1, from + 1); // El ResultSet es 1-based, por comodidad en los criteria usaré  0-based, por eso se suma 1. Además, se asegura que no sea menor a 1 para evitar errores.
-			
+
 			if (rs.absolute(filaInicial)) { // Nos movemos a la fila inicial (from) para empezar a cargar resultados desde ahí
 				int count = 0;
 				do {
@@ -206,10 +206,10 @@ public class EventoMusicalDAO {
 				} while (count<pageSize && rs.next()); 	// Mientras no se alcance el pageSize y haya más registros, se siguen cargando resultados
 			}
 			int totalResults = SQLUtils.getTotalRows(rs);
-			
+
 			results.setPage(resultsPage); // Se setea la página de resultados (subconjunto de resultados)
 			results.setTotal(totalResults); // Se setea el total de resultados // TODO
-			
+
 			return results; // TODO
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -219,17 +219,19 @@ public class EventoMusicalDAO {
 		return null;
 	}
 
-	public EventoMusical create(EventoMusical evento) {
+	public EventoMusicalDTO create(EventoMusicalDTO evento) {
 		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+
 		try {
 			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false); // Iniciamos la transacción para asegurar que la inserción del evento y sus relaciones sea atómica
 
-			StringBuilder sql = new StringBuilder();
-			sql.append(" INSERT INTO MUSICAL_EVENT (name, description, start_date, end_date, ");
+			StringBuilder sql = new StringBuilder(); // Datos propios de la tabla
+			sql.append(" INSERT INTO musical_event (name, description, start_date, end_date, ");
 			sql.append(" organizer_id, site_id, event_subtype_id, capacity, event_status_id, time_zone_id) ");
-			sql.append(" VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, 1, ?) "); // 1 = Borrador
+			sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?) "); // 1 = Borrador
 
 			ps = c.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -250,13 +252,31 @@ public class EventoMusicalDAO {
 			rs = ps.getGeneratedKeys();
 			if (rs.next()) {
 				evento.setId(rs.getLong(1));
+			} else {
+				throw new Exception("No se pudo obtener el ID generado para el evento musical.");
 			}
-			return evento;
+
+			// Insercion de  sus listas asociacadas
+			insertarSubGeneros(c, evento.getId(), evento.getSubGeneros()); 
+			insertarArtistas(c, evento.getId(), evento.getArtistas());
+
+			c.commit();
+
+			return findById(evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
+
 		} catch (Exception e) {
+			if (c != null) {
+				try {
+					c.rollback();
+				} catch (Exception rollbackException) {
+					rollbackException.printStackTrace();
+				}
+			}
 			e.printStackTrace();
 		} finally {
 			DAOUtils.close(rs, ps, c);
 		}
+
 		return null;
 	}
 
@@ -317,87 +337,125 @@ public class EventoMusicalDAO {
 		}
 	}
 
-	
-	
-	private EventoMusicalDTO loadNext(ResultSet rs)  throws Exception {
-	    int i = 1;
-	    EventoMusicalDTO em = new EventoMusicalDTO();
-	    em.setId(rs.getLong(i++));
-	    em.setNombre(rs.getString(i++));
-	    em.setDescripcion(rs.getString(i++));
-	    em.setFechaInicio(rs.getObject(i++, LocalDateTime.class));
-	    em.setFechaFin(rs.getObject(i++, LocalDateTime.class));
-	    em.setIdOrganizador(rs.getLong(i++));
-	    em.setOrganizadorNombre(rs.getString(i++));
-	    em.setIdLugar(rs.getLong(i++));
-	    em.setLugarNombre(rs.getString(i++));
-	    em.setLugarDireccion(rs.getString(i++));
-	    em.setIdCiudad(rs.getLong(i++));
-	    em.setCiudadNombre(rs.getString(i++));
-	    em.setIdTipo(rs.getLong(i++));
-	    em.setTipoNombre(rs.getString(i++));
-	    em.setIdSubtipo(rs.getLong(i++));
-	    em.setSubtipoNombre(rs.getString(i++));
-	    em.setCapacidad(rs.getInt(i++));
-	    em.setIdEstado(rs.getLong(i++));
-	    em.setEstadoNombre(rs.getString(i++));
-	    em.setIdZonaHoraria(rs.getLong(i++));
-	    em.setZonaHorariaNombre(rs.getString(i++));
-	    // --- LÓGICA PARA LLENAR LAS LISTAS ---
-	 // 1. Artistas
-	    String artistIds = rs.getString("artist_ids");
-	    String artistNames = rs.getString("artist_names");
-	    em.setArtistas(parseListaGenerica(artistIds, artistNames, (id, nombre) -> {
-	        Artista artista = new Artista();
-	        artista.setId(id);
-	        artista.setNombre(nombre);
-	        return artista;
-	    }));
-	    // 2. Subgéneros
-	    String subgenreIds = rs.getString("subgenre_ids");
-	    String subgenreNames = rs.getString("subgenre_names");
-	    em.setSubGeneros(parseListaGenerica(subgenreIds, subgenreNames, (id, nombre) -> {
-	        SubGeneroMusical subGenero = new SubGeneroMusical();
-	        subGenero.setId(id);
-	        subGenero.setNombre(nombre);
-	        return subGenero;
-	    }));
-	    // 3. Géneros
-	    String genreIds = rs.getString("genre_ids");
-	    String genreNames = rs.getString("genre_names");
-	    em.setGeneros(parseListaGenerica(genreIds, genreNames, (id, nombre) -> {
-	        GeneroMusical genero = new GeneroMusical();
-	        genero.setId(id);
-	        genero.setNombre(nombre);
-	        return genero;
-	    }));
-	    
-	    return em;
+	private void insertarSubGeneros(Connection c, Long eventoId, List<SubGeneroMusical> subGeneros) throws Exception {
+		if (subGeneros == null || subGeneros.isEmpty()) {
+			return;
+		}
+
+		String sql = " INSERT INTO musical_event_subgenre (musical_event_id, musical_subgenre_id) VALUES (?, ?) ";
+
+		try (PreparedStatement ps = c.prepareStatement(sql)) {
+			for (SubGeneroMusical subGenero : subGeneros) {
+				if (subGenero == null || subGenero.getId() == null) {
+					continue;
+				}
+
+				DAOUtils.setParameters(ps, eventoId, subGenero.getId());
+				ps.addBatch();
+			}
+
+			ps.executeBatch();
+		}
 	}
-	
-	
+
+	private void insertarArtistas(Connection c, Long eventoId, List<Artista> artistas) throws Exception {
+		if (artistas == null || artistas.isEmpty()) {
+			return;
+		}
+
+		String sql = " INSERT INTO musical_event_artist (musical_event_id, artist_id) VALUES (?, ?) ";
+
+		try (PreparedStatement ps = c.prepareStatement(sql)) {
+			for (Artista artista : artistas) {
+				if (artista == null || artista.getId() == null) {
+					continue;
+				}
+
+				DAOUtils.setParameters(ps, eventoId, artista.getId());
+				ps.addBatch();
+			}
+
+			ps.executeBatch();
+		}
+	}
+
 	/*
 	 * Estos métodos parsean las cadenas concatenadas de IDs y Nombres para crear las listas de Artistas, Subgéneros y Géneros.
 	 */
 	private <T> List<T> parseListaGenerica(String idsStr, String namesStr, BiFunction<Long, String, T> mapeador) {
-	    List<T> lista = new ArrayList<>();
-	    
-	    // Verificamos que las cadenas no vengan nulas o vacías
-	    if (idsStr != null && !idsStr.trim().isEmpty() && namesStr != null) {
-	        String[] ids = idsStr.split(";;");
-	        String[] names = namesStr.split(";;");
-	        
-	        for (int j = 0; j < ids.length; j++) {
-	            Long id = Long.valueOf(ids[j].trim());
-	            // Prevenimos un IndexOutOfBounds en caso de que haya menos nombres que IDs
-	            String nombre = (j < names.length) ? names[j].trim() : null;
-	            
-	            // Usamos la función inyectada para crear y llenar el objeto
-	            T objeto = mapeador.apply(id, nombre);
-	            lista.add(objeto);
-	        }
-	    }
-	    return lista;
+		List<T> lista = new ArrayList<>();
+
+		// Verificamos que las cadenas no vengan nulas o vacías
+		if (idsStr != null && !idsStr.trim().isEmpty() && namesStr != null) {
+			String[] ids = idsStr.split(";;");
+			String[] names = namesStr.split(";;");
+
+			for (int j = 0; j < ids.length; j++) {
+				Long id = Long.valueOf(ids[j].trim());
+				// Prevenimos un IndexOutOfBounds en caso de que haya menos nombres que IDs
+				String nombre = (j < names.length) ? names[j].trim() : null;
+
+				// Usamos la función inyectada para crear y llenar el objeto
+				T objeto = mapeador.apply(id, nombre);
+				lista.add(objeto);
+			}
+		}
+		return lista;
 	}
-	
+
+	private EventoMusicalDTO loadNext(ResultSet rs)  throws Exception {
+		int i = 1;
+		EventoMusicalDTO em = new EventoMusicalDTO();
+		em.setId(rs.getLong(i++));
+		em.setNombre(rs.getString(i++));
+		em.setDescripcion(rs.getString(i++));
+		em.setFechaInicio(rs.getObject(i++, LocalDateTime.class));
+		em.setFechaFin(rs.getObject(i++, LocalDateTime.class));
+		em.setIdOrganizador(rs.getLong(i++));
+		em.setOrganizadorNombre(rs.getString(i++));
+		em.setIdLugar(rs.getLong(i++));
+		em.setLugarNombre(rs.getString(i++));
+		em.setLugarDireccion(rs.getString(i++));
+		em.setIdCiudad(rs.getLong(i++));
+		em.setCiudadNombre(rs.getString(i++));
+		em.setIdTipo(rs.getLong(i++));
+		em.setTipoNombre(rs.getString(i++));
+		em.setIdSubtipo(rs.getLong(i++));
+		em.setSubtipoNombre(rs.getString(i++));
+		em.setCapacidad(rs.getInt(i++));
+		em.setIdEstado(rs.getLong(i++));
+		em.setEstadoNombre(rs.getString(i++));
+		em.setIdZonaHoraria(rs.getLong(i++));
+		em.setZonaHorariaNombre(rs.getString(i++));
+		// --- LÓGICA PARA LLENAR LAS LISTAS ---
+		// 1. Artistas
+		String artistIds = rs.getString("artist_ids");
+		String artistNames = rs.getString("artist_names");
+		em.setArtistas(parseListaGenerica(artistIds, artistNames, (id, nombre) -> {
+			Artista artista = new Artista();
+			artista.setId(id);
+			artista.setNombre(nombre);
+			return artista;
+		}));
+		// 2. Subgéneros
+		String subgenreIds = rs.getString("subgenre_ids");
+		String subgenreNames = rs.getString("subgenre_names");
+		em.setSubGeneros(parseListaGenerica(subgenreIds, subgenreNames, (id, nombre) -> {
+			SubGeneroMusical subGenero = new SubGeneroMusical();
+			subGenero.setId(id);
+			subGenero.setNombre(nombre);
+			return subGenero;
+		}));
+		// 3. Géneros
+		String genreIds = rs.getString("genre_ids");
+		String genreNames = rs.getString("genre_names");
+		em.setGeneros(parseListaGenerica(genreIds, genreNames, (id, nombre) -> {
+			GeneroMusical genero = new GeneroMusical();
+			genero.setId(id);
+			genero.setNombre(nombre);
+			return genero;
+		}));
+
+		return em;
+	}	
 } // class

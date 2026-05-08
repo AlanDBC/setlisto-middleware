@@ -3,6 +3,7 @@ package com.setlisto.model;
 public class LugarDTO extends Lugar {
 
 	private String ciudadNombre;
+	private String zonaHorariaNombre;
 	
 	public LugarDTO() {
 	}
@@ -13,5 +14,13 @@ public class LugarDTO extends Lugar {
 
 	public void setCiudadNombre(String ciudadNombre) {
 		this.ciudadNombre = ciudadNombre;
+	}
+
+	public String getZonaHorariaNombre() {
+		return zonaHorariaNombre;
+	}
+
+	public void setZonaHorariaNombre(String zonaHorariaNombre) {
+		this.zonaHorariaNombre = zonaHorariaNombre;
 	}
 }

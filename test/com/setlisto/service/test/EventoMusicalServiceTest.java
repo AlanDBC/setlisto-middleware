@@ -162,7 +162,7 @@ public class EventoMusicalServiceTest {
 	 */
 	public void testCreate() {
 		System.out.println("\n--- Test: EventoMusicalService.create ---");
-		EventoMusical nuevo = new EventoMusical();
+		EventoMusicalDTO nuevo = new EventoMusicalDTO();
 		nuevo.setNombre("Test Service Event");
 		nuevo.setDescripcion("Evento de prueba desde el Service");
 		nuevo.setFechaInicio(LocalDateTime.of(2026, 5, 15, 20, 0));
@@ -174,7 +174,7 @@ public class EventoMusicalServiceTest {
 		// el estado es puesto por el DAO (Borrador)
 		nuevo.setIdZonaHoraria(3l);
 
-		EventoMusical creado = service.create(nuevo);
+		EventoMusicalDTO creado = service.create(nuevo);
 		if (creado != null && creado.getId() != null) {
 			System.out.println("Evento creado exitosamente con ID: " + creado.getId());
 		} else {
