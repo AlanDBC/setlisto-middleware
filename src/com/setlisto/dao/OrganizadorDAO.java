@@ -54,6 +54,33 @@ public class OrganizadorDAO {
 		return null;
 	}
 
+	public Organizador findByEmail(String email) {
+		Connection c = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			c = DAOUtils.getConnection();
+
+			StringBuilder sql = new StringBuilder(BASE_QUERY);
+			sql.append(" WHERE LOWER(org.email) = LOWER(?) ");
+
+			ps = c.prepareStatement(sql.toString());
+			DAOUtils.setParameters(ps, email);
+			rs = ps.executeQuery();
+
+			Organizador organizador = null;
+			if (rs.next()) {
+				organizador = loadNext(rs);
+			}
+			return organizador;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DAOUtils.close(rs, ps, c);
+		}
+		return null;
+	}
+
 	public Results<Organizador> findByCriteria(OrganizadorCriteria criteria, int from, int pageSize) {
 		logger.info("Criteria: {}", criteria);
 
@@ -72,13 +99,13 @@ public class OrganizadorDAO {
 			List<Object> parametros = new ArrayList<>();
 
 			SQLUtils.addClause(criteria.getId(), condiciones, " org.id = ? ", parametros, criteria.getId());
-			SQLUtils.addClause(criteria.getNombreComercial(), condiciones, " UPPER(business_name) = UPPER(?) ", parametros, criteria.getNombreComercial());
+			SQLUtils.addClause(criteria.getNombreComercial(), condiciones, " UPPER(business_name) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getNombreComercial()));
 			SQLUtils.addClause(criteria.getVerificado(), condiciones, " verified = ? ", parametros, criteria.getVerificado());
-			SQLUtils.addClause(criteria.getEmail(), condiciones, " UPPER(email) = UPPER(?) ", parametros, criteria.getEmail());
-			SQLUtils.addClause(criteria.getTelefono(), condiciones, " phone = ? ", parametros, criteria.getTelefono());
-			SQLUtils.addClause(criteria.getNombre(), condiciones, " UPPER(name) = UPPER(?) ", parametros, criteria.getNombre());
-			SQLUtils.addClause(criteria.getApellido1(), condiciones, " UPPER(surname1) = UPPER(?) ", parametros, criteria.getApellido1());
-			SQLUtils.addClause(criteria.getApellido2(), condiciones, " UPPER(surname2) = UPPER(?) ", parametros, criteria.getApellido2());
+			SQLUtils.addClause(criteria.getEmail(), condiciones, " UPPER(email) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getEmail()));
+			SQLUtils.addClause(criteria.getTelefono(), condiciones, " phone LIKE ? ", parametros, SQLUtils.like(criteria.getTelefono()));
+			SQLUtils.addClause(criteria.getNombre(), condiciones, " UPPER(name) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getNombre()));
+			SQLUtils.addClause(criteria.getApellido1(), condiciones, " UPPER(surname1) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getApellido1()));
+			SQLUtils.addClause(criteria.getApellido2(), condiciones, " UPPER(surname2) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getApellido2()));
 			SQLUtils.addClause(criteria.getFechaNacimientoDesde(), condiciones, " birth_date >= ? ", parametros, criteria.getFechaNacimientoDesde());
 			SQLUtils.addClause(criteria.getFechaNacimientoHasta(), condiciones, " birth_date <= ? ", parametros, criteria.getFechaNacimientoHasta());
 
@@ -88,8 +115,8 @@ public class OrganizadorDAO {
 			}
 
 			sql.append(" ORDER BY ");
-			sql.append(criteria.getOrderBy());
-			sql.append(criteria.getAscDesc() ? " ASC " : " DESC ");
+			sql.append(criteria.getOrderBy() == null || criteria.getOrderBy().trim().isEmpty() ? " org.id " : criteria.getOrderBy());
+			sql.append(Boolean.FALSE.equals(criteria.getAscDesc()) ? " DESC " : " ASC ");
 
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
@@ -232,8 +259,8 @@ public class OrganizadorDAO {
 					organizador.getNombre(), 
 					organizador.getApellido1(),
 					organizador.getApellido2(),
-					organizador.getId(),
-					organizador.getFechaNacimiento()
+					organizador.getFechaNacimiento(),
+					organizador.getId()
 					);
 
 			int rows = ps.executeUpdate();

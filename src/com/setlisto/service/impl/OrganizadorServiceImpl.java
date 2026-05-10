@@ -18,62 +18,50 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 
     public OrganizadorServiceImpl() {
         this.organizadorDAO = new OrganizadorDAO();
-        this.encryptionService = new EncryptionServiceImpl(); 
+        this.encryptionService = new EncryptionServiceImpl();
         this.mailService = new MailServiceImpl();
     }
 
     @Override
     public Organizador register(Organizador organizador) {
-        // 1. Cifrado de contraseña obligatorio según modelo de datos
         String passwordEncrypted = encryptionService.encrypt(organizador.getContrasena());
         organizador.setContrasena(passwordEncrypted);
 
-        // 2. Persistencia con objeto enriquecido
         Organizador registrado = organizadorDAO.create(organizador);
-
-        // 3. Notificación de bienvenida si se creó correctamente
         if (registrado != null) {
-            mailService.sendEmail(registrado.getEmail(), "Bienvenido a Setlisto Partners", 
-                "Hola " + registrado.getNombre() + ", su cuenta de organizador ha sido registrada.");
+            mailService.sendEmail(registrado.getEmail(), "Bienvenido a Setlisto Partners",
+                    "Hola " + registrado.getNombre() + ", su cuenta de organizador ha sido registrada.");
         }
         return registrado;
     }
 
     @Override
     public Organizador login(String email, String password) {
-        OrganizadorCriteria criteria = new OrganizadorCriteria();
-        criteria.setEmail(email);
-        Results<Organizador> resultados = organizadorDAO.findByCriteria(criteria, 0, 1); // desde la primera pagina y solo una pues el email es único 
-        List<Organizador> organizadores = resultados.getPage(); // TODO preguntar si es buena solucion para obtener la Lista
-        
-        if (organizadores != null && !organizadores.isEmpty()) {
-            Organizador org = organizadores.get(0);
-            // Verificación segura del hash de la contraseña
-            if (encryptionService.checkEncryption(password, org.getContrasena())) {
-                return org;
-            }
+        Organizador org = organizadorDAO.findByEmail(email);
+        if (org != null && encryptionService.checkEncryption(password, org.getContrasena())) {
+            return org;
         }
         return null;
     }
 
     @Override
     public Organizador findById(Long id) {
-        return organizadorDAO.findById(id); 
+        return organizadorDAO.findById(id);
     }
 
     @Override
     public Results<Organizador> findByCriteria(OrganizadorCriteria criteria, int from, int pageSize) {
-        return organizadorDAO.findByCriteria(criteria, from, pageSize); 
+        return organizadorDAO.findByCriteria(criteria, from, pageSize);
     }
 
     @Override
     public boolean update(Organizador organizador) {
-        return organizadorDAO.update(organizador); 
+        return organizadorDAO.update(organizador);
     }
 
     @Override
     public boolean updateVerifiedStatus(Long id, boolean verificado) {
-        return organizadorDAO.updateVerifiedStatus(id, verificado); 
+        return organizadorDAO.updateVerifiedStatus(id, verificado);
     }
 
     @Override

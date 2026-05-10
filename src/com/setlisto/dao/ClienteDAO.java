@@ -315,8 +315,8 @@ public class ClienteDAO {
 					cliente.getNombre(),
 					cliente.getTelefono(),
 					cliente.getApellido(),
-					cliente.getId(),
-					cliente.getFechaNacimiento()
+					cliente.getFechaNacimiento(),
+					cliente.getId()
 					);
 
 			int rows = ps.executeUpdate();
@@ -369,13 +369,13 @@ public class ClienteDAO {
 			List<Object> parametros = new ArrayList<>();
 
 			SQLUtils.addClause(criteria.getActivo(), condiciones, " active = ?  ", parametros, criteria.getActivo());
-			SQLUtils.addClause(criteria.getApellido(), condiciones, " UPPER(surname1) LIKE UPPER(?) ", parametros, criteria.getApellido());
-			SQLUtils.addClause(criteria.getEmail(), condiciones," UPPER(email) LIKE UPPER(?) ", parametros, criteria.getEmail());
-			SQLUtils.addClause(criteria.getNombre(), condiciones, " UPPER(name) LIKE UPPER(?) ", parametros, criteria.getNombre());
+			SQLUtils.addClause(criteria.getApellido(), condiciones, " UPPER(surname1) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getApellido()));
+			SQLUtils.addClause(criteria.getEmail(), condiciones," UPPER(email) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getEmail()));
+			SQLUtils.addClause(criteria.getNombre(), condiciones, " UPPER(name) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getNombre()));
 			SQLUtils.addClause(criteria.getVerificado(), condiciones, " verified = ? ", parametros, criteria.getVerificado());
 			SQLUtils.addClause(criteria.getCreadoDesde(), condiciones, " created_at >= ? ", parametros, criteria.getCreadoDesde());
 			SQLUtils.addClause(criteria.getCreadoHasta(), condiciones, " created_at <= ? ", parametros, criteria.getCreadoHasta());
-			SQLUtils.addClause(criteria.getTelefono(), condiciones, " phone = ? ", parametros, criteria.getTelefono());
+			SQLUtils.addClause(criteria.getTelefono(), condiciones, " phone LIKE ? ", parametros, SQLUtils.like(criteria.getTelefono()));
 			SQLUtils.addClause(criteria.getFechaNacimientoDesde(), condiciones, " birth_date >= ? ", parametros, criteria.getFechaNacimientoDesde());
 			SQLUtils.addClause(criteria.getFechaNacimientoHasta(), condiciones, " birth_date <= ? ", parametros, criteria.getFechaNacimientoHasta());
 
@@ -385,8 +385,8 @@ public class ClienteDAO {
 			}
 			
 			sql.append(" ORDER BY ");
-			sql.append(criteria.getOrderBy());
-			sql.append(criteria.getAscDesc() ? " ASC " : " DESC ");
+			sql.append(criteria.getOrderBy() == null || criteria.getOrderBy().trim().isEmpty() ? " id " : criteria.getOrderBy());
+			sql.append(Boolean.FALSE.equals(criteria.getAscDesc()) ? " DESC " : " ASC ");
 			
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
@@ -399,9 +399,9 @@ public class ClienteDAO {
 			rs = ps.executeQuery();
 			List<Cliente> resultsPage = new ArrayList<>();
 			
-			if (from>1) {
+			int filaInicial = Math.max(1, from + 1);
+			if (rs.absolute(filaInicial)) {
 				int count = 0;
-				rs.absolute(from);
 				do {
 					resultsPage.add(loadNext(rs));
 					count++;

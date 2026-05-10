@@ -6,6 +6,11 @@ public class CategoriaAsiento extends AbstractValueObject {
 	
 	public CategoriaAsiento() {
 	}
+	
+	public CategoriaAsiento(Long id, String nombre) {
+		this.id = id;
+		this.nombre = nombre;
+	}
 
 	public Long getId() {
 		return id;

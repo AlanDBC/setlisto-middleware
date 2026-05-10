@@ -76,6 +76,16 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 
 	@Override
+	public boolean setActive(boolean active, Long customerId) {
+		return clienteDAO.setActive(active, customerId);
+	}
+
+	@Override
+	public boolean setVerify(boolean verified, Long customerId) {
+		return clienteDAO.setVerify(verified, customerId);
+	}
+
+	@Override
 	public boolean updatePassword(Long id, 
 			String oldPassword, 
 			String newPassword) {

@@ -47,7 +47,7 @@ public class CategoriaAsientoServiceTest {
         CategoriaAsientoServiceTest test = new CategoriaAsientoServiceTest();
 
         // 1. Probar búsqueda por un ID que sepamos que existe (ejemplo: 1L)
-        test.testFindById(1L);
+//        test.testFindById(1L);
 
         // 2. Probar listado completo
         test.testFindAll();

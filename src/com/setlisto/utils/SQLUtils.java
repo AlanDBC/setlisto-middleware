@@ -6,6 +6,7 @@ import java.util.List;
 
 public class SQLUtils {
 
+	// 
 	public static final void addClause(Object criteriaParameter, List<String> conditions,
 			String condition, List<Object> parameterValues,
 			Object parameterValue) { 
@@ -34,5 +35,12 @@ public class SQLUtils {
 		resultSet.beforeFirst();
 		return totalRows;
 	}
-
+	
+	// Metodo para generar el valor de un parametro de tipo LIKE, añadiendo los comodines al principio y al final.
+	public static final String like(String value) {
+		if (value == null || value.trim().isEmpty()) {
+			return null;
+		}
+		return "%" + value.trim() + "%";
+	}
 }

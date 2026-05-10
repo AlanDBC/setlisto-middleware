@@ -41,6 +41,10 @@ public interface ClienteService {
 	 * @param cliente
 	 */
 	public boolean update (Cliente cliente);
+
+	public boolean setActive(boolean active, Long customerId);
+
+	public boolean setVerify(boolean verified, Long customerId);
 	
 	/**
 	 * Actualiza la contrase��a de un cliente
