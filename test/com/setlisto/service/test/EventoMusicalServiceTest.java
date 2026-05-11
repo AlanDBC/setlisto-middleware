@@ -42,47 +42,47 @@ public class EventoMusicalServiceTest {
 	public void testFindByCriteriaExtendido() {
 		System.out.println("=== INICIANDO PRUEBAS DE CRITERIOS EXTENDIDOS ===");
 
-//		// 1. FILTRO POR ARTISTA (Ejemplo: Aitana - ID 1)
-//		// Según los inserts, Aitana participa en el evento 'Aitana: Alpha Tour' (ID 1).
-//		EventoMusicalCriteria critArtista = new EventoMusicalCriteria();
-//		critArtista.setArtistaId(1L); 
-//		ejecutarBusqueda("Filtro por Artista (ID 1 - Aitana)", critArtista);
-//
-//		// 2. FILTRO POR CIUDAD (Ejemplo: Madrid - ID 437)
-//		// Madrid tiene múltiples eventos como Afterlife, Hans Zimmer y Bizarrap
-//		EventoMusicalCriteria critCiudad = new EventoMusicalCriteria();
-//		critCiudad.setCiudadId(437L);
-//		ejecutarBusqueda("Filtro por Ciudad (ID 437 - Madrid)", critCiudad);
-//
-//		// 3. FILTRO POR ORGANIZADOR (Ejemplo: Valencia Electronic - ID 14)
-//		// Este organizador gestiona el evento 'Afterlife Madrid' (ID 11)
-//		EventoMusicalCriteria critOrg = new EventoMusicalCriteria();
-//		critOrg.setOrganizadorId(14L);
-//		ejecutarBusqueda("Filtro por Organizador (ID 14 - Valencia Electronic)", critOrg);
-//
-//		// 4. FILTRO COMBINADO: ROCK EN BARCELONA (Género 2, Ciudad 429)
-//		// Debería devolver eventos como Pearl Jam o Metallica
-//		EventoMusicalCriteria critCombo = new EventoMusicalCriteria();
-//		critCombo.setGeneroMusicalId(2l); 
-//		critCombo.setCiudadId(429L);
-//		ejecutarBusqueda("Filtro Combinado: Rock en Barcelona", critCombo);
-//		
-//		// 5. Filtro de Fecha; Eventos de 2025
-//		EventoMusicalCriteria critFecha = new EventoMusicalCriteria();
-//		critFecha.setFechaInicio(LocalDateTime.of(2025, 1, 1, 0, 0));
-//		critFecha.setFechaFin(LocalDateTime.of(2025, 12, 31, 23, 59));
-//		ejecutarBusqueda("Filtro por Fecha: Eventos en 2025", critFecha);
-//		
-//		// 6. FIltro por Estado
-//		EventoMusicalCriteria critEstado = new EventoMusicalCriteria();
-//		critEstado.setEstadoId(1l); // (1 Borrador) (2 Programado) (3 En Curso) (4 Finalizado) (5 Cancelado) (6 Postergado)
-//		ejecutarBusqueda("Filtro por Estado ", critEstado);
-		
+		// 1. FILTRO POR ARTISTA (Ejemplo: Aitana - ID 1)
+		// Según los inserts, Aitana participa en el evento 'Aitana: Alpha Tour' (ID 1).
+		EventoMusicalCriteria critArtista = new EventoMusicalCriteria();
+		critArtista.setArtistaId(1L); 
+		ejecutarBusqueda("Filtro por Artista (ID 1 - Aitana)", critArtista);
+
+		// 2. FILTRO POR CIUDAD (Ejemplo: Madrid - ID 437)
+		// Madrid tiene múltiples eventos como Afterlife, Hans Zimmer y Bizarrap
+		EventoMusicalCriteria critCiudad = new EventoMusicalCriteria();
+		critCiudad.setCiudadId(437L);
+		ejecutarBusqueda("Filtro por Ciudad (ID 437 - Madrid)", critCiudad);
+
+		// 3. FILTRO POR ORGANIZADOR (Ejemplo: Valencia Electronic - ID 14)
+		// Este organizador gestiona el evento 'Afterlife Madrid' (ID 11)
+		EventoMusicalCriteria critOrg = new EventoMusicalCriteria();
+		critOrg.setOrganizadorId(14L);
+		ejecutarBusqueda("Filtro por Organizador (ID 14 - Valencia Electronic)", critOrg);
+
+		// 4. FILTRO COMBINADO: ROCK EN BARCELONA (Género 2, Ciudad 429)
+		// Debería devolver eventos como Pearl Jam o Metallica
+		EventoMusicalCriteria critCombo = new EventoMusicalCriteria();
+		critCombo.setGeneroMusicalId(2l); 
+		critCombo.setCiudadId(429L);
+		ejecutarBusqueda("Filtro Combinado: Rock en Barcelona", critCombo);
+
+		// 5. Filtro de Fecha; Eventos de 2025
+		EventoMusicalCriteria critFecha = new EventoMusicalCriteria();
+		critFecha.setFechaInicio(LocalDateTime.of(2025, 1, 1, 0, 0));
+		critFecha.setFechaFin(LocalDateTime.of(2025, 12, 31, 23, 59));
+		ejecutarBusqueda("Filtro por Fecha: Eventos en 2025", critFecha);
+
+		// 6. FIltro por Estado
+		EventoMusicalCriteria critEstado = new EventoMusicalCriteria();
+		critEstado.setEstadoId(1l); // (1 Borrador) (2 Programado) (3 En Curso) (4 Finalizado) (5 Cancelado) (6 Postergado)
+		ejecutarBusqueda("Filtro por Estado ", critEstado);
+
 		// 7. Filtro por ID
 		EventoMusicalCriteria critIdEvento = new EventoMusicalCriteria();
 		critIdEvento.setId(28l);
 		ejecutarBusqueda("Filtro por ID Evento ", critIdEvento);
-		
+
 		// Filtro con from y pageSize
 		EventoMusicalCriteria criteria = new EventoMusicalCriteria();
 		int from = 1;
@@ -90,30 +90,34 @@ public class EventoMusicalServiceTest {
 		Results<EventoMusicalDTO> resultPage;
 		List<EventoMusicalDTO> resultados;
 		do {
-		    resultPage = service.findByCriteria(criteria, from, pageSize);
-		    
-		    if (resultPage == null) {
-		        System.out.println("Error: El servicio devolvió null.");
-		        break; 
-		    }
-		    resultados = resultPage.getPage();
-		    
-		    if (resultados == null) {
-		        System.out.println("La lista de resultados es null.");
-		        break;
-		    }
+			resultPage = service.findByCriteria(criteria, from, pageSize);
 
-		    print(resultados);
-		    from = from + pageSize;
+			if (resultPage == null) {
+				System.out.println("Error: El servicio devolvió null.");
+				break; 
+			}
+			resultados = resultPage.getPage();
+
+			if (resultados == null) {
+				System.out.println("La lista de resultados es null.");
+				break;
+			}
+
+			print(resultados);
+			from = from + pageSize;
 		} while (resultados.size() == pageSize);
-		
+
 		// Filtro por nombre de Artista
 		EventoMusicalCriteria critNombreArtista = new EventoMusicalCriteria();
 		critNombreArtista.setArtistaNombre("Ait");
 		ejecutarBusqueda("Filtro por Nombre de Artista (contiene 'Ait')", critNombreArtista);
 		
+		// Sin filtros
+		EventoMusicalCriteria critSinFiltros = new EventoMusicalCriteria();
+		ejecutarBusqueda("Sin filtros (todos los eventos)", critSinFiltros);
+
 	}
-	
+
 	private void print (List<EventoMusicalDTO> resultsPage) {
 		System.out.println("Imprimiendo pagina...");
 		for (EventoMusicalDTO em: resultsPage) {
@@ -125,36 +129,36 @@ public class EventoMusicalServiceTest {
 	 * Método auxiliar para imprimir los resultados de cada búsqueda.
 	 */
 	private void ejecutarBusqueda(String descripcion, EventoMusicalCriteria criteria) {
-	    System.out.println("\n--- " + descripcion + " ---");
-	    Results<EventoMusicalDTO> resultados = service.findByCriteria(criteria, 0, 30);
-	    List<EventoMusicalDTO> eventos = resultados.getPage();
+		System.out.println("\n--- " + descripcion + " ---");
+		Results<EventoMusicalDTO> resultados = service.findByCriteria(criteria, 0, 30);
+		List<EventoMusicalDTO> eventos = resultados.getPage();
 
-	    if (eventos != null && !eventos.isEmpty()) {
-	        System.out.println("Se encontraron " + eventos.size() + " eventos:");
-	        for (EventoMusicalDTO dto : eventos) {
-	            // Mapeamos las listas a String para una visualización rápida
-	            String nombresArtistas = dto.getArtistas().stream()
-	                    .map(Artista::getNombre)
-	                    .collect(Collectors.joining(", "));
+		if (eventos != null && !eventos.isEmpty()) {
+			System.out.println("Se encontraron " + eventos.size() + " eventos:");
+			for (EventoMusicalDTO dto : eventos) {
+				// Mapeamos las listas a String para una visualización rápida
+				String nombresArtistas = dto.getArtistas().stream()
+						.map(Artista::getNombre)
+						.collect(Collectors.joining(", "));
 
-	            String nombresGeneros = dto.getGeneros().stream()
-	                    .map(GeneroMusical::getNombre)
-	                    .collect(Collectors.joining(", "));
+				String nombresGeneros = dto.getGeneros().stream()
+						.map(GeneroMusical::getNombre)
+						.collect(Collectors.joining(", "));
 
-	            String nombresSubGeneros = dto.getSubGeneros().stream()
-	                    .map(SubGeneroMusical::getNombre)
-	                    .collect(Collectors.joining(", "));
+				String nombresSubGeneros = dto.getSubGeneros().stream()
+						.map(SubGeneroMusical::getNombre)
+						.collect(Collectors.joining(", "));
 
-	            System.out.println("  - [" + dto.getId() + "] " + dto.getNombre());
-	            System.out.println("    Lugar: " + dto.getLugarNombre() + " | Org: " + dto.getOrganizadorNombre());
-	            System.out.println("    Géneros: [" + nombresGeneros + "]");
-	            System.out.println("    Subgéneros: [" + nombresSubGeneros + "]");
-	            System.out.println("    Artistas: [" + nombresArtistas + "]");
-	            System.out.println("    -------------------------------------------");
-	        }
-	    } else {
-	        System.out.println("No se encontraron resultados para este criterio.");
-	    }
+				System.out.println("  - [" + dto.getId() + "] " + dto.getNombre());
+				System.out.println("    Lugar: " + dto.getLugarNombre() + " | Org: " + dto.getOrganizadorNombre());
+				System.out.println("    Géneros: [" + nombresGeneros + "]");
+				System.out.println("    Subgéneros: [" + nombresSubGeneros + "]");
+				System.out.println("    Artistas: [" + nombresArtistas + "]");
+				System.out.println("    -------------------------------------------");
+			}
+		} else {
+			System.out.println("No se encontraron resultados para este criterio.");
+		}
 	}
 
 	/**
@@ -217,19 +221,19 @@ public class EventoMusicalServiceTest {
 		EventoMusicalServiceTest test = new EventoMusicalServiceTest();
 
 		// 1. Buscar evento existente (según script de prueba, el 1L es Aitana)
-//				test.testFindById(28L);
+		//				test.testFindById(28L);
 
 		// 2. Probar creación
-//		        test.testCreate();
+		//		        test.testCreate();
 
 		// 3. Probar modificacion
-//		        test.updateTest();   
+		//		        test.updateTest();   
 
 		// 4. Probar eliminación 
-//		         test.deleteTest(21L); 
+		//		         test.deleteTest(21L); 
 
 		// 5. Probar criterios extendidos
-				test.testFindByCriteriaExtendido();
+		test.testFindByCriteriaExtendido();
 
 	}
 }

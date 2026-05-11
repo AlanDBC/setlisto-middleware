@@ -37,7 +37,7 @@ public class EventoMusicalDAO {
 	private final String BASE_QUERY =
 			" SELECT me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
 					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
-					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name, "
+					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, tz.id, tz.name, "
 					// Artistas
 					+ " GROUP_CONCAT(DISTINCT art.id ORDER BY art.id SEPARATOR ';;') AS artist_ids, " // order by para asegurar que los IDs y Nombres correspondan en orden siempre
 					+ " GROUP_CONCAT(DISTINCT art.name ORDER BY art.id SEPARATOR ';;') AS artist_names, "
@@ -65,12 +65,12 @@ public class EventoMusicalDAO {
 					+ " LEFT JOIN seat_of_musical_event som ON som.musical_event_id = me.id "
 					+ " LEFT JOIN ticket t ON t.seat_of_musical_event_id = som.id "
 					+ " INNER JOIN event_status evs ON evs.id = me.event_status_id "
-					+ " INNER JOIN time_zone tz ON tz.id = me.time_zone_id ";
+					+ " INNER JOIN time_zone tz ON tz.id = st.time_zone_id ";
 
 	private final String BASE_GROUP_BY = 
 			" GROUP BY me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
 					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
-					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, me.time_zone_id, tz.name ";
+					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, tz.id, tz.name ";
 
 	public EventoMusicalDAO() {
 	}
@@ -164,7 +164,7 @@ public class EventoMusicalDAO {
 								parametros, "%" + criteria.getArtistaNombre() + "%");
 
 				SQLUtils.addClause(criteria.getEstadoId(), condiciones, " me.event_status_id = ? ", parametros, criteria.getEstadoId());
-				SQLUtils.addClause(criteria.getZonaHorariaId(), condiciones, " me.time_zone_id = ? ", parametros, criteria.getZonaHorariaId());
+				SQLUtils.addClause(criteria.getZonaHorariaId(), condiciones, " tz.id = ? ", parametros, criteria.getZonaHorariaId());
 			}
 
 			if (!condiciones.isEmpty()) {
@@ -230,8 +230,8 @@ public class EventoMusicalDAO {
 
 			StringBuilder sql = new StringBuilder(); // Datos propios de la tabla
 			sql.append(" INSERT INTO musical_event (name, description, start_date, end_date, ");
-			sql.append(" organizer_id, site_id, event_subtype_id, capacity, event_status_id, time_zone_id) ");
-			sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?) "); // 1 = Borrador
+			sql.append(" organizer_id, site_id, event_subtype_id, capacity, event_status_id) ");
+			sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1) "); // 1 = Borrador
 
 			ps = c.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -243,8 +243,8 @@ public class EventoMusicalDAO {
 					evento.getIdOrganizador(),
 					evento.getIdLugar(),
 					evento.getIdSubtipo(),
-					evento.getCapacidad(),
-					evento.getIdZonaHoraria()
+					evento.getCapacidad()
+					// event_status es puesto por base de datos
 					);
 
 			ps.executeUpdate();
@@ -289,7 +289,7 @@ public class EventoMusicalDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE MUSICAL_EVENT SET name = ?, description = ?, start_date = ?, end_date = ?, ");
-			sql.append(" organizer_id = ?, site_id = ?, capacity = ?, event_subtype_id = ?, event_status_id = ?, time_zone_id = ? ");
+			sql.append(" organizer_id = ?, site_id = ?, capacity = ?, event_subtype_id = ?, event_status_id = ? ");
 			sql.append(" WHERE id = ? ");
 
 			ps = c.prepareStatement(sql.toString());
@@ -304,7 +304,6 @@ public class EventoMusicalDAO {
 					evento.getCapacidad(),
 					evento.getIdSubtipo(),
 					evento.getIdEstado(),
-					evento.getIdZonaHoraria(),
 					evento.getId()
 					);
 

@@ -12,7 +12,7 @@ public class EventoMusicalCriteria extends AbstractValueObject {
 	public final String ORDER_BY_ARTIST = " artist_names "; // Alias del GROUP_CONCAT
 	public final String ORDER_BY_LUGAR = " st.name ";       
 	public final String ORDER_BY_CIUDAD = " ct.name ";      
-	public final String ORDER_BY_REGION = " rg.name ";      
+	public final String ORDER_BY_REGION = " rg.name ";
 
     private Long id = null;
     private String nombre = null;
