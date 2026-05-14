@@ -17,13 +17,10 @@ public class MonedaPagoDAO {
 	public MonedaPagoDAO() {
 	}
 
-	public MonedaPago findById(Long id) {
-		Connection c = null;
+	public MonedaPago findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE id = ? ");
 
@@ -39,21 +36,17 @@ public class MonedaPagoDAO {
 			}
 			return mp;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<MonedaPago> findAll() {
+	public List<MonedaPago> findAll(Connection c) throws Exception {
 		List<MonedaPago> resultados = new ArrayList<MonedaPago>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = BASE_QUERY;
 			
 			ps = c.prepareStatement(sql);
@@ -63,9 +56,9 @@ public class MonedaPagoDAO {
 				resultados.add(loadNext(rs));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return resultados;
 	}

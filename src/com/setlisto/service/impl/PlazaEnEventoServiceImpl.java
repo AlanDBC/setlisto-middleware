@@ -1,50 +1,120 @@
 package com.setlisto.service.impl;
 
+import java.sql.Connection;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.setlisto.criteria.PlazaEnEventoCriteria;
 import com.setlisto.dao.PlazaEnEventoDAO;
 import com.setlisto.model.PlazaEnEventoDTO;
 import com.setlisto.model.Results;
 import com.setlisto.service.PlazaEnEventoService;
+import com.setlisto.utils.JDBCUtils;
 
 public class PlazaEnEventoServiceImpl implements PlazaEnEventoService {
 
-    private PlazaEnEventoDAO plazaEnEventoDAO = null;
+	private static final Logger logger = LogManager.getLogger(PlazaEnEventoServiceImpl.class.getName());
 
-    public PlazaEnEventoServiceImpl() {
-        this.plazaEnEventoDAO = new PlazaEnEventoDAO();
-    }
+	private PlazaEnEventoDAO plazaEnEventoDAO = null;
 
-    @Override
-    public PlazaEnEventoDTO findById(Long id) {
-        return plazaEnEventoDAO.findById(id);
-    }
+	public PlazaEnEventoServiceImpl() {
+		this.plazaEnEventoDAO = new PlazaEnEventoDAO();
+	}
 
-    @Override
-    public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int from, int pageSize) {
-        if (criteria == null) {
-            criteria = new PlazaEnEventoCriteria();
-        }
-        return plazaEnEventoDAO.findByCriteria(criteria, from, pageSize);
-    }
+	@Override
+	public PlazaEnEventoDTO findById(Long id) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			PlazaEnEventoDTO plaza = plazaEnEventoDAO.findById(c, id);
+			commit = true;
+			return plaza;
+		} catch (Exception e) {
+			logger.error("Buscando por id {}: {}", id, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public boolean isSeatAvailable(Long plazaEnEventoId) {
-        // Según el DAO, comprueba si el estado es ID 1 (AVAILABLE)
-        return plazaEnEventoDAO.isAvailable(plazaEnEventoId);
-    }
+	@Override
+	public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int from, int pageSize) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			Results<PlazaEnEventoDTO> resultados = plazaEnEventoDAO.findByCriteria(c, criteria, from, pageSize);
+			commit = true;
+			return resultados;
+		} catch (Exception e) {
+			logger.error("Buscando por criteria {}: {}", criteria, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public boolean updateStatus(Long plazaEnEventoId, Long statusId) {
-        // Cambia el estado en la tabla seat_of_musical_event
-        if (plazaEnEventoId != null && statusId != null) {
-            return plazaEnEventoDAO.updateStatus(plazaEnEventoId, statusId);
-        }
-        return false;
-    }
+	/**
+	 * Comprueba si una plaza esta disponible
+	 */
+	@Override
+	public boolean isSeatAvailable(Long plazaEnEventoId) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			boolean disponible = plazaEnEventoDAO.isAvailable(c, plazaEnEventoId);
+			commit = true;
+			return disponible;
+		} catch (Exception e) {
+			logger.error("Viendo disponibilidad de plaza con id {}: {}", plazaEnEventoId, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public int getAvailableCount(Long eventId) {
-        // Retorna el conteo de plazas con estado 'AVAILABLE' para un evento
-        return plazaEnEventoDAO.countAvailableByEvent(eventId);
-    }
+	@Override
+	public boolean updateStatus(Long plazaEnEventoId, Long statusId) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			boolean cambiado = plazaEnEventoDAO.updateStatus(c, plazaEnEventoId, statusId);
+			commit = true;
+			return cambiado;
+		} catch (Exception e) {
+			logger.error("Cambiando estado de plaza con id {}: {}", plazaEnEventoId, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
+
+	/**
+	 * Trae el total de plazas disponibles para el evento
+	 */
+	@Override
+	public int getAvailableCount(Long eventId) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			int disponibles = plazaEnEventoDAO.countAvailableByEvent(c, eventId);
+			commit = true;
+			return disponibles;
+		} catch (Exception e) {
+			logger.error("Viendo plazas disponibles de evento con id {}: {}", eventId, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 }

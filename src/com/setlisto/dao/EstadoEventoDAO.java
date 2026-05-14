@@ -17,13 +17,10 @@ public class EstadoEventoDAO {
 	public EstadoEventoDAO() {
 	}
 
-	public EstadoEvento findById(Long id) {
-		Connection c = null;
+	public EstadoEvento findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE id = ? ");
 
@@ -37,22 +34,18 @@ public class EstadoEventoDAO {
 			}
 			return estado;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		}
 		finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<EstadoEvento> findAll() {
+	public List<EstadoEvento> findAll(Connection c) throws Exception {
 		List<EstadoEvento> resultados = new ArrayList<EstadoEvento>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			ps = c.prepareStatement(sql.toString());
@@ -65,12 +58,11 @@ public class EstadoEventoDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		}
 		finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 	
 	public EstadoEvento loadNext (ResultSet rs) throws Exception {

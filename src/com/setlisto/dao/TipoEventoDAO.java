@@ -17,12 +17,10 @@ public class TipoEventoDAO {
 	public TipoEventoDAO() {
 	}
 
-	public TipoEvento findById(Long id) {
-		Connection c = null;
+	public TipoEvento findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE id = ? ");
 
@@ -37,21 +35,17 @@ public class TipoEventoDAO {
 			}
 			return te;
 		}  catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<TipoEvento> findAll() {
+	public List<TipoEvento> findAll(Connection c) throws Exception {
 		List<TipoEvento> resultados = new ArrayList<>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" ORDER BY name ");
 
@@ -63,11 +57,10 @@ public class TipoEventoDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 
 	private TipoEvento loadNext(ResultSet rs) throws Exception {

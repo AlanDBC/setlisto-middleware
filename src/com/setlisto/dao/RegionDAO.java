@@ -15,14 +15,11 @@ public class RegionDAO {
 	public RegionDAO() {
 	}
 	
-	public List<Region> findByPaisId(Long id) {
+	public List<Region> findByPaisId(Connection c, Long id)  throws Exception{
 		List<Region> resultados = new ArrayList<Region>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-			
 			String sql = "SELECT id, name, country_id FROM region WHERE country_id = ? ORDER BY name ASC";
 			
 			ps = c.prepareStatement(sql);			
@@ -39,10 +36,9 @@ public class RegionDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 } // class

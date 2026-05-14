@@ -16,6 +16,7 @@ import com.setlisto.model.Pago;
 import com.setlisto.model.PagoDTO;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class PagoDAO {
@@ -33,15 +34,12 @@ public class PagoDAO {
 	public PagoDAO() {
 	}
 
-	public Pago create(Pago pago) {
-	    Connection c = null;
+	public Pago create(Connection c, Pago pago) throws Exception {
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
-
 	    try {
-	        c = DAOUtils.getConnection();
 	        // 1. Verificación de reglas de negocio (Código de transacción único)
-	        if (existsByReference(pago.getCodigoTransaccion())) {
+	        if (existsByReference(c,pago.getCodigoTransaccion())) {
 	            return null;
 	        }
 	        StringBuilder sql = new StringBuilder();
@@ -71,20 +69,17 @@ public class PagoDAO {
 	            return pago; // Devolvemos el objeto completo enriquecido
 	        }
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	throw e;
 	    } finally {
-	        DAOUtils.close(rs, ps, c); 
+	    	JDBCUtils.close(rs, ps); 
 	    }
 	    return null;
 	}
 
-	public PagoDTO findById(Long id) {
-		Connection c = null;
+	public PagoDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE p.id = ? ");
 
@@ -98,21 +93,17 @@ public class PagoDAO {
 			}
 			return pago;			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<PagoDTO> findAll() {
+	public List<PagoDTO> findAll(Connection c) throws Exception {
 		List<PagoDTO> pagos = new ArrayList<PagoDTO>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" ORDER BY p.id ");
 
@@ -125,20 +116,16 @@ public class PagoDAO {
 			}
 			return pagos;			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public BigDecimal getTotalPagadoByClienteId(Long id) {
-		Connection c = null;
+	public BigDecimal getTotalPagadoByClienteId(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COALESCE(SUM(p.amount), 0) ");
 			sql.append(" FROM payment p ");
@@ -153,20 +140,17 @@ public class PagoDAO {
 				return rs.getBigDecimal(1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public PagoDTO findUltimoPagoByClienteId(Long id) {
-		Connection c = null;
+	public PagoDTO findUltimoPagoByClienteId(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE p.customer_id = ? ");
 			sql.append(" ORDER BY p.created_at DESC ");
@@ -182,20 +166,16 @@ public class PagoDAO {
 			}
 			return pago;			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public boolean updateStatus(Long paymentId, Long statusId) {
-		Connection c = null;
+	public boolean updateStatus(Connection c, Long paymentId, Long statusId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE payment SET payment_status_id = ? WHERE id = ? ");
 
@@ -206,20 +186,16 @@ public class PagoDAO {
 
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return false;	
+			JDBCUtils.close(rs, ps);
+		}	
 	}
 
-	public boolean existsByReference(String transactionCode) {
-		Connection c = null;
+	public boolean existsByReference(Connection c, String transactionCode) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COUNT(*) ");
 			sql.append(" FROM payment p ");
@@ -234,20 +210,17 @@ public class PagoDAO {
 				return count > 0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public PagoDTO findByCodigoDeTransaccion(String transactionCode) {
-		Connection c = null;
+	public PagoDTO findByCodigoDeTransaccion(Connection c, String transactionCode) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE p.transaction_code = ? ");
 
@@ -262,25 +235,21 @@ public class PagoDAO {
 			return pago;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Results<PagoDTO> findByCriteria(PagoCriteria criteria, int from, int pageSize) {
+	public Results<PagoDTO> findByCriteria(Connection c, PagoCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
 		
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		Results<PagoDTO> results = new Results<PagoDTO>();
 		
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<String>();
@@ -329,11 +298,10 @@ public class PagoDAO {
 			
 			return results;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 	private PagoDTO loadNext (ResultSet rs) throws Exception {

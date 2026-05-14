@@ -75,13 +75,10 @@ public class EventoMusicalDAO {
 	public EventoMusicalDAO() {
 	}
 
-	public EventoMusicalDTO findById(Long id) {
-		Connection c = null;
+	public EventoMusicalDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE me.id = ? ");
 			sql.append(BASE_GROUP_BY); // Para que funcionen los GROUP_CONCAT aunque en este caso no deberían traer múltiples registros por ser la búsqueda por ID
@@ -96,25 +93,21 @@ public class EventoMusicalDAO {
 			}
 			return em;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Results<EventoMusicalDTO> findByCriteria(EventoMusicalCriteria criteria, int from, int pageSize) {
+	public Results<EventoMusicalDTO> findByCriteria(Connection c, EventoMusicalCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria); // TODO 
-
-		Connection c = null;
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		Results<EventoMusicalDTO> results = new Results<EventoMusicalDTO>(); // TODO
 
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<String>();
@@ -212,20 +205,16 @@ public class EventoMusicalDAO {
 
 			return results; // TODO
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public EventoMusicalDTO create(EventoMusicalDTO evento) {
-		Connection c = null;
+	public EventoMusicalDTO create(Connection c, EventoMusicalDTO evento) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
 		try {
-			c = JDBCUtils.getConnection();
 			c.setAutoCommit(false); // Iniciamos la transacción para asegurar que la inserción del evento y sus relaciones sea atómica
 
 			StringBuilder sql = new StringBuilder(); // Datos propios de la tabla
@@ -262,31 +251,19 @@ public class EventoMusicalDAO {
 
 			c.commit();
 
-			return findById(evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
+			return findById(c, evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
 
 		} catch (Exception e) {
-			if (c != null) {
-				try {
-					c.rollback();
-				} catch (Exception rollbackException) {
-					rollbackException.printStackTrace();
-				}
-			}
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-
-		return null;
 	}
 
-	public void update(EventoMusical evento) {
-		Connection c = null;
+	public void update(Connection c, EventoMusical evento) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE MUSICAL_EVENT SET name = ?, description = ?, start_date = ?, end_date = ?, ");
 			sql.append(" organizer_id = ?, site_id = ?, capacity = ?, event_subtype_id = ?, event_status_id = ? ");
@@ -310,19 +287,16 @@ public class EventoMusicalDAO {
 			ps.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps,c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public void delete(Long id) {
-		Connection c = null;
+	public void delete(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = "DELETE FROM musical_event WHERE id = ?";
 			ps = c.prepareStatement(sql);
 
@@ -330,9 +304,9 @@ public class EventoMusicalDAO {
 			ps.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 
@@ -340,19 +314,16 @@ public class EventoMusicalDAO {
 		if (subGeneros == null || subGeneros.isEmpty()) {
 			return;
 		}
-
 		String sql = " INSERT INTO musical_event_subgenre (musical_event_id, musical_subgenre_id) VALUES (?, ?) ";
-
+		
 		try (PreparedStatement ps = c.prepareStatement(sql)) {
 			for (SubGeneroMusical subGenero : subGeneros) {
 				if (subGenero == null || subGenero.getId() == null) {
 					continue;
 				}
-
 				DAOUtils.setParameters(ps, eventoId, subGenero.getId());
 				ps.addBatch();
 			}
-
 			ps.executeBatch();
 		}
 	}

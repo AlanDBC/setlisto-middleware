@@ -17,13 +17,10 @@ public class MetodoPagoDAO {
 	public MetodoPagoDAO() {
 	}
 
-	public MetodoPago findById(Long id) {
-		Connection c = null;
+	public MetodoPago findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE id = ? ");
 
@@ -38,21 +35,17 @@ public class MetodoPagoDAO {
 			}
 			return mp;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<MetodoPago> findAll() {
+	public List<MetodoPago> findAll(Connection c) throws Exception {
 		List<MetodoPago> resultados = new ArrayList<MetodoPago>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = BASE_QUERY;
 
 			ps = c.prepareStatement(sql);
@@ -62,9 +55,9 @@ public class MetodoPagoDAO {
 				resultados.add(loadNext(rs));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return resultados;
 	}

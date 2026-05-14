@@ -13,12 +13,12 @@ public interface EventoMusicalService {
     /**
      * Recupera la información detallada de un evento por su ID.
      */
-    public EventoMusicalDTO findById(Long id);
+    public EventoMusicalDTO findById(Long id) throws Exception;
 
     /**
      * Realiza búsquedas dinámicas de eventos (por nombre, fechas, capacidad, géneros, etc.).
      */
-    public Results<EventoMusicalDTO> findByCriteria(EventoMusicalCriteria criteria, int page, int size);
+    public Results<EventoMusicalDTO> findByCriteria(EventoMusicalCriteria criteria, int page, int size) throws Exception;
 
 //    /**
 //     * Obtiene el listado completo de eventos musicales.
@@ -28,15 +28,15 @@ public interface EventoMusicalService {
     /**
      * Registra un nuevo evento musical en el sistema.
      */
-    public EventoMusicalDTO create(EventoMusicalDTO evento);
+    public EventoMusicalDTO create(EventoMusicalDTO evento) throws Exception;
 
     /**
      * Actualiza los datos de un evento existente.
      */
-    public void update(EventoMusicalDTO evento);
+    public void update(EventoMusicalDTO evento) throws Exception;
 
     /**
      * Elimina un evento del sistema.
      */
-    public void delete(Long id);
+    public void delete(Long id) throws Exception;
 }

@@ -1,23 +1,30 @@
 package com.setlisto.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.Artista;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
 public class ArtistaDAO {
+	
+	private static final Logger logger = LogManager.getLogger(ArtistaDAO.class.getName());
 
     private static final String BASE_QUERY = " SELECT id, name, description FROM artist ";
 
-    public Artista findById(Long id) {
-        Connection c = null;
+    public Artista findById(Connection c, Long id) throws Exception {    
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            c = JDBCUtils.getConnection();
             String sql = BASE_QUERY + " WHERE id = ? ";
             ps = c.prepareStatement(sql);
             DAOUtils.setParameters(ps, id);
@@ -26,9 +33,9 @@ public class ArtistaDAO {
                 return loadNext(rs);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+            JDBCUtils.close(rs, ps);
         }
         return null;
     }
@@ -36,13 +43,11 @@ public class ArtistaDAO {
     /**
      * Recupera todos los artistas que participan en un evento musical concreto.
      */
-    public List<Artista> findByMusicalEventId(Long eventId) {
+    public List<Artista> findByMusicalEventId(Connection c,Long eventId) throws Exception {
         List<Artista> artistas = new ArrayList<>();
-        Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            c = JDBCUtils.getConnection();
             String sql = " SELECT a.id, a.name, a.description " +
                          " FROM artist a " +
                          " JOIN musical_event_artist mea ON a.id = mea.artist_id " +
@@ -54,19 +59,19 @@ public class ArtistaDAO {
                 artistas.add(loadNext(rs));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+            JDBCUtils.close(rs, ps);
         }
         return artistas;
     }
 
-    public Artista create(Artista artista) {
-        Connection c = null;
+    public Artista create(Connection c,Artista artista) throws Exception {
+        
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            c = JDBCUtils.getConnection();
+        
             String sql = " INSERT INTO artist (name, description) VALUES (?, ?) ";
             ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             DAOUtils.setParameters(ps, artista.getNombre(), artista.getDescripcion());
@@ -79,21 +84,18 @@ public class ArtistaDAO {
                 return artista;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
         return null;
     }
     
-    public List<Artista> findAll() {
+    public List<Artista> findAll(Connection c) throws Exception {
         List<Artista> artistas = new ArrayList<>();
-        Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-
         try {
-            c = JDBCUtils.getConnection();
             String sql = BASE_QUERY + " ORDER BY name ";
             ps = c.prepareStatement(sql);
             rs = ps.executeQuery();
@@ -102,9 +104,9 @@ public class ArtistaDAO {
                 artistas.add(loadNext(rs));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
 
         return artistas;

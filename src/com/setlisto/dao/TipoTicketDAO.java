@@ -20,13 +20,10 @@ public class TipoTicketDAO {
     /**
      * Recupera un tipo de ticket específico por su ID
      */
-    public TipoTicket findById(Long id) {
-        Connection c = null;
+    public TipoTicket findById(Connection c, Long id) throws Exception {
         PreparedStatement ps = null;
         ResultSet rs = null;
-
         try {
-            c = JDBCUtils.getConnection();
             StringBuilder sql = new StringBuilder(BASE_QUERY);
             sql.append(" WHERE id = ? ");
 
@@ -41,24 +38,20 @@ public class TipoTicketDAO {
             return tt;
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
-        return null;
     }
 
     /**
      * Obtiene todos los tipos de tickets registrados en la tabla maestra.
      */
-    public List<TipoTicket> findAll() {
+    public List<TipoTicket> findAll(Connection c) throws Exception {
         List<TipoTicket> resultados = new ArrayList<>();
-        Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-
         try {
-            c = JDBCUtils.getConnection();
             ps = c.prepareStatement(BASE_QUERY);
             rs = ps.executeQuery();
 
@@ -68,11 +61,10 @@ public class TipoTicketDAO {
             return resultados;
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
-        return resultados;
     }
 
     /**

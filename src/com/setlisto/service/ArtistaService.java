@@ -6,14 +6,14 @@ import com.setlisto.model.Artista;
 
 public interface ArtistaService {
     
-    public Artista findById(Long id);
+    public Artista findById(Long id) throws Exception;
     
     /**
      * Obtiene los artistas de un evento específico.
      */
-    public List<Artista> findByMusicalEvent(Long eventId);
+    public List<Artista> findByMusicalEvent(Long eventId) throws Exception;
     
-    public Artista create(Artista artista);
+    public Artista create(Artista artista) throws Exception;
     
-    public List<Artista> findAll();
+    public List<Artista> findAll() throws Exception;
 }

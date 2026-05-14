@@ -14,6 +14,7 @@ import com.setlisto.criteria.OrganizadorCriteria;
 import com.setlisto.model.Organizador;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class OrganizadorDAO {
@@ -27,13 +28,10 @@ public class OrganizadorDAO {
 	public OrganizadorDAO() {
 	}
 
-	public Organizador findById(Long id) {
-		Connection c = null;
+	public Organizador findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE org.id = ? ");
 
@@ -47,20 +45,16 @@ public class OrganizadorDAO {
 			}
 			return ogr;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Organizador findByEmail(String email) {
-		Connection c = null;
+	public Organizador findByEmail(Connection c, String email) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE LOWER(org.email) = LOWER(?) ");
 
@@ -74,25 +68,21 @@ public class OrganizadorDAO {
 			}
 			return organizador;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Results<Organizador> findByCriteria(OrganizadorCriteria criteria, int from, int pageSize) {
+	public Results<Organizador> findByCriteria(Connection c, OrganizadorCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
 
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		Results<Organizador> results = new Results<Organizador>();
 
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<>();
@@ -145,21 +135,16 @@ public class OrganizadorDAO {
 
 			return results;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 	
-	public List<Organizador> findAll() {
-		Connection c = null;
+	public List<Organizador> findAll(Connection c) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
-		try {
-			c = DAOUtils.getConnection();
-			
+		try {			
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			
 			ps = c.prepareStatement(sql.toString());
@@ -171,19 +156,16 @@ public class OrganizadorDAO {
 			}
 			return organizadores;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public boolean updateVerifiedStatus(Long id, boolean verificado) {
-		Connection c = null;
+	public boolean updateVerifiedStatus(Connection c, Long id, boolean verificado) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = "UPDATE organizer SET verified = ? WHERE id = ?";
 
 			ps = c.prepareStatement(sql);
@@ -191,19 +173,16 @@ public class OrganizadorDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public Organizador create(Organizador organizador) {
-		Connection c = null;
+	public Organizador create(Connection c, Organizador organizador) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" INSERT INTO organizer (business_name, verified, email, ");
 			sql.append(" password, phone, name, surname1, surname2, birth_date) ");
@@ -234,19 +213,17 @@ public class OrganizadorDAO {
 				return organizador; // Retorno de la entidad enriquecida
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public boolean update(Organizador organizador) {
-		Connection c = null;
+	public boolean update(Connection c, Organizador organizador) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = "UPDATE organizer SET business_name = ?, verified = ?, email = ?, phone = ?, "
 					+ "name = ?, surname1 = ?, surname2 = ?, birth_date = ? WHERE id = ?";
 
@@ -266,19 +243,16 @@ public class OrganizadorDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public boolean delete(Long id) {
-		Connection c = null;
+	public boolean delete(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = "DELETE FROM organizer WHERE id = ?";
 
 			ps = c.prepareStatement(sql);
@@ -287,11 +261,10 @@ public class OrganizadorDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
 	private Organizador loadNext(ResultSet rs) throws Exception {

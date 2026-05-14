@@ -12,7 +12,7 @@ public interface ClienteService {
 	 * @param contrasena
 	 * @return id del cliente registrado
 	 */
-	public Cliente register (Cliente cliente);
+	public Cliente register (Cliente cliente) throws Exception;
 	
 	/**
 	 * Logea un usuario dentro de la aplicacion 
@@ -20,31 +20,31 @@ public interface ClienteService {
 	 * @param contrasena
 	 * @return Cliente llogeado para pintar o null si no se ha podido logear
 	 */
-	public Cliente login (String correo, String contrasena);	
+	public Cliente login (String correo, String contrasena) throws Exception;	
 	
 	/**
 	 * Busca un cliente por su email
 	 * @param email
 	 * @return
 	 */
-	Cliente findByEmail(String email);
+	Cliente findByEmail(String email) throws Exception;
 	
 	/**
 	 * Busca un cliente por su id
 	 * @param id
 	 * @return
 	 */
-	public Cliente findById(Long id);
+	public Cliente findById(Long id) throws Exception;
 	
 	/**
 	 * Modifica los datos de un usuario
 	 * @param cliente
 	 */
-	public boolean update (Cliente cliente);
+	public boolean update (Cliente cliente) throws Exception;
 
-	public boolean setActive(boolean active, Long customerId);
+	public boolean setActive(boolean active, Long customerId) throws Exception;
 
-	public boolean setVerify(boolean verified, Long customerId);
+	public boolean setVerify(boolean verified, Long customerId) throws Exception;
 	
 	/**
 	 * Actualiza la contrase��a de un cliente
@@ -53,19 +53,19 @@ public interface ClienteService {
 	 * @param newPassword
 	 * @return
 	 */
-	boolean updatePassword(Long id, String oldPassword, String newPassword);
+	boolean updatePassword(Long id, String oldPassword, String newPassword) throws Exception;
 	
 	/**
 	 * Elimina un cliente de la aplicacion
 	 * @param id
 	 */
-	public void delete (Long id);
+	public void delete (Long id) throws Exception;
 	
 	/**
 	 * Busca clientes segun los criterios indicados
 	 * @param criteria
 	 * @return
 	 */
-	public Results<Cliente> findByCriteria(ClienteCriteria criteria, int from, int pageSize);
+	public Results<Cliente> findByCriteria(ClienteCriteria criteria, int from, int pageSize) throws Exception;
 	
 }

@@ -13,10 +13,11 @@ import com.setlisto.criteria.PlazaEnEventoCriteria;
 import com.setlisto.model.PlazaEnEventoDTO;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class PlazaEnEventoDAO {
-	
+
 	private static Logger logger = LogManager.getLogger(PlazaEnEventoDAO.class.getName()); // TODO
 
 	private static String BASE_QUERY = " SELECT sme.id, me.id, me.name, st.id, st.row, st.number, se.id, se.name "
@@ -28,12 +29,10 @@ public class PlazaEnEventoDAO {
 	public PlazaEnEventoDAO() {
 	}
 
-	public PlazaEnEventoDTO findById(Long id) {
-		Connection c = null;
+	public PlazaEnEventoDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE sme.id = ? ");
 
@@ -47,24 +46,20 @@ public class PlazaEnEventoDAO {
 			}
 			return plaza;
 		}  catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int from, int pageSize) {
+	public Results<PlazaEnEventoDTO> findByCriteria(Connection c, PlazaEnEventoCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
-		
-		Connection c = null;
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
+
 		Results<PlazaEnEventoDTO> results = new Results<PlazaEnEventoDTO>();
-		
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<Object> parametros = new ArrayList<Object>();
@@ -81,22 +76,22 @@ public class PlazaEnEventoDAO {
 				sql.append(" WHERE ");
 				sql.append(String.join(" AND ", condiciones));
 			}
-			
+
 			sql.append(" ORDER BY ");
 			sql.append(criteria.getOrderBy());
 			sql.append(criteria.getAscDesc() ? " ASC " : " DESC ");
-			
+
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
 			} 
-			
+
 			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-			
+
 			DAOUtils.setParameters(ps, parametros);	
 
 			rs = ps.executeQuery();
 			List<PlazaEnEventoDTO> resultsPage = new ArrayList<>();
-			
+
 			if (from>=1) {
 				int count = 0;
 				rs.absolute(from);
@@ -106,25 +101,22 @@ public class PlazaEnEventoDAO {
 				} while (count<pageSize && rs.next());
 			}
 			int totalResults = SQLUtils.getTotalRows(rs);
-			
+
 			results.setPage(resultsPage); 
 			results.setTotal(totalResults);
-			
+
 			return results;
 		}  catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public boolean updateStatus(Long plazaEventoMusicalId, Long estatusId) {
-		Connection c = null;
+	public boolean updateStatus(Connection c, Long plazaEventoMusicalId, Long estatusId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE seat_of_musical_event ");
 			sql.append(" SET seat_status_id = ? ");
@@ -135,20 +127,17 @@ public class PlazaEnEventoDAO {
 
 			int filasAfectadas = ps.executeUpdate();
 			return filasAfectadas > 0;
-		}   catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public boolean isAvailable(Long plazaEventoMusicalId) {
-		Connection c = null;
+	public boolean isAvailable(Connection c, Long plazaEventoMusicalId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT 1 ");
 			sql.append(" FROM seat_of_musical_event ");
@@ -162,21 +151,18 @@ public class PlazaEnEventoDAO {
 			if (rs.next()) {
 				return true;
 			}
-		}   catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public int countAvailableByEvent(Long eventId) {
-		Connection c = null;
+	public int countAvailableByEvent(Connection c, Long eventId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COUNT(*) ");
 			sql.append(" FROM seat_of_musical_event ");
@@ -191,9 +177,9 @@ public class PlazaEnEventoDAO {
 				return rs.getInt(1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return 0;
 	}

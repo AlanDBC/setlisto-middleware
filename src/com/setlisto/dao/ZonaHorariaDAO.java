@@ -17,13 +17,10 @@ public class ZonaHorariaDAO {
 	public ZonaHorariaDAO() {
 	}
 	
-	public ZonaHoraria findById(Long id) {
-		Connection c = null;
+	public ZonaHoraria findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE id = ? ");
 
@@ -37,22 +34,18 @@ public class ZonaHorariaDAO {
 			}
 			return zh;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		}
 		finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 	
-	public List<ZonaHoraria> findAll() {
+	public List<ZonaHoraria> findAll(Connection c)  throws Exception{
 		List<ZonaHoraria> resultados = new ArrayList<ZonaHoraria>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			ps = c.prepareStatement(sql.toString());
@@ -65,12 +58,11 @@ public class ZonaHorariaDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		}
 		finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 	
 	

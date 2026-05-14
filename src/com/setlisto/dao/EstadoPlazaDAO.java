@@ -21,12 +21,10 @@ public class EstadoPlazaDAO {
     /**
      * Busca un estado de plaza por su ID (1=AVAILABLE, 2=SOLD, 3=DISABLED)
      */
-    public EstadoPlaza findById(Long id) {
-        Connection c = null;
+    public EstadoPlaza findById(Connection c, Long id)  throws Exception {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            c = JDBCUtils.getConnection();
             StringBuilder sql = new StringBuilder(BASE_QUERY);
             sql.append(" WHERE id = ? ");
 
@@ -40,23 +38,20 @@ public class EstadoPlazaDAO {
             }
             return ep;
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
-        return null;
     }
 
     /**
      * Recupera todos los estados de plaza disponibles.
      */
-    public List<EstadoPlaza> findAll() {
+    public List<EstadoPlaza> findAll(Connection c) throws Exception {
         List<EstadoPlaza> resultados = new ArrayList<>();
-        Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            c = JDBCUtils.getConnection();
             ps = c.prepareStatement(BASE_QUERY);
             rs = ps.executeQuery();
 
@@ -65,11 +60,10 @@ public class EstadoPlazaDAO {
             }
             return resultados;
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw e;
         } finally {
-            DAOUtils.close(rs, ps, c);
+        	JDBCUtils.close(rs, ps);
         }
-        return resultados;
     }
 
     /**
@@ -80,7 +74,7 @@ public class EstadoPlazaDAO {
         int i = 1;
         EstadoPlaza ep = new EstadoPlaza();
         ep.setId(rs.getLong(i++));
-        ep.setNombre(rs.getString(i++)); // Mapea la columna 'name' al atributo 'estado' [2]
+        ep.setNombre(rs.getString(i++));
         return ep;
     }
 }

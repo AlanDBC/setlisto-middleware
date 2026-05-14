@@ -10,6 +10,7 @@ import java.util.List;
 import com.setlisto.model.Resena;
 import com.setlisto.model.ResenaDTO;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 
 public class ResenaDAO {
 
@@ -28,12 +29,10 @@ public class ResenaDAO {
 	 * @param resena (resenaDTO, pasando solo los atributos POJO)
 	 * @return boolean (true si se ha creado correctamente, false en caso contrario)
 	 */
-	public boolean create(Resena resena) {
-		Connection c = null;
+	public boolean create(Connection c, Resena resena) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;	
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" INSERT INTO review (musical_event_id, customer_id, stars ");
 			sql.append(" , favorite, comment) VALUES (?, ?, ?, ?, ?)");
@@ -51,11 +50,10 @@ public class ResenaDAO {
 			return rows > 0;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
-		return false;
 	}
 
 	/**
@@ -63,12 +61,10 @@ public class ResenaDAO {
 	 * @param resenaDTO con los datos a editar
 	 * @return true si se ha editado correctamente, false en caso contrario
 	 */
-	public boolean edit(Resena resena) {
-		Connection c = null;
+	public boolean edit(Connection c, Resena resena) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE review SET stars = ?, favorite = ?, comment = ? ");
 			sql.append(" WHERE musical_event_id = ? AND customer_id = ? ");
@@ -86,11 +82,10 @@ public class ResenaDAO {
 			return rows > 0;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
 	/**
@@ -99,12 +94,10 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return true si se ha eliminado correctamente, false en caso contrario
 	 */
-	public boolean delete(Long eventoId, Long usuarioId) {
-		Connection c = null;
+	public boolean delete(Connection c, Long eventoId, Long usuarioId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = " DELETE FROM review WHERE musical_event_id = ? AND customer_id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -114,11 +107,10 @@ public class ResenaDAO {
 			return rows > 0;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
-		return false;
 	}
 
 	/**
@@ -127,12 +119,10 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return ResenaDTO si se encuentra, null en caso contrario
 	 */
-	public ResenaDTO findByEventAndCustomer(Long eventoId, Long usuarioId) {
-		Connection c = null;
+	public ResenaDTO findByEventAndCustomer(Connection c, Long eventoId, Long usuarioId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE r.musical_event_id = ? AND r.customer_id = ? ");
 
@@ -147,11 +137,10 @@ public class ResenaDAO {
 			}
 			return resena;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
-		return null;
 	}
 
 	/**
@@ -159,12 +148,10 @@ public class ResenaDAO {
 	 * @param eventoId
 	 * @return Lista de ResenaDTO, null en caso de error o inexistencia
 	 */
-	public List<ResenaDTO> findByMusicalEvent(Long eventoId) {
-		Connection c = null;
+	public List<ResenaDTO> findByMusicalEvent(Connection c, Long eventoId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE r.musical_event_id = ? ");
 
@@ -180,11 +167,10 @@ public class ResenaDAO {
 			}
 			return resenas;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
-		return null;
 	}
 
 	/**
@@ -192,12 +178,10 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return Lista de ResenaDTO
 	 */
-	public List<ResenaDTO> findByCustomer(Long usuarioId) {
-		Connection c = null;
+	public List<ResenaDTO> findByCustomer(Connection c, Long usuarioId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE r.customer_id = ? ");
 
@@ -213,11 +197,10 @@ public class ResenaDAO {
 			}
 			return resenas;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
-		return null;
 	}
 
 	/**
@@ -226,12 +209,10 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return true si es favorito, false en caso contrario
 	 */
-	public boolean isFavorite(Long eventoId, Long usuarioId) {
-		Connection c = null;
+	public boolean isFavorite(Connection c, Long eventoId, Long usuarioId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = " SELECT favorite FROM review WHERE musical_event_id = ? AND customer_id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -244,9 +225,9 @@ public class ResenaDAO {
 				return rs.getBoolean(i++);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs,ps, c);
+			JDBCUtils.close(rs,ps);
 		}
 		return false;
 	}

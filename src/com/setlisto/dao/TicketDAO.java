@@ -3,6 +3,8 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import com.setlisto.model.Results;
 import com.setlisto.model.Ticket;
 import com.setlisto.model.TicketDTO;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class TicketDAO {
@@ -36,22 +39,19 @@ public class TicketDAO {
 	public TicketDAO() {
 	}
 
-	public Long create(Ticket ticket) {
-	    Connection c = null;
+	public Long create(Connection c, Ticket ticket) throws Exception {
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
-
 	    try {
-	        c = DAOUtils.getConnection();
 	        String sql = "INSERT INTO ticket (code, price, purchase_date, payment_id, " +
 	                     "seat_of_musical_event_id, ticket_type_id) VALUES (?, ?, ?, ?, ?, ?)";
 
-	        ps = c.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+	        ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 	        DAOUtils.setParameters(ps,
 	            ticket.getCodigo(),
 	            ticket.getPrecio(),
-	            java.sql.Timestamp.valueOf(ticket.getFechaCompra()),
+	            Timestamp.valueOf(ticket.getFechaCompra()),
 	            ticket.getPagoId(),
 	            ticket.getPlazaEventoMusicalId(),
 	            ticket.getTipoTicketId()
@@ -66,19 +66,17 @@ public class TicketDAO {
 	            }
 	        }
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	throw e;
 	    } finally {
-	        DAOUtils.close(rs, ps, c);
+	    	JDBCUtils.close(rs, ps);
 	    }
 	    return null;
 	}
 
-	public TicketDTO findById(Long id) {
-		Connection c = null;
+	public TicketDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE t.id = ? ");
 
@@ -92,20 +90,16 @@ public class TicketDAO {
 			}
 			return tck;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
-
 	}
 
-	public TicketDTO findByCode(String code) {
-		Connection c = null;
+	public TicketDTO findByCode(Connection c, String code) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE t.code = ? ");
 
@@ -119,21 +113,17 @@ public class TicketDAO {
 			}
 			return tck;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
-
 	}
 
-	public List<TicketDTO> findByPaymentId(Long paymentId){
+	public List<TicketDTO> findByPaymentId(Connection c, Long paymentId) throws Exception {
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE t.payment_id = ? ");
 
@@ -146,20 +136,17 @@ public class TicketDAO {
 			}
 			return tickets;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<TicketDTO> findByClienteId(Long clienteId){
+	public List<TicketDTO> findByClienteId(Connection c, Long clienteId) throws Exception{
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE c.id = ? ");
 
@@ -172,20 +159,17 @@ public class TicketDAO {
 			}
 			return tickets;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<TicketDTO> findByEventoId(Long musicalEventId){ 
+	public List<TicketDTO> findByEventoId(Connection c, Long musicalEventId) throws Exception{ 
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE me.id = ? ");
 
@@ -198,19 +182,16 @@ public class TicketDAO {
 			}
 			return tickets;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public boolean existsBySeatOfEventId(Long seatOfMusicalEventId) {
-		Connection c = null;
+	public boolean existsBySeatOfEventId(Connection c, Long seatOfMusicalEventId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT 1 FROM ticket WHERE seat_of_musical_event_id = ? ");
 			
@@ -222,19 +203,17 @@ public class TicketDAO {
 				return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public long countByEventoId(Long musicalEventId) {
-		Connection c = null;
+	public long countByEventoId(Connection c, Long musicalEventId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COUNT(*) FROM ticket t ");
 			sql.append(" INNER JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id WHERE stme.musical_event_id = ? ");
@@ -247,25 +226,21 @@ public class TicketDAO {
 				return rs.getLong(1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return 0;
 	}
 
-	public Results<TicketDTO> findByCriteria(TicketCriteria criteria, int from, int pageSize) {
+	public Results<TicketDTO> findByCriteria(Connection c, TicketCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria); 
-		
-	    Connection c = null;
+	    
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
 	    
 	    Results<TicketDTO> results = new Results<TicketDTO>();
-
 	    try {
-	        c = DAOUtils.getConnection();
-	        
 	        StringBuilder sql = new StringBuilder(BASE_QUERY);
 	        
 	        List<String> condiciones = new ArrayList<>();
@@ -312,11 +287,10 @@ public class TicketDAO {
 
 	        return results;
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	throw e;
 	    } finally {
-	        DAOUtils.close(rs, ps, c);
+	    	JDBCUtils.close(rs, ps);
 	    }
-	    return null;
 	}
 
 	private TicketDTO loadNext(ResultSet rs) throws Exception {

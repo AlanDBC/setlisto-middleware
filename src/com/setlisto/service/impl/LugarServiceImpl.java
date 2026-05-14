@@ -1,6 +1,10 @@
 package com.setlisto.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.LugarCriteria;
 import com.setlisto.dao.LugarDAO;
@@ -8,57 +12,126 @@ import com.setlisto.model.Lugar;
 import com.setlisto.model.LugarDTO;
 import com.setlisto.model.Results;
 import com.setlisto.service.LugarService;
+import com.setlisto.utils.JDBCUtils;
 
 /**
  * Implementación del servicio de gestión de lugares.
  */
 public class LugarServiceImpl implements LugarService {
 
-    private LugarDAO lugarDAO = null;
+	private static final Logger logger = LogManager.getLogger(LugarServiceImpl.class.getName());
 
-    public LugarServiceImpl() {
-        this.lugarDAO = new LugarDAO();
-    }
+	private LugarDAO lugarDAO = null;
 
-    @Override
-    public LugarDTO findById(Long id) {
-        return lugarDAO.findById(id);
-    }
+	public LugarServiceImpl() {
+		this.lugarDAO = new LugarDAO();
+	}
 
-    @Override
-    public List<LugarDTO> findAll() {
-        return lugarDAO.findAll();
-    }
+	@Override
+	public LugarDTO findById(Long id) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			LugarDTO lugar = lugarDAO.findById(c, id);
+			commit = true;
+			return lugar;
+		} catch (Exception e) {
+			logger.error("Buscando lugar por id{}: {}", id, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) {
-        // Se asegura de no pasar un criteria nulo al DAO
-        if (criteria == null) {
-            criteria = new LugarCriteria();
-        }
-        return lugarDAO.findByCriteria(criteria, from, pageSize);
-    }
+	@Override
+	public List<LugarDTO> findAll() throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			List<LugarDTO> lugares = lugarDAO.findAll(c);
+			commit = true;
+			return lugares;
+		} catch (Exception e) {
+			logger.error("Buscando todos", e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public Lugar create(Lugar lugar) {
-        if (lugar.getNombre() != null && lugar.getCiudadId() != null) {
+	@Override
+	public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			Results<LugarDTO> resultados = lugarDAO.findByCriteria(c, criteria, from, pageSize);
+			commit = true;
+			return resultados;
+		} catch (Exception e) {
+			logger.error("Buscando por criteria {}: {}", criteria, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-            return lugarDAO.create(lugar);
-        }        
-        return null;
-    }
+	@Override
+	public Lugar create(Lugar lugar) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			Lugar creado = lugarDAO.create(c, lugar);
+			commit = true;
+			return creado;
+		} catch (Exception e) {
+			logger.error("Creando {}: {}", lugar, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public void update(Lugar lugar) {
-        if (lugar.getId() != null) {
-            lugarDAO.update(lugar);
-        }
-    }
+	@Override
+	public void update(Lugar lugar) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			lugarDAO.update(c, lugar);
+			commit = true;
+			return;
+		} catch (Exception e) {
+			logger.error("Modificando {}: {}", lugar, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 
-    @Override
-    public void delete(Long id) {
-        if (id != null) {
-            lugarDAO.delete(id);
-        }
-    }
+	@Override
+	public void delete(Long id) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			lugarDAO.delete(c, id);
+			commit = true;
+			return; 
+		} catch (Exception e) {
+			logger.error("Eliminando con id {}: {}", id,  e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 }

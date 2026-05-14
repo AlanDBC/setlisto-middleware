@@ -15,14 +15,11 @@ public class CiudadDAO {
 	public CiudadDAO() {
 	}
 
-	public List<Ciudad> findByRegionId(Long regionId) {
+	public List<Ciudad> findByRegionId(Connection c, Long regionId) throws Exception {
 		List<Ciudad> resultados = new ArrayList<Ciudad>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = "SELECT id, name, region_id FROM city WHERE region_id = ? ORDER BY name ASC";
 
 			ps = c.prepareStatement(sql);
@@ -36,11 +33,10 @@ public class CiudadDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return resultados;	
+			JDBCUtils.close(rs, ps);
+		}	
 	}
 
 	private static Ciudad loadNext(ResultSet rs) throws Exception {

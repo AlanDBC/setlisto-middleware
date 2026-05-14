@@ -15,10 +15,11 @@ import com.setlisto.criteria.ClienteCriteria;
 import com.setlisto.model.Cliente;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
+import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class ClienteDAO {
-	
+
 	private static Logger logger = LogManager.getLogger(ClienteDAO.class.getName());
 
 	private static final String BASE_QUERY = " SELECT id, preferences, email, password, name, phone, "
@@ -28,13 +29,10 @@ public class ClienteDAO {
 	public ClienteDAO() {
 	}
 
-	public Cliente findById (Long id) {
-		Connection c = null;
+	public Cliente findById (Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE id = ? ");
 
@@ -48,20 +46,16 @@ public class ClienteDAO {
 			}
 			return cli;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Cliente findByEmail(String email) {
-		Connection c = null;
+	public Cliente findByEmail(Connection c, String email) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE LOWER(email) = LOWER(?) ");
 
@@ -75,21 +69,17 @@ public class ClienteDAO {
 			}
 			return cli;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public boolean emailExists(String email) {
-		Connection c = null;
+	public boolean emailExists(Connection c, String email) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		try {
-			c = DAOUtils.getConnection();
-
 			String sql = " SELECT 1 FROM customer WHERE LOWER(email) = LOWER(?) LIMIT 1 ";
 
 			ps = c.prepareStatement(sql);
@@ -98,21 +88,17 @@ public class ClienteDAO {
 
 			return rs.next();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public List<Cliente> findAll() {
+	public List<Cliente> findAll(Connection c) throws Exception {
 		List<Cliente> clientes = new ArrayList<>(); 
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" ORDER BY id ");
 
@@ -123,22 +109,18 @@ public class ClienteDAO {
 			while (rs.next()) {
 				clientes.add(loadNext(rs));
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return clientes;
 	}
 
-	public boolean isVerified(Long id) {
-		Connection c = null;
+	public boolean isVerified(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-
-			c = DAOUtils.getConnection();
-
 			String sql = " SELECT verified FROM customer cu WHERE cu.id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -149,20 +131,17 @@ public class ClienteDAO {
 				return rs.getBoolean(1);
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public boolean setVerify(boolean verified, Long id) {
-		Connection c = null;
+	public boolean setVerify(Connection c, boolean verified, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			String sql = " UPDATE customer SET verified = ? WHERE id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -171,20 +150,16 @@ public class ClienteDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		}catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public boolean setActive(boolean active, Long customerId) {
-		Connection c = null;
+	public boolean setActive(Connection c, boolean active, Long customerId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null; 
 		try {
-			c = DAOUtils.getConnection();
-
 			String sql = " UPDATE customer SET active = ? WHERE id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -194,21 +169,17 @@ public class ClienteDAO {
 			return rows > 0;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public int countReviews(Long id) {
-		Connection c = null;
+	public int countReviews(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null; 
 		int total = 0;
 		try {
-			c = DAOUtils.getConnection();
-
 			String sql = " SELECT COUNT(*) FROM review WHERE customer_id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -220,20 +191,17 @@ public class ClienteDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return total;
 	}
 
-	public boolean hasReviewedEvent(Long customerId, Long eventId) {
-		Connection c = null;
+	public boolean hasReviewedEvent(Connection c, Long customerId, Long eventId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			String sql = " SELECT COUNT(*) FROM review WHERE customer_id = ? AND musical_event_id = ? ";
 
 			ps = c.prepareStatement(sql);
@@ -246,19 +214,17 @@ public class ClienteDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public Cliente create(Cliente cliente) {
-		Connection c = null;
+	public Cliente create(Connection c, Cliente cliente) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			StringBuilder sql = new StringBuilder();
 			sql.append(" INSERT INTO customer (preferences, email, password, name, ");
 			sql.append(" phone, surname1, active, verified, birth_date) ");
@@ -289,20 +255,17 @@ public class ClienteDAO {
 				return cliente; // Se devuelve el objeto completo
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public boolean update(Cliente cliente) {
-		Connection c = null;
+	public boolean update(Connection c, Cliente cliente) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE customer SET preferences = ?, email = ?, password = ?, ");
 			sql.append(" name = ?, phone = ?, surname1 = ?, birth_date = ? WHERE id = ? ");
@@ -322,19 +285,16 @@ public class ClienteDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public boolean delete(Long id) {
-		Connection c = null;
+	public boolean delete(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = DAOUtils.getConnection();
 			String sql = "DELETE FROM customer WHERE id = ?";
 
 			ps = c.prepareStatement(sql);
@@ -344,25 +304,21 @@ public class ClienteDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return false;
 	}
 
-	public Results<Cliente> findByCriteria(ClienteCriteria criteria, int from, int pageSize) {
+	public Results<Cliente> findByCriteria(Connection c, ClienteCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
-		
-		Connection c = null;
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
+
 		Results<Cliente> results = new Results<>();
 
 		try {
-			c = DAOUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<>();
@@ -383,22 +339,22 @@ public class ClienteDAO {
 				sql.append(" WHERE ");
 				sql.append(String.join(" AND ", condiciones));
 			}
-			
+
 			sql.append(" ORDER BY ");
 			sql.append(criteria.getOrderBy() == null || criteria.getOrderBy().trim().isEmpty() ? " id " : criteria.getOrderBy());
 			sql.append(Boolean.FALSE.equals(criteria.getAscDesc()) ? " DESC " : " ASC ");
-			
+
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
 			};
 
 			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-			
+
 			DAOUtils.setParameters(ps, parametros);
 
 			rs = ps.executeQuery();
 			List<Cliente> resultsPage = new ArrayList<>();
-			
+
 			int filaInicial = Math.max(1, from + 1);
 			if (rs.absolute(filaInicial)) {
 				int count = 0;
@@ -408,17 +364,16 @@ public class ClienteDAO {
 				} while (count < pageSize && rs.next());
 			}
 			int totalResults = SQLUtils.getTotalRows(rs);
-			
+
 			results.setPage(resultsPage);
 			results.setTotal(totalResults);
-			
+
 			return results;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 	private static Cliente loadNext(ResultSet rs) throws Exception {

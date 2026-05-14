@@ -19,12 +19,10 @@ public class SubGeneroMusicalDAO {
 	public SubGeneroMusicalDAO() {
 	}
 
-	public SubGeneroMusicalDTO findById(Long id) {
-		Connection c = null;
+	public SubGeneroMusicalDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE ms.id = ? ");
 			ps = c.prepareStatement(sql.toString());
@@ -38,19 +36,17 @@ public class SubGeneroMusicalDAO {
 			}
 			return sgm;	
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
+		
 	}
 
-	public List<SubGeneroMusicalDTO> findByGeneroId(Long generoId) {
-		Connection c = null;
+	public List<SubGeneroMusicalDTO> findByGeneroId(Connection c, Long generoId) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE mg.id = ? ORDER BY ms.name ");
 			
@@ -66,19 +62,16 @@ public class SubGeneroMusicalDAO {
 			}
 			return resultados;	
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 	
-	public List<SubGeneroMusicalDTO> findAll() {
-		Connection c = null;
+	public List<SubGeneroMusicalDTO> findAll(Connection c) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" ORDER BY ms.name ");
 			
@@ -92,11 +85,10 @@ public class SubGeneroMusicalDAO {
 			}
 			return resultados;	
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 	private SubGeneroMusicalDTO loadNext(ResultSet rs) throws Exception {

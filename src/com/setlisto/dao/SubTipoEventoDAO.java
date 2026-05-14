@@ -18,13 +18,10 @@ public class SubTipoEventoDAO {
 	public SubTipoEventoDAO() {
 	}
 
-	public SubTipoEventoDTO findById(Long id) {
-		Connection c = null;
+	public SubTipoEventoDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE es.id = ?");
 			
@@ -38,22 +35,18 @@ public class SubTipoEventoDAO {
 				ste = loadNext(rs);
 			}
 			return ste;
-
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 	
-	public List<SubTipoEventoDTO> findByTipoEventoId(Long id) {
+	public List<SubTipoEventoDTO> findByTipoEventoId(Connection c, Long id) throws Exception {
 		List<SubTipoEventoDTO> resultados = new ArrayList<>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE et.id = ? ORDER BY es.name ASC");
 			
@@ -67,10 +60,9 @@ public class SubTipoEventoDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 

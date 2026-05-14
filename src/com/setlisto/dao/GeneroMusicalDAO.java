@@ -17,12 +17,10 @@ public class GeneroMusicalDAO {
 	public GeneroMusicalDAO() {
 	}
 
-	public GeneroMusical findById(Long id) {	
-		Connection c = null;
+	public GeneroMusical findById(Connection c, Long id) throws Exception {	
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE id = ?");
 
@@ -37,20 +35,17 @@ public class GeneroMusicalDAO {
 			}
 			return gm;	
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<GeneroMusical> findAll() {
+	public List<GeneroMusical> findAll(Connection c) throws Exception {
 		List<GeneroMusical> resultados = new ArrayList<>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(	"ORDER BY name");
 
@@ -62,12 +57,11 @@ public class GeneroMusicalDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 
 		}
-		return resultados;
 	}
 
 	private GeneroMusical loadNext(ResultSet rs)  throws Exception {

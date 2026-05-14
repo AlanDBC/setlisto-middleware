@@ -17,13 +17,10 @@ public class CategoriaAsientoDAO {
 	
 	private static final String BASE_QUERY = " SELECT id, name FROM seat_category ";
 
-	public CategoriaAsiento findById(Long id) {
-		Connection c = null;
+	public CategoriaAsiento findById(Connection c,Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE id = ? ");
 			ps = c.prepareStatement(sql.toString());
@@ -37,22 +34,18 @@ public class CategoriaAsientoDAO {
 			}
 			return ca;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 
-	public List<CategoriaAsiento> findAll() {
+	public List<CategoriaAsiento> findAll(Connection c) throws Exception {
 		List<CategoriaAsiento> resultados = new ArrayList<CategoriaAsiento>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = BASE_QUERY;
 			ps = c.prepareStatement(sql);
 			rs = ps.executeQuery();
@@ -62,11 +55,10 @@ public class CategoriaAsientoDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 	
 	private CategoriaAsiento loadNext(ResultSet rs) throws Exception {

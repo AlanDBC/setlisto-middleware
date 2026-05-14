@@ -31,13 +31,10 @@ public class LugarDAO {
 	public LugarDAO() {
 	}
 
-	public LugarDTO findById(Long id) {
-		Connection c = null;
+	public LugarDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE s.id = ?");
 
@@ -52,21 +49,17 @@ public class LugarDAO {
 			return lgr;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<LugarDTO> findAll() {
+	public List<LugarDTO> findAll(Connection c) throws Exception {
 		List<LugarDTO> resultados = new ArrayList<LugarDTO>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			ps = c.prepareStatement(sql.toString());
@@ -77,25 +70,21 @@ public class LugarDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 
-	public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) {
+	public Results<LugarDTO> findByCriteria(Connection c, LugarCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
 
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		Results<LugarDTO> results = new Results<LugarDTO>();
 
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<>();
@@ -147,20 +136,16 @@ public class LugarDAO {
 			
 			return results;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Lugar create(Lugar lugar) {
-		Connection c = null;
+	public Lugar create(Connection c, Lugar lugar) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = "INSERT INTO site (name, address, city_id, time_zone_id) VALUES (?, ?, ?, ?)";
 
 			ps = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -182,20 +167,17 @@ public class LugarDAO {
 				return lugar; 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public void update(Lugar lugar) {
-		Connection c = null;
+	public void update(Connection c, Lugar lugar) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = "UPDATE site SET name = ?, address = ?, city_id = ?, time_zone_id = ? WHERE id = ?";
 			ps = c.prepareStatement(sql);
 
@@ -210,19 +192,16 @@ public class LugarDAO {
 			ps.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public void delete(Long id) {
-		Connection c = null;
+	public void delete(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			String sql = "DELETE FROM site WHERE id = ?";
 			ps = c.prepareStatement(sql);
 
@@ -230,9 +209,9 @@ public class LugarDAO {
 			ps.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
 	}
 

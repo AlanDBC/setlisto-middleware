@@ -28,13 +28,10 @@ public class PlazaDAO {
 	public PlazaDAO() {
 	}
 
-	public PlazaDTO findById(Long id) {
-		Connection c = null;
+	public PlazaDTO findById(Connection c, Long id) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE s.id = ? ");
 
@@ -49,25 +46,21 @@ public class PlazaDAO {
 			}
 			return plaza;
 		}  catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public Results<PlazaDTO> findByCriteria(PlazaCriteria criteria, int from, int pageSize) {
+	public Results<PlazaDTO> findByCriteria(Connection c, PlazaCriteria criteria, int from, int pageSize) throws Exception {
 		logger.info("Criteria: {}", criteria);
 		
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		Results<PlazaDTO> results = new Results<PlazaDTO>();
 		
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 
 			List<String> condiciones = new ArrayList<String>();
@@ -111,11 +104,10 @@ public class PlazaDAO {
 					
 			return results;
 		}   catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 	private PlazaDTO loadNext (ResultSet rs) throws Exception {

@@ -17,13 +17,10 @@ public class PaisDAO {
 	public PaisDAO() {
 	}
 
-	public Pais findById(Long id) {
-		Connection c = null;
+	public Pais findById(Connection c, Long id)  throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY); 
 			sql.append(" WHERE id = ? ");
 
@@ -37,21 +34,17 @@ public class PaisDAO {
 			}
 			return pais;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
-	public List<Pais> findAll() {
+	public List<Pais> findAll(Connection c) throws Exception {
 		List<Pais> resultados = new ArrayList<Pais>();
-		Connection c = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c = JDBCUtils.getConnection();
-
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append( " ORDER BY name ");
 
@@ -65,11 +58,10 @@ public class PaisDAO {
 			}
 			return resultados;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return resultados;
 	}
 	
 	public Pais loadNext (ResultSet rs) throws Exception {
