@@ -32,6 +32,10 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 
 	@Override
 	public Organizador register(Organizador organizador) throws Exception {
+		// Cigrado y registro
+		String passwordEncrypted = encryptionService.encrypt(organizador.getContrasena());
+		organizador.setContrasena(passwordEncrypted);
+		
 		Connection c = null;
 		boolean commit = false;
 		Organizador organizadorRegistrado = null;
@@ -44,10 +48,6 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			if (existeOrganizador != null) {
 				throw new Exception("El usuario ya existe");
 			}
-
-			// Cigrado y registro
-			String passwordEncrypted = encryptionService.encrypt(organizador.getContrasena());
-			organizador.setContrasena(passwordEncrypted);
 
 			organizadorRegistrado = organizadorDAO.create(c, organizador);
 

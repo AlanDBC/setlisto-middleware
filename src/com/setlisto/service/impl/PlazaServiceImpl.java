@@ -1,34 +1,60 @@
 package com.setlisto.service.impl;
 
+import java.sql.Connection;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.setlisto.criteria.PlazaCriteria;
 import com.setlisto.dao.PlazaDAO;
 import com.setlisto.model.PlazaDTO;
 import com.setlisto.model.Results;
 import com.setlisto.service.PlazaService;
+import com.setlisto.utils.JDBCUtils;
 
-/**
- * Implementación del servicio de plazas físicas.
- */
 public class PlazaServiceImpl implements PlazaService {
 
-    private PlazaDAO plazaDAO = null;
+	private static final Logger logger = LogManager.getLogger(PlazaServiceImpl.class.getName());
 
-    public PlazaServiceImpl() {
-        this.plazaDAO = new PlazaDAO();
-    }
+	private PlazaDAO plazaDAO = null;
 
-    @Override
-    public PlazaDTO findById(Long id) {
-        // Recupera el DTO con el nombre del recinto y la categoría ya resueltos
-        return plazaDAO.findById(id);
-    }
+	public PlazaServiceImpl() {
+		this.plazaDAO = new PlazaDAO();
+	}
 
-    @Override
-    public Results<PlazaDTO> findByCriteria(PlazaCriteria criteria, int from, int pageSize) {
-        // Si no hay criterios, se inicializan para evitar errores en la lógica del DAO
-        if (criteria == null) {
-            criteria = new PlazaCriteria();
-        }
-        return plazaDAO.findByCriteria(criteria, from, pageSize);
-    }
+	@Override
+	public PlazaDTO findById(Long id) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			PlazaDTO plaza = plazaDAO.findById(c, id);
+			commit = true;
+			return plaza;
+		} catch (Exception e) {
+			logger.error("Buscando por id {}: {}", id, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
+
+	@Override
+	public Results<PlazaDTO> findByCriteria(PlazaCriteria criteria, int from, int pageSize) throws Exception {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			Results<PlazaDTO> resultados = plazaDAO.findByCriteria(c, criteria, from, pageSize);
+			commit = true;
+			return resultados;
+		} catch (Exception e) {
+			logger.error("Buscando por criteria {}: {}", criteria, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 }

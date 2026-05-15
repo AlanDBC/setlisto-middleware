@@ -27,80 +27,89 @@ public class ClienteServiceImpl implements ClienteService {
 		mailService = new MailServiceImpl();
 		clienteDAO = new ClienteDAO();
 	}
-
+	
 	@Override
 	public Cliente register(Cliente cliente) throws Exception {
-		Connection c = null;
-		boolean commit = false;
-		Cliente clienteRegistrado = null;
-		try {
-			c = JDBCUtils.getConnection();
-			c.setAutoCommit(false); 
+	    // Encriptamos antes de tocar la BD para no "secuestrar" la conexión
+	    String passwordEncrypted = encryptionService.encrypt(cliente.getContrasena());
+	    cliente.setContrasena(passwordEncrypted);
+	    
+	    Connection c = null;
+	    boolean commit = false;
+	    Cliente clienteRegistrado = null;
 
-			Cliente existeCliente = clienteDAO.findByEmail(c, cliente.getEmail());
+	    // 2. PERSISTENCIA (Transacción corta)
+	    try {
+	        c = JDBCUtils.getConnection();
+	        c.setAutoCommit(false); 
 
-			if (existeCliente != null) {
-				throw new Exception("El usuario ya existe");
-			}
+	        if (clienteDAO.findByEmail(c, cliente.getEmail()) != null) {
+	            throw new Exception("El usuario ya existe");
+	        }
 
-			// Cifrado y registro...
-			String passwordEncrypted = encryptionService.encrypt(cliente.getContrasena());
-			cliente.setContrasena(passwordEncrypted);
+	        clienteRegistrado = clienteDAO.create(c, cliente);
+	        commit = true;
 
-			clienteRegistrado = clienteDAO.create(c, cliente);
+	    } catch (Exception e) {
+	        logger.error("Error registrando {}: {} ", cliente.getEmail(), e.getMessage());
+	        throw e;
+	    } finally {
+	        JDBCUtils.close(c, commit);
+	    }
 
-			commit = true;
-			return clienteRegistrado;
+	    // 3. EFECTOS SECUNDARIOS (Fuera del bloque de BD)
+	    // Solo enviamos el email si la transacción terminó con éxito (commit == true)
+	    if (commit && clienteRegistrado != null) {
+	        enviarEmailBienvenida(clienteRegistrado);
+	    }
 
-		} catch (Exception e) {
-			logger.error("Error registrando {}: {} ", cliente, e.getMessage(), e);
-			throw e;
-		} finally {
-			JDBCUtils.close(c, commit);
-			if (clienteRegistrado != null) {
-				try {
-					mailService.sendEmail(
-							clienteRegistrado.getEmail(), 
-							"Bienvenido a Setlisto!", 
-							"Hola " + clienteRegistrado.getNombre() + ", bienvenido."
-							);
-				} catch (Exception e) {
-					logger.warn("No se pudo enviar el email de bienvenida a {}", clienteRegistrado.getEmail());
-				}
+	    return clienteRegistrado;
+	}
 
-			}
-
-		}
+	private void enviarEmailBienvenida(Cliente cliente) {
+	    try {
+	        mailService.sendEmail(
+	            cliente.getEmail(), 
+	            "Bienvenido a Setlisto!", 
+	            "Hola " + cliente.getNombre() + ", bienvenido."
+	        );
+	    } catch (Exception e) {
+	        // Logueamos pero no lanzamos excepción para no romper el registro
+	        // ya que el usuario YA se guardó en la BD.
+	        logger.warn("No se pudo enviar el email a {}", cliente.getEmail());
+	    }
 	}
 
 	@Override
 	public Cliente login(String correo, String contrasena) throws Exception {
 	    Connection c = null;
-	    boolean commit = false; 
+	    boolean commit = false;
+	    Cliente cliente = null;
 	    try {
 	        c = JDBCUtils.getConnection();
 	        c.setAutoCommit(false);
-	        Cliente cliente = clienteDAO.findByEmail(c, correo);
+	        cliente = clienteDAO.findByEmail(c, correo);
 	        
 	        if (cliente == null) {
 	            throw new Exception("Credenciales incorrectas.");
 	        }
-	        
-	        boolean isPasswordCorrect = encryptionService.checkEncryption(contrasena, cliente.getContrasena());
-	        if (!isPasswordCorrect) {
-	            throw new Exception("Credenciales incorrectas.");
-	        }
 
 	        commit = true; 
-	        return cliente;
-
 	    } catch (Exception e) {
 	        logger.error("Error en login para {}: {}", correo, e.getMessage());
 	        throw e;
 	    } finally {
 	        JDBCUtils.close(c, commit);
 	    }
+	    
+	    boolean isPasswordCorrect = encryptionService.checkEncryption(contrasena, cliente.getContrasena());
+        if (!isPasswordCorrect) {
+            throw new Exception("Credenciales incorrectas.");
+        }
+        return cliente;
+        
 	}
+	
 
 	@Override
 	public Cliente findByEmail(String email) throws Exception {
