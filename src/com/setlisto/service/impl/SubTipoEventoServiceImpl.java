@@ -1,31 +1,63 @@
 package com.setlisto.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.setlisto.dao.DataException;
 import com.setlisto.dao.SubTipoEventoDAO;
 import com.setlisto.model.SubTipoEventoDTO;
 import com.setlisto.service.SubTipoEventoService;
+import com.setlisto.utils.JDBCUtils;
 
 /**
  * Implementación del servicio de subtipos de eventos.
  */
 public class SubTipoEventoServiceImpl implements SubTipoEventoService {
 
-    private SubTipoEventoDAO subTipoEventoDAO = null;
+	private static final Logger logger = LogManager.getLogger(SubTipoEventoServiceImpl.class.getName());
 
-    public SubTipoEventoServiceImpl() {
-        this.subTipoEventoDAO = new SubTipoEventoDAO();
-    }
+	private SubTipoEventoDAO subTipoEventoDAO = null;
 
-    @Override
-    public SubTipoEventoDTO findById(Long id) {
-        // El DAO ya realiza el JOIN con event_type para obtener el nombre del tipo padre
-        return subTipoEventoDAO.findById(id);
-    }
+	public SubTipoEventoServiceImpl() {
+		this.subTipoEventoDAO = new SubTipoEventoDAO();
+	}
 
-    @Override
-    public List<SubTipoEventoDTO> findByTipoEvento(Long tipoEventoId) {
-        // Utiliza el método del DAO para filtrar por el ID del tipo principal
-        return subTipoEventoDAO.findByTipoEventoId(tipoEventoId);
-    }
+	@Override
+	public SubTipoEventoDTO findById(Long id) throws Exception {
+		Connection c = null;
+		boolean commit = false;   
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			SubTipoEventoDTO subtipo = subTipoEventoDAO.findById(c, id);
+			commit = true;
+			return subtipo;
+		} catch (Exception e) {
+			logger.error("Buscando por id {}: {}",id , e.getMessage());
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
+
+	@Override
+	public List<SubTipoEventoDTO> findByTipoEvento(Long tipoEventoId) throws Exception {
+		Connection c = null;
+		boolean commit = false;   
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false);
+			List<SubTipoEventoDTO> subtipos = subTipoEventoDAO.findByTipoEventoId(c, tipoEventoId);
+			commit = true;
+			return subtipos;
+		} catch (Exception e) {
+			logger.error("Buscando por tipo de evento con id {}: {}",tipoEventoId, e.getMessage());
+			throw e;
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+	}
 }

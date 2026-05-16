@@ -46,10 +46,8 @@ public class ClienteServiceImpl implements ClienteService {
 	        if (clienteDAO.findByEmail(c, cliente.getEmail()) != null) {
 	            throw new Exception("El usuario ya existe");
 	        }
-
 	        clienteRegistrado = clienteDAO.create(c, cliente);
 	        commit = true;
-
 	    } catch (Exception e) {
 	        logger.error("Error registrando {}: {} ", cliente.getEmail(), e.getMessage());
 	        throw e;
@@ -57,7 +55,6 @@ public class ClienteServiceImpl implements ClienteService {
 	        JDBCUtils.close(c, commit);
 	    }
 
-	    // 3. EFECTOS SECUNDARIOS (Fuera del bloque de BD)
 	    // Solo enviamos el email si la transacción terminó con éxito (commit == true)
 	    if (commit && clienteRegistrado != null) {
 	        enviarEmailBienvenida(clienteRegistrado);

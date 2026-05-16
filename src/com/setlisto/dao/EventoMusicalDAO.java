@@ -215,8 +215,6 @@ public class EventoMusicalDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			c.setAutoCommit(false); // Iniciamos la transacción para asegurar que la inserción del evento y sus relaciones sea atómica
-
 			StringBuilder sql = new StringBuilder(); // Datos propios de la tabla
 			sql.append(" INSERT INTO musical_event (name, description, start_date, end_date, ");
 			sql.append(" organizer_id, site_id, event_subtype_id, capacity, event_status_id) ");
@@ -248,8 +246,6 @@ public class EventoMusicalDAO {
 			// Insercion de  sus listas asociacadas
 			insertarSubGeneros(c, evento.getId(), evento.getSubGeneros()); 
 			insertarArtistas(c, evento.getId(), evento.getArtistas());
-
-			c.commit();
 
 			return findById(c, evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
 

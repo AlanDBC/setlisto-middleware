@@ -35,7 +35,7 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 		// Cigrado y registro
 		String passwordEncrypted = encryptionService.encrypt(organizador.getContrasena());
 		organizador.setContrasena(passwordEncrypted);
-		
+
 		Connection c = null;
 		boolean commit = false;
 		Organizador organizadorRegistrado = null;
@@ -48,29 +48,33 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			if (existeOrganizador != null) {
 				throw new Exception("El usuario ya existe");
 			}
-
 			organizadorRegistrado = organizadorDAO.create(c, organizador);
-
 			commit = true;
-			return organizadorRegistrado;
-
 		} catch (Exception e) {
 			logger.error("Error registrando {}: {} ", organizador, e.getMessage(), e);
 			throw e;
 		} finally {
 			JDBCUtils.close(c, commit);
-
-			if (organizadorRegistrado != null) {
-				try {
-					mailService.sendEmail(
-							organizadorRegistrado.getEmail(), 
-							"Bienvenido a Setlisto Partners",
-							"Hola " + organizadorRegistrado.getNombre() + ", su cuenta de organizador ha sido registrada.");
-				} catch (Exception e) {
-					logger.warn("No se pudo enviar el email de bienvenida al organizador {}", organizadorRegistrado.getEmail());
-				}
-			} 
 		}
+
+		if (commit && organizadorRegistrado != null) {
+			enviarEmailBienvenida(organizadorRegistrado);
+		} 
+		return organizadorRegistrado;
+	}
+	
+	private void enviarEmailBienvenida(Organizador organizador) {
+	    try {
+	        mailService.sendEmail(
+	            organizador.getEmail(), 
+				"Bienvenido a Setlisto Partners",
+	            "Hola " + organizador.getNombre() + ", su cuenta de organizador ha sido registrada."
+	        );
+	    } catch (Exception e) {
+	        // Logueamos pero no lanzamos excepción para no romper el registro
+	        // ya que el usuario YA se guardó en la BD.
+	        logger.warn("No se pudo enviar el email a {}", organizador.getEmail());
+	    }
 	}
 
 	@Override

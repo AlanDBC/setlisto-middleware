@@ -1,58 +1,87 @@
 package com.setlisto.service.test;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.GeneroMusical;
 import com.setlisto.service.GeneroMusicalService;
 import com.setlisto.service.impl.GeneroMusicalServiceImpl;
 
+/**
+ * Clase ejecutable para testear el servicio de Géneros Musicales.
+ * Valida la recuperación de géneros maestros (Pop, Rock, Metal, etc.).
+ */
 public class GeneroMusicalServiceTest {
 
-    private GeneroMusicalService service = null;
+    private static final Logger logger = LogManager.getLogger(GeneroMusicalServiceTest.class);
+    private GeneroMusicalService generoService;
 
     public GeneroMusicalServiceTest() {
-        // Inicialización de la implementación del servicio
-        this.service = new GeneroMusicalServiceImpl();
-    }
-
-    /**
-     * Prueba la recuperación de un género específico por su ID.
-     * Basado en los datos maestros, el ID 1 corresponde a 'Pop' y el 2 a 'Rock'.
-     */
-    public void testFindById(Long id) {
-        System.out.println("--- Test: GeneroMusicalService.findById(" + id + ") ---");
-        GeneroMusical gm = service.findById(id);
-        if (gm != null) {
-            System.out.println("Género encontrado: " + gm.getNombre());
-        } else {
-            System.out.println("No se encontró el género con ID: " + id);
+        try {
+            // Inicialización del servicio transaccional [3]
+            this.generoService = new GeneroMusicalServiceImpl();
+        } catch (Exception e) {
+            logger.error("Error al inicializar GeneroMusicalService: {}", e.getMessage());
         }
     }
 
     /**
-     * Prueba la obtención de la lista completa de géneros musicales.
-     * Debería devolver los 14 géneros iniciales definidos en el sistema.
+     * Prueba la recuperación de un género específico por ID.
+     * Según datos maestros: 1=Pop, 2=Rock, 12=Metal [2].
+     */
+    public void testFindById(Long id) {
+        System.out.println("\n--- Ejecutando testFindById para ID: " + id + " ---");
+        try {
+            // El servicio gestiona la conexión y el commit/rollback internamente [3]
+            GeneroMusical genero = generoService.findById(id);
+            if (genero != null) {
+                logger.info("Género recuperado: ID={} | Nombre={}", genero.getId(), genero.getNombre());
+                System.out.println("Resultado: " + genero.getNombre());
+            } else {
+                logger.warn("No se encontró el género con ID: {}", id);
+                System.out.println("Género no encontrado.");
+            }
+        } catch (Exception e) {
+            logger.error("Excepción en búsqueda por ID {}: {}", id, e.getMessage());
+            System.err.println("Error transaccional: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Prueba la recuperación de todos los géneros musicales ordenados por nombre [1].
      */
     public void testFindAll() {
-        System.out.println("\n--- Test: GeneroMusicalService.findAll() ---");
-        List<GeneroMusical> generos = service.findAll();
-        if (generos != null && !generos.isEmpty()) {
-            System.out.println("Se recuperaron " + generos.size() + " géneros musicales:");
-            for (GeneroMusical gm : generos) {
-                System.out.println("  - " + gm.getNombre());
+        System.out.println("\n--- Ejecutando testFindAll ---");
+        try {
+            List<GeneroMusical> generos = generoService.findAll();
+            if (generos != null && !generos.isEmpty()) {
+                logger.info("Se han recuperado {} géneros musicales.", generos.size());
+                System.out.println("Lista de géneros disponibles:");
+                for (GeneroMusical g : generos) {
+                    System.out.println(" - " + g.getId() + ": " + g.getNombre());
+                }
+            } else {
+                System.out.println("La lista de géneros está vacía.");
             }
-        } else {
-            System.out.println("No se encontraron géneros musicales.");
+        } catch (Exception e) {
+            logger.error("Excepción al recuperar todos los géneros: {}", e.getMessage());
+            System.err.println("Error al recuperar listado: " + e.getMessage());
         }
     }
 
     public static void main(String[] args) {
-        GeneroMusicalServiceTest test = new GeneroMusicalServiceTest();
+        GeneroMusicalServiceTest tester = new GeneroMusicalServiceTest();
 
-        // 1. Probar búsqueda por ID (ID 2 es Rock según datos maestros)
-        test.testFindById(2L);
+        // 1. Probar "Pop" (ID 1)
+        tester.testFindById(1L);
 
-        // 2. Listar todos los géneros
-        test.testFindAll();
+        // 2. Probar id inexistente
+        tester.testFindById(77L);
+
+        // 3. Probar recuperación completa de la tabla musical_genre
+        tester.testFindAll();
+
+        System.out.println("\n--- Pruebas de GeneroMusicalService finalizadas ---");
     }
 }

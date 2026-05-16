@@ -1,6 +1,8 @@
 package com.setlisto.service.test;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.CategoriaAsiento;
 import com.setlisto.service.CategoriaAsientoService;
@@ -8,48 +10,80 @@ import com.setlisto.service.impl.CategoriaAsientoServiceImpl;
 
 public class CategoriaAsientoServiceTest {
 
-    private CategoriaAsientoService service = null;
+    private static final Logger logger = LogManager.getLogger(CategoriaAsientoServiceTest.class);
+    private CategoriaAsientoService categoriaService;
 
     public CategoriaAsientoServiceTest() {
-        this.service = new CategoriaAsientoServiceImpl();
+        try {
+            this.categoriaService = new CategoriaAsientoServiceImpl();
+        } catch (Exception e) {
+            logger.error("Error crítico al inicializar el servicio: {}", e.getMessage());
+        }
     }
 
     /**
-     * Prueba el método findById para verificar que recupera una categoría específica
+     * Prueba la recuperación de una categoría específica por ID.
      */
     public void testFindById(Long id) {
-        System.out.println("--- Test: CategoriaAsientoService.findById(" + id + ") ---");
-        CategoriaAsiento ca = service.findById(id);
-        if (ca != null) {
-            System.out.println("Categoría encontrada: " + ca);
-        } else {
-            System.out.println("No se encontró ninguna categoría con ID: " + id);
+        System.out.println("\n--- Ejecutando testFindById para ID: " + id + " ---");
+        try {
+            // El servicio gestiona internamente la conexión y transacción [1]
+            CategoriaAsiento categoria = categoriaService.findById(id);
+            
+            if (categoria != null) {
+                logger.info("Resultado exitoso: Categoria encontrada -> [ID: {}, Nombre: {}]", 
+                            categoria.getId(), categoria.getNombre());
+                System.out.println("Categoría recuperada: " + categoria.getNombre());
+            } else {
+                logger.warn("No se encontró ninguna categoría con ID: {}", id);
+                System.out.println("Categoría no encontrada.");
+            }
+        } catch (Exception e) {
+            logger.error("Error transaccional en testFindById: {}", e.getMessage(), e);
+            System.err.println("Error al buscar categoría: " + e.getMessage());
         }
     }
 
     /**
-     * Prueba el método findAll para obtener el listado completo de categorías
+     * Prueba la recuperación de todas las categorías maestras.
      */
     public void testFindAll() {
-        System.out.println("\n--- Test: CategoriaAsientoService.findAll() ---");
-        List<CategoriaAsiento> categorias = service.findAll();
-        if (categorias != null && !categorias.isEmpty()) {
-            System.out.println("Se encontraron " + categorias.size() + " categorías:");
-            for (CategoriaAsiento ca : categorias) {
-                System.out.println("  - " + ca);
+        System.out.println("\n--- Ejecutando testFindAll ---");
+        try {
+            // Recupera la lista completa de la tabla seat_category [1, 2]
+            List<CategoriaAsiento> categorias = categoriaService.findAll();
+            
+            if (categorias != null && !categorias.isEmpty()) {
+                logger.info("Se han recuperado {} categorías de la base de datos.", categorias.size());
+                System.out.println("Listado de categorías maestras:");
+                for (CategoriaAsiento cat : categorias) {
+                    System.out.println(" - " + cat.getId() + ": " + cat.getNombre());
+                }
+            } else {
+                logger.warn("La lista de categorías está vacía.");
+                System.out.println("No hay categorías registradas.");
             }
-        } else {
-            System.out.println("No hay categorías registradas o hubo un error.");
+        } catch (Exception e) {
+            logger.error("Error transaccional en testFindAll: {}", e.getMessage(), e);
+            System.err.println("Error al recuperar todas las categorías: " + e.getMessage());
         }
     }
 
+    /**
+     * Punto de entrada principal para ejecutar las pruebas.
+     */
     public static void main(String[] args) {
-        CategoriaAsientoServiceTest test = new CategoriaAsientoServiceTest();
+        CategoriaAsientoServiceTest tester = new CategoriaAsientoServiceTest();
 
-        // 1. Probar búsqueda por un ID que sepamos que existe (ejemplo: 1L)
-//        test.testFindById(1L);
+        // 1. Probar búsqueda por ID (ID 1 es 'General' según datos maestros) [3]
+        tester.testFindById(1L);
 
-        // 2. Probar listado completo
-        test.testFindAll();
+        // 2. Probar búsqueda por ID inexistente
+        tester.testFindById(999L);
+
+        // 3. Probar recuperación de todas las categorías
+        tester.testFindAll();
+        
+        System.out.println("\n--- Pruebas de CategoriaAsientoService finalizadas ---");
     }
 }

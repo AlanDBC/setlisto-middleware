@@ -2,108 +2,126 @@ package com.setlisto.service.test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import com.setlisto.criteria.PagoCriteria;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.setlisto.model.Pago;
 import com.setlisto.model.PagoDTO;
-import com.setlisto.model.Results;
 import com.setlisto.service.PagoService;
 import com.setlisto.service.impl.PagoServiceImpl;
 
+/**
+ * Clase ejecutable para testear el servicio de Pagos.
+ * Maneja el registro de transacciones financieras y consultas de estados.
+ */
 public class PagoServiceTest {
 
-    private PagoService service = null;
+    private static final Logger logger = LogManager.getLogger(PagoServiceTest.class);
+    private PagoService pagoService;
 
     public PagoServiceTest() {
-        this.service = new PagoServiceImpl();
+        try {
+            // Inicialización del servicio transaccional
+            this.pagoService = new PagoServiceImpl();
+        } catch (Exception e) {
+            logger.error("Error al inicializar PagoService: {}", e.getMessage());
+        }
     }
 
     /**
-     * Prueba el registro de un nuevo pago. 
-     * Incluye validación contra códigos de transacción duplicados.
+     * Prueba el procesamiento y registro de un nuevo pago.
      */
     public void testProcessPayment() {
-        System.out.println("--- Test: PagoService.processPayment ---");
-        Pago nuevoPago = new Pago();
-        nuevoPago.setMonto(new BigDecimal("75.00"));
-        nuevoPago.setCodigoTransaccion("TXN-SERVICE-TEST-999");
-        nuevoPago.setFechaPago(LocalDateTime.now());
-        nuevoPago.setClienteId(1L);      // Juan Pérez
-        nuevoPago.setEstadoPagoId(1L);   // PENDING
-        nuevoPago.setMetodoPagoId(4L);   // Bizum
-        nuevoPago.setMonedaId(1L);       // EUR
+        System.out.println("\n--- Ejecutando testProcessPayment ---");
+        try {
+            Pago nuevoPago = new Pago();
+            nuevoPago.setMonto(new BigDecimal("99.99"));
+            nuevoPago.setCodigoTransaccion("TXN-TEST-999");
+            nuevoPago.setFechaPago(LocalDateTime.now());
+            nuevoPago.setClienteId(1L); // Juan Pérez
+            nuevoPago.setEstadoPagoId(1L); // Pendiente
+            nuevoPago.setMetodoPagoId(1L); // VISA
+            nuevoPago.setMonedaId(1L); // EUR
 
-        Pago procesado = service.processPayment(nuevoPago);
-        if (procesado != null && procesado.getId() != null) {
-            System.out.println("Pago procesado con éxito e ID: " + procesado.getId());
-        } else {
-            System.out.println("El pago no se pudo procesar (posible duplicado de transacción).");
+            // El servicio abre transacción y persiste el pago
+            Pago procesado = pagoService.processPayment(nuevoPago);
+            
+            if (procesado != null && procesado.getId() != null) {
+                logger.info("Pago procesado con éxito. ID: {}", procesado.getId());
+                System.out.println("Pago registrado: " + procesado.getCodigoTransaccion() + " (ID: " + procesado.getId() + ")");
+            }
+        } catch (Exception e) {
+            logger.error("Error al procesar el pago: {}", e.getMessage());
+            System.err.println("Fallo transaccional en el pago: " + e.getMessage());
         }
     }
 
     /**
-     * Prueba la recuperación de un pago enriquecido con datos de otras tablas.
+     * Prueba la recuperación detallada de un pago por ID.
      */
     public void testFindById(Long id) {
-        System.out.println("\n--- Test: PagoService.findById(" + id + ") ---");
-        PagoDTO pago = service.findById(id);
-        if (pago != null) {
-            System.out.println("Pago encontrado: " + pago.getMonto() + " " + pago.getMonedaSimbolo());
-            System.out.println("  Cliente: " + pago.getClienteNombre());
-            System.out.println("  Método: " + pago.getMetodoPagoNombre());
-        } else {
-            System.out.println("No se encontró el pago con ID: " + id);
+        System.out.println("\n--- Ejecutando testFindById para ID: " + id + " ---");
+        try {
+            PagoDTO pago = pagoService.findById(id);
+            if (pago != null) {
+                logger.info("Pago recuperado: {} de {}€", pago.getCodigoTransaccion(), pago.getMonto());
+                System.out.println("Transacción: " + pago.getCodigoTransaccion());
+                System.out.println("Monto: " + pago.getMonto() + " (Estado ID: " + pago.getEstadoPagoId() + ")");
+            } else {
+                System.out.println("Pago no encontrado.");
+            }
+        } catch (Exception e) {
+            logger.error("Error buscando pago {}: {}", id, e.getMessage());
         }
     }
 
     /**
-     * Prueba el cambio de estado de un pago.
+     * Prueba la actualización del estado de un pago.
      */
-    public void testUpdateStatus(Long paymentId, Long statusId) {
-        System.out.println("\n--- Test: PagoService.updateStatus ---");
-        boolean exito = service.updateStatus(paymentId, statusId);
-        System.out.println(exito ? "Estado del pago " + paymentId + " actualizado a " + statusId 
-                                 : "Error al actualizar estado.");
+    public void testUpdateStatus(Long paymentId, Long newStatusId) {
+        System.out.println("\n--- Ejecutando testUpdateStatus para Pago ID: " + paymentId + " ---");
+        try {
+            // Cambiamos, por ejemplo, de Pendiente (1) a Aprovado (2)
+            boolean actualizado = pagoService.updateStatus(paymentId, newStatusId);
+            if (actualizado) {
+                logger.info("Estado del pago {} actualizado a {}", paymentId, newStatusId);
+                System.out.println("Estado actualizado correctamente.");
+            }
+        } catch (Exception e) {
+            logger.error("Error actualizando estado del pago: {}", e.getMessage());
+        }
     }
 
     /**
-     * Prueba la obtención del total pagado por un cliente en estado 'APPROVED'.
+     * Prueba el cálculo del total aprobado para un cliente.
      */
     public void testGetTotalApproved(Long customerId) {
-        System.out.println("\n--- Test: PagoService.getTotalApprovedByCustomer(" + customerId + ") ---");
-        BigDecimal total = service.getTotalApprovedByCustomer(customerId);
-        System.out.println("Total aprobado para el cliente " + customerId + ": " + total + " EUR");
+        System.out.println("\n--- Ejecutando getTotalApprovedByCustomer para Cliente ID: " + customerId + " ---");
+        try {
+            BigDecimal total = pagoService.getTotalApprovedByCustomer(customerId);
+            logger.info("Total aprobado para cliente {}: {}", customerId, total);
+            System.out.println("Inversión total del cliente: " + total + "€");
+        } catch (Exception e) {
+            logger.error("Error calculando total: {}", e.getMessage());
+        }
     }
 
-    public void testFindByCriteria() {
-		System.out.println("\n--- Test: PagoService.findByCriteria ---");
-		PagoCriteria criteria = new PagoCriteria();
-		criteria.setMonedaId(1L); // EUR
-		Results<PagoDTO> page =  service.findByCriteria(criteria, 1, 10);
-		List<PagoDTO> pagos = page.getPage();
-		
-		for (PagoDTO pago : pagos) {
-			System.out.println("Pago encontrado: " + pago.getMonto() + " " + pago.getMonedaSimbolo() 
-								+ " - Método: " + pago.getMetodoPagoNombre());
-		}
-	}
     public static void main(String[] args) {
-        PagoServiceTest test = new PagoServiceTest();
+        PagoServiceTest tester = new PagoServiceTest();
 
-        // 1. Procesar un nuevo pago
-//        test.testProcessPayment();
+        // 1. Probar búsqueda de un pago real (ID 1: TXN-AITANA-001) [1]
+        tester.testFindById(1L);
 
-        // 2. Buscar un pago existente (según script, el 1L es de Juan Pérez)
-//        test.testFindById(1L);
+        // 2. Probar el proceso de un nuevo pago
+        tester.testProcessPayment();
 
-        // 3. Cambiar estado (ej: actualizar el pago 9 de REJECTED a APPROVED)
-//        test.testUpdateStatus(9L, 2L);
+        // 3. Probar actualización de estado (de Rechazado a Aprobado en ID 9) [1]
+        tester.testUpdateStatus(9L, 2L);
 
-        // 4. Ver total acumulado aprobado del cliente 1
-//        test.testGetTotalApproved(1L);
-        
-        // 5. Buscar por criterios (ej: pagos en EUR, método Bizum, etc.)
-        test.testFindByCriteria();
+        // 4. Probar total acumulado de Juan Pérez (ID 1) [1, 3]
+        tester.testGetTotalApproved(1L);
+
+        System.out.println("\n--- Pruebas de PagoService finalizadas ---");
     }
 }

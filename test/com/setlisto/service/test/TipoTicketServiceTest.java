@@ -1,58 +1,78 @@
 package com.setlisto.service.test;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.TipoTicket;
 import com.setlisto.service.TipoTicketService;
 import com.setlisto.service.impl.TipoTicketServiceImpl;
 
+/**
+ * Clase ejecutable para testear el servicio de Tipos de Ticket.
+ * Valida la recuperación de categorías de entradas (General, VIP, etc.).
+ */
 public class TipoTicketServiceTest {
 
-    private TipoTicketService service = null;
+    private static final Logger logger = LogManager.getLogger(TipoTicketServiceTest.class);
+    private TipoTicketService tipoTicketService;
 
     public TipoTicketServiceTest() {
-        // Inicialización de la implementación del servicio
-        this.service = new TipoTicketServiceImpl();
-    }
-
-    /**
-     * Prueba la recuperación de un tipo de ticket específico por ID.
-     * Según los datos maestros: 1=General, 2=VIP, 3=Pista, 4=Grada.
-     */
-    public void testFindById(Long id) {
-        System.out.println("--- Test: TipoTicketService.findById(" + id + ") ---");
-        TipoTicket tt = service.findById(id);
-        if (tt != null) {
-            System.out.println("Tipo de ticket encontrado: " + tt.getNombre());
-        } else {
-            System.out.println("No se encontró el tipo de ticket con ID: " + id);
+        try {
+            // Inicialización del servicio transaccional [2]
+            this.tipoTicketService = new TipoTicketServiceImpl();
+        } catch (Exception e) {
+            logger.error("Error al inicializar TipoTicketService: {}", e.getMessage());
         }
     }
 
     /**
-     * Prueba la obtención de todas las categorías de tickets configuradas.
-     * Debería devolver exactamente 4 registros según el script de carga.
+     * Prueba la recuperación de un tipo de ticket por ID.
+     * Según datos maestros: 1=General, 2=VIP [1].
+     */
+    public void testFindById(Long id) {
+        System.out.println("\n--- Ejecutando testFindById para ID: " + id + " ---");
+        try {
+            // El servicio gestiona la conexión mediante JDBCUtils [2]
+            TipoTicket tipo = tipoTicketService.findById(id);
+            if (tipo != null) {
+                logger.info("Tipo de ticket recuperado: ID={} | Nombre={}", tipo.getId(), tipo.getNombre());
+                System.out.println("Resultado: " + tipo.getNombre());
+            } else {
+                System.out.println("Tipo de ticket no encontrado.");
+            }
+        } catch (Exception e) {
+            logger.error("Error en búsqueda por ID {}: {}", id, e.getMessage());
+        }
+    }
+
+    /**
+     * Prueba la recuperación de todos los tipos de tickets disponibles.
      */
     public void testFindAll() {
-        System.out.println("\n--- Test: TipoTicketService.findAll() ---");
-        List<TipoTicket> lista = service.findAll();
-        if (lista != null && !lista.isEmpty()) {
-            System.out.println("Se encontraron " + lista.size() + " tipos de tickets:");
-            for (TipoTicket tt : lista) {
-                System.out.println("  - ID: " + tt.getId() + " | Nombre: " + tt.getNombre());
+        System.out.println("\n--- Ejecutando testFindAll ---");
+        try {
+            List<TipoTicket> tipos = tipoTicketService.findAll();
+            if (tipos != null && !tipos.isEmpty()) {
+                System.out.println("Listado de tipos de tickets:");
+                for (TipoTicket tt : tipos) {
+                    System.out.println(" - " + tt.getId() + ": " + tt.getNombre());
+                }
             }
-        } else {
-            System.out.println("No se recuperaron tipos de tickets de la base de datos.");
+        } catch (Exception e) {
+            logger.error("Error al recuperar listado completo: {}", e.getMessage());
         }
     }
 
     public static void main(String[] args) {
-        TipoTicketServiceTest test = new TipoTicketServiceTest();
+        TipoTicketServiceTest tester = new TipoTicketServiceTest();
 
-        // 1. Probar con ID 2 (VIP según datos maestros)
-        test.testFindById(2L);
+        // 1. Probar "General" (ID 1)
+        tester.testFindById(1L);
 
-        // 2. Listar todos los tipos (General, VIP, Pista, Grada)
-        test.testFindAll();
+        // 2. Probar recuperación completa
+        tester.testFindAll();
+
+        System.out.println("\n--- Pruebas de TipoTicketService finalizadas ---");
     }
 }

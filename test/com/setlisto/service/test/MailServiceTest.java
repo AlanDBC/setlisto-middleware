@@ -2,40 +2,44 @@ package com.setlisto.service.test;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.setlisto.service.MailService;
 import com.setlisto.service.impl.MailServiceImpl;
 
+/**
+ * Clase para testear el envío de correos (Confirmaciones, Notificaciones).
+ */
 public class MailServiceTest {
-	
-	private MailService ms = null;
 
-	public MailServiceTest() {
-		ms = new MailServiceImpl();
-	}
+    private MailService mailService = new MailServiceImpl();
 
-	public void testEnviarEmail () {
-		ms.sendEmail("alanb1213aa@gmail.com", "volamos", "Melo :P");
-	}
-	
-	public void testEnviarEmailMultiple () {
-		List<String> destinatarios = new ArrayList<String>();
-		destinatarios.add("joseantoniolp.teacher@gmail.com");
-		destinatarios.add("sarasantossarmiento@gmail.com");
-		destinatarios.add("alanb1213aa@gmail.com");
-		destinatarios.add("cenizost16@gmail.com");
-		destinatarios.add("xubummitreigro-4523@yopmail.com");
-		
-		for (String destinatario : destinatarios) {
-			ms.sendEmail(destinatario, "volamos", "Melo :P");
-		}
-		
-	}
-	
-	public static void main(String[] args) {
-		MailServiceTest test = new MailServiceTest();
-//		test.testEnviarEmail();
-		test.testEnviarEmailMultiple();
-	}
+    public void testEnviarEmailIndividual() {
+        System.out.println("\n--- Ejecutando testEnviarEmailIndividual ---");
+        try {
+            mailService.sendEmail("usuario@ejemplo.com", "Bienvenido a Setlisto", 
+                                   "Gracias por registrarte en nuestra plataforma.");
+            System.out.println("Correo enviado con éxito.");
+        } catch (Exception e) {
+            System.err.println("Error en envío: " + e.getMessage());
+        }
+    }
 
+    public void testEnviarEmailMultiple() {
+        System.out.println("\n--- Ejecutando testEnviarEmailMultiple ---");
+        try {
+            List<String> destinatarios = new ArrayList<>();
+            destinatarios.add("admin@setlisto.com");
+            destinatarios.add("soporte@setlisto.com");
+            
+            mailService.sendEmail(destinatarios, "Aviso de Sistema", "Prueba de envío múltiple.");
+            System.out.println("Correos múltiples enviados.");
+        } catch (Exception e) {
+            System.err.println("Error en envío múltiple: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        MailServiceTest tester = new MailServiceTest();
+        tester.testEnviarEmailIndividual();
+        tester.testEnviarEmailMultiple();
+    }
 }
