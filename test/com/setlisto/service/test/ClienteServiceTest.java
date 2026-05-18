@@ -129,7 +129,7 @@ public class ClienteServiceTest {
         ClienteServiceTest tester = new ClienteServiceTest();
 
         // Juan Pérez: juan.perez@email.com / passUser1
-//        tester.testLogin("lucia.test@email.com", "user1234");
+        tester.testLogin("sofiatest@gmail.es", "abc123.");
 
 //         2. Probar Login Fallido
 //        tester.testLogin("juan.perez@email.com", "clave_incorrecta");

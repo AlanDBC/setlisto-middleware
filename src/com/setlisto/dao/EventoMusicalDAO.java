@@ -33,6 +33,7 @@ import com.setlisto.utils.SQLUtils;
 public class EventoMusicalDAO {
 
 	private static Logger logger = LogManager.getLogger(EventoMusicalDAO.class.getName()); // TODO
+	private EventZoneDAO eventZoneDAO = new EventZoneDAO();
 
 	private final String BASE_QUERY =
 			" SELECT me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
@@ -64,6 +65,7 @@ public class EventoMusicalDAO {
 					+ " LEFT JOIN artist art ON art.id = mea.artist_id "
 					+ " LEFT JOIN seat_of_musical_event som ON som.musical_event_id = me.id "
 					+ " LEFT JOIN ticket t ON t.seat_of_musical_event_id = som.id "
+					+ " LEFT JOIN event_zone ez_search ON ez_search.musical_event_id = me.id "
 					+ " INNER JOIN event_status evs ON evs.id = me.event_status_id "
 					+ " INNER JOIN time_zone tz ON tz.id = st.time_zone_id ";
 
@@ -90,6 +92,7 @@ public class EventoMusicalDAO {
 			EventoMusicalDTO em = null;
 			if (rs.next()) {
 				em = loadNext(rs);
+				em.setZonas(eventZoneDAO.findByEventId(c, id));
 			}
 			return em;
 		} catch (Exception e) {
@@ -141,8 +144,8 @@ public class EventoMusicalDAO {
 				SQLUtils.addClause(criteria.getCiudadId(), condiciones, " ct.id = ? ", parametros, criteria.getCiudadId());
 				SQLUtils.addClause(criteria.getRegionId(), condiciones, " rg.id = ? ", parametros, criteria.getRegionId());
 				SQLUtils.addClause(criteria.getPaisId(), condiciones, " co.id = ? ", parametros, criteria.getPaisId());
-				SQLUtils.addClause(criteria.getPrecioDesde(), condiciones, " t.price >= ? ", parametros, criteria.getPrecioDesde());
-				SQLUtils.addClause(criteria.getPrecioHasta(), condiciones, " t.price <= ? ", parametros, criteria.getPrecioHasta());
+				SQLUtils.addClause(criteria.getPrecioDesde(), condiciones, " COALESCE(t.price, ez_search.base_price) >= ? ", parametros, criteria.getPrecioDesde());
+				SQLUtils.addClause(criteria.getPrecioHasta(), condiciones, " COALESCE(t.price, ez_search.base_price) <= ? ", parametros, criteria.getPrecioHasta());
 
 				// En lugar de filtrar por el alias 'art.id', filtramos por el ID del evento que contenga a dicho artista y no excluir artistas
 				SQLUtils.addClause(criteria.getArtistaId(), condiciones,
@@ -172,7 +175,7 @@ public class EventoMusicalDAO {
 			String orderBy = criteria.getOrderBy();
 			// Manejo especial para el precio por ser una relación 1:N
 			if (" t.price ".equals(orderBy)) {
-				sql.append(" MIN(t.price) "); 
+				sql.append(" MIN(COALESCE(t.price, ez_search.base_price)) "); 
 			} else {
 				sql.append(orderBy);
 			}
@@ -246,6 +249,7 @@ public class EventoMusicalDAO {
 			// Insercion de  sus listas asociacadas
 			insertarSubGeneros(c, evento.getId(), evento.getSubGeneros()); 
 			insertarArtistas(c, evento.getId(), evento.getArtistas());
+			eventZoneDAO.replaceByEventId(c, evento.getId(), evento.getZonas());
 
 			return findById(c, evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
 
@@ -281,6 +285,9 @@ public class EventoMusicalDAO {
 					);
 
 			ps.executeUpdate();
+			if (evento instanceof EventoMusicalDTO) {
+				eventZoneDAO.replaceByEventId(c, evento.getId(), ((EventoMusicalDTO) evento).getZonas());
+			}
 
 		} catch (Exception e) {
 			throw e;

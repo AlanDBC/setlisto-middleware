@@ -13,6 +13,7 @@ public class Ticket extends AbstractValueObject {
 	private Long pagoId;
 	private Long plazaEventoMusicalId;
 	private Long tipoTicketId;
+	private Long eventZoneId;
 	
 	public Ticket() {
 	}
@@ -79,5 +80,13 @@ public class Ticket extends AbstractValueObject {
 
 	public void setFechaCompra(LocalDateTime fechaCompra) {
 		this.fechaCompra = fechaCompra;
+	}
+
+	public Long getEventZoneId() {
+		return eventZoneId;
+	}
+
+	public void setEventZoneId(Long eventZoneId) {
+		this.eventZoneId = eventZoneId;
 	}
 }

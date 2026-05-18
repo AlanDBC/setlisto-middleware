@@ -19,6 +19,8 @@ public class TicketDTO extends Ticket {
 	private Long plazaNumero;
 	private Long plazaCategoriaId;
 	private String plazaCategoriaNombre;
+	private String eventZoneSectionName;
+	private Integer eventZoneAvailableCapacity;
 	// Tipo de ticket
 	private String tipoTicketNombre;
 	
@@ -129,5 +131,20 @@ public class TicketDTO extends Ticket {
 		this.tipoTicketNombre = tipoTicketNombre;
 	}
 
+	public String getEventZoneSectionName() {
+		return eventZoneSectionName;
+	}
+
+	public void setEventZoneSectionName(String eventZoneSectionName) {
+		this.eventZoneSectionName = eventZoneSectionName;
+	}
+
+	public Integer getEventZoneAvailableCapacity() {
+		return eventZoneAvailableCapacity;
+	}
+
+	public void setEventZoneAvailableCapacity(Integer eventZoneAvailableCapacity) {
+		this.eventZoneAvailableCapacity = eventZoneAvailableCapacity;
+	}
 	
 }

@@ -126,7 +126,6 @@ public class TicketServiceImpl implements TicketService {
 			Long generatedId = ticketDAO.create(c, ticket);
 			if (generatedId != null) {
 				ticket.setId(generatedId);
-				return ticket;
 			}
 			commit = true;
 			return ticket;

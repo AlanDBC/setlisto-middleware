@@ -37,6 +37,7 @@ public class EventoMusicalDTO extends EventoMusical {
 	private List<SubGeneroMusical> subGeneros = null;  
 
 	private List<Artista> artistas = null;
+	private List<EventZone> zonas = null;
 	// guardamos en listas para poder poner en UI, JScrollPane + JList y mostrar varios géneros y subgéneros
 	
 
@@ -139,6 +140,10 @@ public class EventoMusicalDTO extends EventoMusical {
 		return artistas;
 	}
 
+	public List<EventZone> getZonas() {
+		return zonas;
+	}
+
 	public void setEntradasRestantes(Integer entradasRestantes) {
 		this.entradasRestantes = entradasRestantes;
 	}
@@ -153,5 +158,9 @@ public class EventoMusicalDTO extends EventoMusical {
 
 	public void setArtistas(List<Artista> artistas) {
 		this.artistas = artistas;
+	}
+
+	public void setZonas(List<EventZone> zonas) {
+		this.zonas = zonas;
 	}
 }

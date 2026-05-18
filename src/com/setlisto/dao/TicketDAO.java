@@ -24,16 +24,19 @@ public class TicketDAO {
 	private static Logger logger = LogManager.getLogger(TicketDAO.class.getName()); // TODO
 
 	private static String BASE_QUERY = " SELECT t.id, t.code, t.price, t.purchase_date, t.payment_id, c.id, c.name, me.id, me.name, me.start_date, ste.id, "
-			+ " ste.name, ste.address, stme.id, st.row, st.number, stc.id, stc.name, sts.id, sts.name, tty.id, tty.name "
+			+ " ste.name, ste.address, stme.id, st.row, st.number, COALESCE(stc.id, ezc.id), COALESCE(stc.name, ezc.name), "
+			+ " sts.id, sts.name, tty.id, tty.name, ez.id, ez.section_name, ez.available_capacity "
 			+ " FROM ticket t"
 			+ " INNER JOIN ticket_type tty ON tty.id = t.ticket_type_id "
 			+ " INNER JOIN payment pmt ON pmt.id = t.payment_id "
 			+ " INNER JOIN customer c ON c.id = pmt.customer_id "
-			+ " INNER JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id "
-			+ " INNER JOIN musical_event me ON me.id = stme.musical_event_id "
-			+ " INNER JOIN seat st ON st.id = stme.seat_id "
-			+ " INNER JOIN seat_category stc ON stc.id = st.seat_category_id "
-			+ " INNER JOIN seat_status sts ON sts.id = stme.seat_status_id "
+			+ " LEFT JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id "
+			+ " LEFT JOIN event_zone ez ON ez.id = t.event_zone_id "
+			+ " INNER JOIN musical_event me ON me.id = COALESCE(stme.musical_event_id, ez.musical_event_id) "
+			+ " LEFT JOIN seat st ON st.id = stme.seat_id "
+			+ " LEFT JOIN seat_category stc ON stc.id = st.seat_category_id "
+			+ " LEFT JOIN seat_category ezc ON ezc.id = ez.seat_category_id "
+			+ " LEFT JOIN seat_status sts ON sts.id = stme.seat_status_id "
 			+ " INNER JOIN site ste ON ste.id = me.site_id ";
 
 	public TicketDAO() {
@@ -44,7 +47,7 @@ public class TicketDAO {
 	    ResultSet rs = null;
 	    try {
 	        String sql = "INSERT INTO ticket (code, price, purchase_date, payment_id, " +
-	                     "seat_of_musical_event_id, ticket_type_id) VALUES (?, ?, ?, ?, ?, ?)";
+	                     "seat_of_musical_event_id, ticket_type_id, event_zone_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	        ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -54,7 +57,8 @@ public class TicketDAO {
 	            Timestamp.valueOf(ticket.getFechaCompra()),
 	            ticket.getPagoId(),
 	            ticket.getPlazaEventoMusicalId(),
-	            ticket.getTipoTicketId()
+	            ticket.getTipoTicketId(),
+	            ticket.getEventZoneId()
 	        );
 
 	        int rows = ps.executeUpdate();
@@ -216,7 +220,9 @@ public class TicketDAO {
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COUNT(*) FROM ticket t ");
-			sql.append(" INNER JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id WHERE stme.musical_event_id = ? ");
+		sql.append(" LEFT JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id ");
+		sql.append(" LEFT JOIN event_zone ez ON ez.id = t.event_zone_id ");
+		sql.append(" WHERE COALESCE(stme.musical_event_id, ez.musical_event_id) = ? ");
 			
 			ps = c.prepareStatement(sql.toString());
 			DAOUtils.setParameters(ps, musicalEventId);
@@ -315,8 +321,15 @@ public class TicketDAO {
 		tck.setPlazaNumero(rs.getLong(i++));
 		tck.setPlazaCategoriaId(rs.getLong(i++));
 		tck.setPlazaCategoriaNombre(rs.getString(i++));
+		rs.getLong(i++);
+		i++;
 		tck.setTipoTicketId(rs.getLong(i++));
 		tck.setTipoTicketNombre(rs.getString(i++));
+		Long eventZoneId = rs.getLong(i++);
+		tck.setEventZoneId(rs.wasNull() ? null : eventZoneId);
+		tck.setEventZoneSectionName(rs.getString(i++));
+		int available = rs.getInt(i++);
+		tck.setEventZoneAvailableCapacity(rs.wasNull() ? null : available);
 		return tck;
 	}
 }

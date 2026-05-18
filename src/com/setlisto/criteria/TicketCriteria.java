@@ -44,6 +44,7 @@ public class TicketCriteria {
 	}
 
 	public TicketCriteria() {
+		this.orderBy = ORDER_BY_PURCHASE_DATE;
 	}
 
 	public Long getClienteId() {
