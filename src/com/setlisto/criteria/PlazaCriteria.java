@@ -11,7 +11,7 @@ public class PlazaCriteria {
 	private Long lugarId;
 	private Long categoriaId;
 	private String orderBy;
-    private Boolean ascDesc = true; // true para ascendente, false para descendente
+    private Boolean ascDesc = true;
 
 	public String getOrderBy() {
 		return orderBy;

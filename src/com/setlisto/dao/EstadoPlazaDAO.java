@@ -3,16 +3,21 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.EstadoPlaza;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
-public class EstadoPlazaDAO {
 
-    // Consulta base a la tabla seat_status definida en el schema [1]
+public class EstadoPlazaDAO {
+	private static Logger logger = LogManager.getLogger(EstadoPlazaDAO.class.getName());
+
     private static final String BASE_QUERY = " SELECT id, name FROM seat_status ";
 
     public EstadoPlazaDAO() {
@@ -21,7 +26,7 @@ public class EstadoPlazaDAO {
     /**
      * Busca un estado de plaza por su ID (1=AVAILABLE, 2=SOLD, 3=DISABLED)
      */
-    public EstadoPlaza findById(Connection c, Long id)  throws Exception {
+    public EstadoPlaza findById(Connection c, Long id)  throws DataException {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -37,8 +42,9 @@ public class EstadoPlazaDAO {
                 ep = loadNext(rs);
             }
             return ep;
-        } catch (Exception e) {
-        	throw e;
+        } catch (SQLException e) {
+        	logger.error("Error en EstadoPlazaDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
         } finally {
         	JDBCUtils.close(rs, ps);
         }
@@ -47,7 +53,7 @@ public class EstadoPlazaDAO {
     /**
      * Recupera todos los estados de plaza disponibles.
      */
-    public List<EstadoPlaza> findAll(Connection c) throws Exception {
+    public List<EstadoPlaza> findAll(Connection c) throws DataException {
         List<EstadoPlaza> resultados = new ArrayList<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -59,8 +65,9 @@ public class EstadoPlazaDAO {
                 resultados.add(loadNext(rs));
             }
             return resultados;
-        } catch (Exception e) {
-        	throw e;
+        } catch (SQLException e) {
+        	logger.error("Error en EstadoPlazaDAO.findAll: {}", e.getMessage());
+		    throw new DataException(e); 
         } finally {
         	JDBCUtils.close(rs, ps);
         }
@@ -68,9 +75,9 @@ public class EstadoPlazaDAO {
 
     /**
      * Mapea el ResultSet al objeto de modelo EstadoPlaza.
-     * Nota: Se usa ep.setEstado() porque así está definido en tu POJO [2].
+     * Nota: Se usa ep.setEstado() porque así está definido en tu POJO
      */
-    private EstadoPlaza loadNext(ResultSet rs) throws Exception {
+    private EstadoPlaza loadNext(ResultSet rs) throws SQLException {
         int i = 1;
         EstadoPlaza ep = new EstadoPlaza();
         ep.setId(rs.getLong(i++));

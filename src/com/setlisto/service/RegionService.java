@@ -13,5 +13,5 @@ public interface RegionService {
      * Obtiene las regiones que pertenecen a un país concreto.
      * @param countryId ID del país (Foreign Key).
      */
-    public List<Region> findByPaisId(Long countryId) throws Exception;
+    public List<Region> findByPaisId(Long countryId) throws ServiceException;
 }

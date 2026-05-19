@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import com.setlisto.utils.SQLUtils;
 
 public class PlazaEnEventoDAO {
 
-	private static Logger logger = LogManager.getLogger(PlazaEnEventoDAO.class.getName()); // TODO
+	private static Logger logger = LogManager.getLogger(PlazaEnEventoDAO.class.getName());
 
 	private static String BASE_QUERY = " SELECT sme.id, me.id, me.name, st.id, st.row, st.number, se.id, se.name "
 			+ " FROM seat_of_musical_event sme "
@@ -29,7 +30,7 @@ public class PlazaEnEventoDAO {
 	public PlazaEnEventoDAO() {
 	}
 
-	public PlazaEnEventoDTO findById(Connection c, Long id) throws Exception {
+	public PlazaEnEventoDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -45,14 +46,15 @@ public class PlazaEnEventoDAO {
 				plaza = loadNext(rs);
 			}
 			return plaza;
-		}  catch (Exception e) {
-			throw e;
+		}  catch (SQLException e) {
+			logger.error("Error en PlazaEnEventoDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<PlazaEnEventoDTO> findByCriteria(Connection c, PlazaEnEventoCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<PlazaEnEventoDTO> findByCriteria(Connection c, PlazaEnEventoCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria);
 
 		PreparedStatement ps = null;
@@ -106,14 +108,15 @@ public class PlazaEnEventoDAO {
 			results.setTotal(totalResults);
 
 			return results;
-		}  catch (Exception e) {
-			throw e;
+		}  catch (SQLException e) {
+			logger.error("Error en PlazaEnEventoDAO.findByCriteria con criteria {}: {}", criteria, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean updateStatus(Connection c, Long plazaEventoMusicalId, Long estatusId) throws Exception {
+	public boolean updateStatus(Connection c, Long plazaEventoMusicalId, Long estatusId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -127,14 +130,15 @@ public class PlazaEnEventoDAO {
 
 			int filasAfectadas = ps.executeUpdate();
 			return filasAfectadas > 0;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PlazaEnEventoDAO.updateStatus. Plaza en Evento Id {} y estado Id {}: {}", plazaEventoMusicalId, estatusId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean isAvailable(Connection c, Long plazaEventoMusicalId) throws Exception {
+	public boolean isAvailable(Connection c, Long plazaEventoMusicalId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -151,15 +155,16 @@ public class PlazaEnEventoDAO {
 			if (rs.next()) {
 				return true;
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PlazaEnEventoDAO.isAvailable con plaza en evento Id {}: {}", plazaEventoMusicalId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public int countAvailableByEvent(Connection c, Long eventId) throws Exception {
+	public int countAvailableByEvent(Connection c, Long eventId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -176,15 +181,16 @@ public class PlazaEnEventoDAO {
 			if (rs.next()) {
 				return rs.getInt(1);
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PlazaEnEventoDAO.countAvailableByEvent con evento Id {}: {}", eventId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return 0;
 	}
 
-	private PlazaEnEventoDTO loadNext (ResultSet rs) throws Exception {
+	private PlazaEnEventoDTO loadNext (ResultSet rs) throws SQLException {
 		int i = 1;
 		PlazaEnEventoDTO dto = new PlazaEnEventoDTO();
 		dto.setId(rs.getLong(i++));

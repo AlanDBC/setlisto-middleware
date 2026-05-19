@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class LugarDAO {
 	public LugarDAO() {
 	}
 
-	public LugarDTO findById(Connection c, Long id) throws Exception {
+	public LugarDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -48,14 +49,15 @@ public class LugarDAO {
 			}
 			return lgr;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public List<LugarDTO> findAll(Connection c) throws Exception {
+	public List<LugarDTO> findAll(Connection c) throws DataException {
 		List<LugarDTO> resultados = new ArrayList<LugarDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -69,14 +71,15 @@ public class LugarDAO {
 				resultados.add( loadNext(rs) );
 			}
 			return resultados;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.findAll: {}", e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<LugarDTO> findByCriteria(Connection c, LugarCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<LugarDTO> findByCriteria(Connection c, LugarCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria);
 
 		PreparedStatement ps = null;
@@ -135,14 +138,15 @@ public class LugarDAO {
 			results.setTotal(totalResults); 
 			
 			return results;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.findByCriteria con criteria {}: {}", criteria, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Lugar create(Connection c, Lugar lugar) throws Exception {
+	public Lugar create(Connection c, Lugar lugar) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -156,9 +160,8 @@ public class LugarDAO {
 					lugar.getCiudadId(),
 					lugar.getIdZonaHoraria()
 					); 
-
+			
 			int rows = ps.executeUpdate(); 
-
 			if (rows > 0) {
 				rs = ps.getGeneratedKeys();
 				if (rs.next()) {
@@ -166,15 +169,16 @@ public class LugarDAO {
 				}
 				return lugar; 
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.create con lugar {}: {}", lugar, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public void update(Connection c, Lugar lugar) throws Exception {
+	public void update(Connection c, Lugar lugar) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -191,14 +195,15 @@ public class LugarDAO {
 
 			ps.executeUpdate();
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.update con lugar {}: {}", lugar, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public void delete(Connection c, Long id) throws Exception {
+	public void delete(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -208,14 +213,15 @@ public class LugarDAO {
 			DAOUtils.setParameters(ps, id);
 			ps.executeUpdate();
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en LugarDAO.delete con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private LugarDTO loadNext(ResultSet rs) throws Exception {
+	private LugarDTO loadNext(ResultSet rs) throws SQLException {
 		int i = 1;
 		LugarDTO lgr = new LugarDTO();
 		lgr.setId( rs.getLong(i++) );

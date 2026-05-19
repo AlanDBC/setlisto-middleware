@@ -18,7 +18,7 @@ public class PagoCriteria {
 	    private Date fechaDesde;
 	    private Date fechaHasta;
 	    private String orderBy;
-	    private Boolean ascDesc = true; // true para ascendente, false para descendente
+	    private Boolean ascDesc = true;
 
 	public PagoCriteria() {
 	}

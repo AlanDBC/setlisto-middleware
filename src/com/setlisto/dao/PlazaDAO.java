@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class PlazaDAO {
 	public PlazaDAO() {
 	}
 
-	public PlazaDTO findById(Connection c, Long id) throws Exception {
+	public PlazaDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -45,14 +46,15 @@ public class PlazaDAO {
 				plaza = loadNext(rs);
 			}
 			return plaza;
-		}  catch (Exception e) {
-			throw e;
+		}  catch (SQLException e) {
+			logger.error("Error en PlazaDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<PlazaDTO> findByCriteria(Connection c, PlazaCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<PlazaDTO> findByCriteria(Connection c, PlazaCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria);
 		
 		PreparedStatement ps = null;
@@ -103,14 +105,15 @@ public class PlazaDAO {
 			results.setTotal(totalResults);
 					
 			return results;
-		}   catch (Exception e) {
-			throw e;
+		}   catch (SQLException e) {
+			logger.error("Error en PlazaDAO.findByCriteria con criteria {}: {}", criteria, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private PlazaDTO loadNext (ResultSet rs) throws Exception {
+	private PlazaDTO loadNext (ResultSet rs) throws SQLException {
 		int i = 1;
 		PlazaDTO plaza = new PlazaDTO();
 		plaza = new PlazaDTO();

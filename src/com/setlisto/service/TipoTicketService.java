@@ -14,11 +14,11 @@ public interface TipoTicketService {
      * @param id Identificador del tipo de ticket.
      * @return El objeto TipoTicket o null si no existe.
      */
-    public TipoTicket findById(Long id) throws Exception;
+    public TipoTicket findById(Long id) throws ServiceException;
 
     /**
      * Obtiene todos los tipos de tickets registrados en el sistema.
      * @return Lista de objetos TipoTicket.
      */
-    public List<TipoTicket> findAll() throws Exception;
+    public List<TipoTicket> findAll() throws ServiceException;
 }

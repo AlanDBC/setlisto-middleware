@@ -11,9 +11,9 @@ public interface ArtistaService {
     /**
      * Obtiene los artistas de un evento específico.
      */
-    public List<Artista> findByMusicalEvent(Long eventId) throws Exception;
+    public List<Artista> findByMusicalEvent(Long eventId) throws ServiceException;
     
-    public Artista create(Artista artista) throws Exception;
+    public Artista create(Artista artista) throws ServiceException;
     
-    public List<Artista> findAll() throws Exception;
+    public List<Artista> findAll() throws ServiceException;
 }

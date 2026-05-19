@@ -24,7 +24,7 @@ public class OrganizadorCriteria {
 	private Date fechaNacimientoDesde = null;
 	private Date fechaNacimientoHasta = null;
 	private String orderBy;
-    private Boolean ascDesc = true; // true para ascendente, false para descendente
+    private Boolean ascDesc = true;
 	
 	public OrganizadorCriteria() {
 	}

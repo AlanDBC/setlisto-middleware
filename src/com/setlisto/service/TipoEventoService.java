@@ -12,10 +12,10 @@ public interface TipoEventoService {
     /**
      * Recupera un tipo de evento específico por su ID.
      */
-    public TipoEvento findById(Long id) throws Exception;
+    public TipoEvento findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de tipos de eventos registrados.
      */
-    public List<TipoEvento> findAll() throws Exception;
+    public List<TipoEvento> findAll() throws ServiceException;
 }

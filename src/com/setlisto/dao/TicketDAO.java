@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import com.setlisto.utils.SQLUtils;
 
 public class TicketDAO {
 	
-	private static Logger logger = LogManager.getLogger(TicketDAO.class.getName()); // TODO
+	private static Logger logger = LogManager.getLogger(TicketDAO.class.getName());
 
 	private static String BASE_QUERY = " SELECT t.id, t.code, t.price, t.purchase_date, t.payment_id, c.id, c.name, me.id, me.name, me.start_date, ste.id, "
 			+ " ste.name, ste.address, stme.id, st.row, st.number, COALESCE(stc.id, ezc.id), COALESCE(stc.name, ezc.name), "
@@ -42,7 +43,7 @@ public class TicketDAO {
 	public TicketDAO() {
 	}
 
-	public Long create(Connection c, Ticket ticket) throws Exception {
+	public Long create(Connection c, Ticket ticket) throws DataException {
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
 	    try {
@@ -69,15 +70,16 @@ public class TicketDAO {
 	                return rs.getLong(1);
 	            }
 	        }
-	    } catch (Exception e) {
-	    	throw e;
+	    } catch (SQLException e) {
+	    	logger.error("Error en TicketDAO.create con ticket {}: {}", ticket, e.getMessage());
+			throw new DataException(e); 
 	    } finally {
 	    	JDBCUtils.close(rs, ps);
 	    }
 	    return null;
 	}
 
-	public TicketDTO findById(Connection c, Long id) throws Exception {
+	public TicketDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -93,14 +95,15 @@ public class TicketDAO {
 				tck = loadNext(rs);
 			}
 			return tck;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findById con ID {}: {}", id, e.getMessage());
+			throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public TicketDTO findByCode(Connection c, String code) throws Exception {
+	public TicketDTO findByCode(Connection c, String code) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -116,14 +119,15 @@ public class TicketDAO {
 				tck = loadNext(rs);
 			}
 			return tck;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByCode con code {}: {}", code, e.getMessage());
+			throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public List<TicketDTO> findByPaymentId(Connection c, Long paymentId) throws Exception {
+	public List<TicketDTO> findByPaymentId(Connection c, Long paymentId) throws DataException {
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -139,14 +143,15 @@ public class TicketDAO {
 				tickets.add(loadNext(rs));
 			}
 			return tickets;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByPaymentId con pago Id {}: {}", paymentId, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public List<TicketDTO> findByClienteId(Connection c, Long clienteId) throws Exception{
+	public List<TicketDTO> findByClienteId(Connection c, Long clienteId) throws DataException{
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -162,14 +167,15 @@ public class TicketDAO {
 				tickets.add(loadNext(rs));
 			}
 			return tickets;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByClienteId con cliente Id {}: {}", clienteId, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public List<TicketDTO> findByEventoId(Connection c, Long musicalEventId) throws Exception{ 
+	public List<TicketDTO> findByEventoId(Connection c, Long musicalEventId) throws DataException{ 
 		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -185,14 +191,15 @@ public class TicketDAO {
 				tickets.add(loadNext(rs));
 			}
 			return tickets;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByEventoId con evento Id {}: {}", musicalEventId, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean existsBySeatOfEventId(Connection c, Long seatOfMusicalEventId) throws Exception {
+	public boolean existsBySeatOfEventId(Connection c, Long seatOfMusicalEventId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -206,15 +213,16 @@ public class TicketDAO {
 			if (rs.next()) {
 				return true;
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.existsBySeatOfEventId con plaza en evento Id {}: {}", seatOfMusicalEventId, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public long countByEventoId(Connection c, Long musicalEventId) throws Exception {
+	public long countByEventoId(Connection c, Long musicalEventId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -231,15 +239,16 @@ public class TicketDAO {
 			if (rs.next()) {
 				return rs.getLong(1);
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.countByEventoId con evento Id {}: {}", musicalEventId, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return 0;
 	}
 
-	public Results<TicketDTO> findByCriteria(Connection c, TicketCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<TicketDTO> findByCriteria(Connection c, TicketCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria); 
 	    
 	    PreparedStatement ps = null;
@@ -292,14 +301,15 @@ public class TicketDAO {
 			results.setTotal(totalResults);
 
 	        return results;
-	    } catch (Exception e) {
-	    	throw e;
+	    } catch (SQLException e) {
+	    	logger.error("Error en TicketDAO.findByCriteria con criteriaId {}: {}", criteria, e.getMessage());
+			throw new DataException(e);
 	    } finally {
 	    	JDBCUtils.close(rs, ps);
 	    }
 	}
 
-	private TicketDTO loadNext(ResultSet rs) throws Exception {
+	private TicketDTO loadNext(ResultSet rs) throws SQLException {
 		int i = 1;
 		TicketDTO tck = new TicketDTO();
 		tck = new TicketDTO();

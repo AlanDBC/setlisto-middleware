@@ -14,5 +14,5 @@ public interface CiudadService {
      * @param regionId Identificador de la región (provincia/estado).
      * @return Lista de objetos Ciudad.
      */
-    public List<Ciudad> findByRegionId(Long regionId) throws Exception;
+    public List<Ciudad> findByRegionId(Long regionId) throws ServiceException;
 }

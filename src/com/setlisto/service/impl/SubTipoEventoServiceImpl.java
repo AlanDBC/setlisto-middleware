@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.setlisto.dao.DataException;
 import com.setlisto.dao.SubTipoEventoDAO;
 import com.setlisto.model.SubTipoEventoDTO;
+import com.setlisto.service.ServiceException;
 import com.setlisto.service.SubTipoEventoService;
 import com.setlisto.utils.JDBCUtils;
 
@@ -26,7 +27,7 @@ public class SubTipoEventoServiceImpl implements SubTipoEventoService {
 	}
 
 	@Override
-	public SubTipoEventoDTO findById(Long id) throws Exception {
+	public SubTipoEventoDTO findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;   
 		try {
@@ -35,16 +36,19 @@ public class SubTipoEventoServiceImpl implements SubTipoEventoService {
 			SubTipoEventoDTO subtipo = subTipoEventoDAO.findById(c, id);
 			commit = true;
 			return subtipo;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar subtipo de evento con id {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por id {}: {}",id , e.getMessage());
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<SubTipoEventoDTO> findByTipoEvento(Long tipoEventoId) throws Exception {
+	public List<SubTipoEventoDTO> findByTipoEvento(Long tipoEventoId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;   
 		try {
@@ -53,9 +57,12 @@ public class SubTipoEventoServiceImpl implements SubTipoEventoService {
 			List<SubTipoEventoDTO> subtipos = subTipoEventoDAO.findByTipoEventoId(c, tipoEventoId);
 			commit = true;
 			return subtipos;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar subtipo por tipo de evento con id {}: {}", tipoEventoId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por tipo de evento con id {}: {}",tipoEventoId, e.getMessage());
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

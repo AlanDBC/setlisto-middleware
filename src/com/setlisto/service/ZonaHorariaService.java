@@ -8,10 +8,10 @@ public interface ZonaHorariaService {
 	/**
 	 * Devuelve la zona horaria con el id indicado
 	 */
-	public ZonaHoraria findById (Long id) throws Exception;
+	public ZonaHoraria findById (Long id) throws ServiceException;
 	
 	/**
 	 * Devuelve todas las zonas horarias disponibles
 	 */
-	public List<ZonaHoraria> findAll() throws Exception;
+	public List<ZonaHoraria> findAll() throws ServiceException;
 }

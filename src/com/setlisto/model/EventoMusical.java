@@ -17,6 +17,7 @@ public class EventoMusical extends AbstractValueObject {
 	private Long idSubtipo = null;
 	private Long idEstado = null;
 	private Long idZonaHoraria = null;
+	private String rutaImagenPlano = null;
 	 
 	public EventoMusical() {
 	}
@@ -107,5 +108,13 @@ public class EventoMusical extends AbstractValueObject {
 
 	public void setIdZonaHoraria(Long idZonaHoraria) {
 		this.idZonaHoraria = idZonaHoraria;
+	}
+
+	public String getRutaImagenPlano() {
+		return rutaImagenPlano;
+	}
+
+	public void setRutaImagenPlano(String rutaImagenPlano) {
+		this.rutaImagenPlano = rutaImagenPlano;
 	}
 }

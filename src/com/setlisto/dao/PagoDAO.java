@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import com.setlisto.utils.SQLUtils;
 
 public class PagoDAO {
 	
-	private static Logger logger = LogManager.getLogger(PagoDAO.class.getName()); // TODO
+	private static Logger logger = LogManager.getLogger(PagoDAO.class.getName());
 
 	private static String BASE_QUERY = " SELECT p.id, p.amount, pm.id, pm.name, pc.id, pc.symbol, pc.code, "
 			+ " p.transaction_code, p.created_at, p.payment_date, c.id, c.name, ps.id, ps.name "
@@ -34,49 +35,7 @@ public class PagoDAO {
 	public PagoDAO() {
 	}
 
-	public Pago create(Connection c, Pago pago) throws Exception {
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    try {
-	        // 1. Verificación de reglas de negocio (Código de transacción único)
-	        if (existsByReference(c,pago.getCodigoTransaccion())) {
-	            return null;
-	        }
-	        StringBuilder sql = new StringBuilder();
-	        sql.append(" INSERT INTO payment (amount, transaction_code, payment_date, ");
-	        sql.append(" customer_id, payment_status_id, payment_method_id, payment_currency_id) ");
-	        sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?) ");
-	   
-	        ps = c.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS); 
-
-	        DAOUtils.setParameters(ps,
-	            pago.getMonto(),
-	            pago.getCodigoTransaccion(),
-	            pago.getFechaPago(),
-	            pago.getClienteId(),
-	            pago.getEstadoPagoId(),
-	            pago.getMetodoPagoId(),
-	            pago.getMonedaId()
-	        );
-
-	        int rows = ps.executeUpdate(); 
-
-	        if (rows > 0) {
-	            rs = ps.getGeneratedKeys(); 
-	            if (rs.next()) {
-	                pago.setId(rs.getLong(1));
-	            }
-	            return pago; // Devolvemos el objeto completo enriquecido
-	        }
-	    } catch (Exception e) {
-	    	throw e;
-	    } finally {
-	    	JDBCUtils.close(rs, ps); 
-	    }
-	    return null;
-	}
-
-	public PagoDTO findById(Connection c, Long id) throws Exception {
+	public PagoDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -92,14 +51,57 @@ public class PagoDAO {
 				pago = loadNext(rs);
 			}
 			return pago;			
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
+	
+	public Pago create(Connection c, Pago pago) throws DataException {
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    try {
+	        // 1. Verificación de reglas de negocio (Código de transacción único)
+	        if (existsByReference(c,pago.getCodigoTransaccion())) {
+	            return null;
+	        }
+	        StringBuilder sql = new StringBuilder();
+	        sql.append(" INSERT INTO payment (amount, transaction_code, payment_date, ");
+	        sql.append(" customer_id, payment_status_id, payment_method_id, payment_currency_id) ");
+	        sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?) ");
+	        
+	        ps = c.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS); 
 
-	public List<PagoDTO> findAll(Connection c) throws Exception {
+	        DAOUtils.setParameters(ps,
+	            pago.getMonto(),
+	            pago.getCodigoTransaccion(),
+	            pago.getFechaPago(),
+	            pago.getClienteId(),
+	            pago.getEstadoPagoId(),
+	            pago.getMetodoPagoId(),
+	            pago.getMonedaId()
+	        );
+
+	        int rows = ps.executeUpdate(); 
+	        if (rows > 0) {
+	            rs = ps.getGeneratedKeys(); 
+	            if (rs.next()) {
+	                pago.setId(rs.getLong(1));
+	            }
+	            return pago; // Devolvemos el objeto completo enriquecido
+	        }
+	    } catch (SQLException e) {
+	    	logger.error("Error en PagoDAO.create con pago {}: {}", pago, e.getMessage());
+		    throw new DataException(e); 
+	    } finally {
+	    	JDBCUtils.close(rs, ps); 
+	    }
+	    return null;
+	}
+
+	public List<PagoDTO> findAll(Connection c) throws DataException {
 		List<PagoDTO> pagos = new ArrayList<PagoDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -115,14 +117,15 @@ public class PagoDAO {
 				pagos.add(loadNext(rs));
 			}
 			return pagos;			
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.findAll: {}", e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public BigDecimal getTotalPagadoByClienteId(Connection c, Long id) throws Exception {
+	public BigDecimal getTotalPagadoByClienteId(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -139,15 +142,16 @@ public class PagoDAO {
 			if (rs.next()) {
 				return rs.getBigDecimal(1);
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.getTotalPagadoByClienteId con Id {}: {}", id, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public PagoDTO findUltimoPagoByClienteId(Connection c, Long id) throws Exception {
+	public PagoDTO findUltimoPagoByClienteId(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -165,14 +169,15 @@ public class PagoDAO {
 				pago = loadNext(rs);
 			}
 			return pago;			
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.findUltimoPagoByClienteId con Id {}: {}", id, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean updateStatus(Connection c, Long paymentId, Long statusId) throws Exception {
+	public boolean updateStatus(Connection c, Long paymentId, Long statusId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -185,14 +190,15 @@ public class PagoDAO {
 			int rows = ps.executeUpdate();
 
 			return rows > 0;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.updateStatus con pago id {} y estado id {}: {}", paymentId, statusId, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}	
 	}
 
-	public boolean existsByReference(Connection c, String transactionCode) throws Exception {
+	public boolean existsByReference(Connection c, String transactionCode) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -209,15 +215,16 @@ public class PagoDAO {
 				int count = rs.getInt(1);
 				return count > 0;
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.existsByReference con codigo de transaccion {}: {}", transactionCode, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public PagoDTO findByCodigoDeTransaccion(Connection c, String transactionCode) throws Exception {
+	public PagoDTO findByCodigoDeTransaccion(Connection c, String transactionCode) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -234,14 +241,15 @@ public class PagoDAO {
 			}
 			return pago;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.findByCodigoDeTransaccion con codigo de transaccion {}: {}", transactionCode, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<PagoDTO> findByCriteria(Connection c, PagoCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<PagoDTO> findByCriteria(Connection c, PagoCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria);
 		
 		PreparedStatement ps = null;
@@ -297,14 +305,15 @@ public class PagoDAO {
 			results.setTotal(totalResults);
 			
 			return results;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en PagoDAO.findByCriteria con criteria {}: {}", criteria, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private PagoDTO loadNext (ResultSet rs) throws Exception {
+	private PagoDTO loadNext (ResultSet rs) throws SQLException {
 		PagoDTO pago = new PagoDTO();
 		int i = 1;
 		pago = new PagoDTO();

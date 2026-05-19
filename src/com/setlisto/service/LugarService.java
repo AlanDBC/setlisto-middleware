@@ -12,30 +12,30 @@ public interface LugarService {
     /**
      * Recupera un lugar específico por su ID.
      */
-    public LugarDTO findById(Long id) throws Exception;
+    public LugarDTO findById(Long id) throws ServiceException;
 
     /**
      * Obtiene todos los lugares registrados.
      */
-    public List<LugarDTO> findAll() throws Exception;
+    public List<LugarDTO> findAll() throws ServiceException;
 
     /**
      * Realiza búsquedas de lugares mediante criterios geográficos (País, Región, Ciudad).
      */
-    public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) throws Exception;
+    public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) throws ServiceException;
 
     /**
      * Registra un nuevo recinto en el sistema.
      */
-    public Lugar create(Lugar lugar) throws Exception;
+    public Lugar create(Lugar lugar) throws ServiceException;
 
     /**
      * Actualiza la información de un recinto existente.
      */
-    public void update(Lugar lugar) throws Exception;
+    public void update(Lugar lugar) throws ServiceException;
 
     /**
      * Elimina un recinto del sistema.
      */
-    public void delete(Long id) throws Exception;
+    public void delete(Long id) throws ServiceException;
 }

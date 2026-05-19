@@ -12,10 +12,10 @@ public interface PlazaService {
     /**
      * Recupera la información de una plaza específica por su ID.
      */
-    public PlazaDTO findById(Long id) throws Exception;
+    public PlazaDTO findById(Long id) throws ServiceException;
 
     /**
      * Busca plazas aplicando filtros como el recinto (lugarId) o la categoría de asiento.
      */
-    public Results<PlazaDTO> findByCriteria(PlazaCriteria criteria, int page, int size) throws Exception;
+    public Results<PlazaDTO> findByCriteria(PlazaCriteria criteria, int page, int size) throws ServiceException;
 }

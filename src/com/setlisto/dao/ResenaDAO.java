@@ -3,16 +3,23 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.setlisto.model.Resena;
 import com.setlisto.model.ResenaDTO;
+import com.setlisto.service.test.EstadoEventoServiceTest;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
 public class ResenaDAO {
+
+	private static Logger logger = LogManager.getLogger(ResenaDAO.class.getName());
 
 	private static String BASE_QUERY = " SELECT r.musical_event_id, me.name, r.customer_id, cu.name,"
 			+ " r.stars, r.comment, r.favorite, r.created_at, r.updated_at "
@@ -29,7 +36,7 @@ public class ResenaDAO {
 	 * @param resena (resenaDTO, pasando solo los atributos POJO)
 	 * @return boolean (true si se ha creado correctamente, false en caso contrario)
 	 */
-	public boolean create(Connection c, Resena resena) throws Exception {
+	public boolean create(Connection c, Resena resena) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;	
 		try {
@@ -49,8 +56,9 @@ public class ResenaDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.create con resena {}: {}", resena, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
@@ -61,7 +69,7 @@ public class ResenaDAO {
 	 * @param resenaDTO con los datos a editar
 	 * @return true si se ha editado correctamente, false en caso contrario
 	 */
-	public boolean edit(Connection c, Resena resena) throws Exception {
+	public boolean edit(Connection c, Resena resena) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -81,8 +89,9 @@ public class ResenaDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.edit con resena {}: {}", resena, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
@@ -94,7 +103,7 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return true si se ha eliminado correctamente, false en caso contrario
 	 */
-	public boolean delete(Connection c, Long eventoId, Long usuarioId) throws Exception {
+	public boolean delete(Connection c, Long eventoId, Long usuarioId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -106,8 +115,9 @@ public class ResenaDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.delete con evento Id {} y usuario Id: {}", eventoId, usuarioId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
@@ -119,7 +129,7 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return ResenaDTO si se encuentra, null en caso contrario
 	 */
-	public ResenaDTO findByEventAndCustomer(Connection c, Long eventoId, Long usuarioId) throws Exception {
+	public ResenaDTO findByEventAndCustomer(Connection c, Long eventoId, Long usuarioId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -136,8 +146,9 @@ public class ResenaDAO {
 				resena = loadNext(rs);
 			}
 			return resena;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.findByEventAndCustomer con evento Id {} y usuario Id: {}", eventoId, usuarioId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
@@ -148,7 +159,7 @@ public class ResenaDAO {
 	 * @param eventoId
 	 * @return Lista de ResenaDTO, null en caso de error o inexistencia
 	 */
-	public List<ResenaDTO> findByMusicalEvent(Connection c, Long eventoId) throws Exception {
+	public List<ResenaDTO> findByMusicalEvent(Connection c, Long eventoId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -166,8 +177,9 @@ public class ResenaDAO {
 				resenas.add(loadNext(rs));
 			}
 			return resenas;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.findByMusicalEvent con evento Id {}: {}", eventoId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
@@ -178,7 +190,7 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return Lista de ResenaDTO
 	 */
-	public List<ResenaDTO> findByCustomer(Connection c, Long usuarioId) throws Exception {
+	public List<ResenaDTO> findByCustomer(Connection c, Long usuarioId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -196,8 +208,9 @@ public class ResenaDAO {
 				resenas.add(loadNext(rs));
 			}
 			return resenas;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.findByCustomer con cliente Id {}: {}", usuarioId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
@@ -209,7 +222,7 @@ public class ResenaDAO {
 	 * @param usuarioId
 	 * @return true si es favorito, false en caso contrario
 	 */
-	public boolean isFavorite(Connection c, Long eventoId, Long usuarioId) throws Exception {
+	public boolean isFavorite(Connection c, Long eventoId, Long usuarioId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -224,15 +237,16 @@ public class ResenaDAO {
 				int i = 1;
 				return rs.getBoolean(i++);
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ResenaDAO.isFavorite con evento Id {} y cliente Id {}: {}", eventoId, usuarioId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs,ps);
 		}
 		return false;
 	}
 	
-	private ResenaDTO loadNext (ResultSet rs) throws Exception {
+	private ResenaDTO loadNext (ResultSet rs) throws SQLException {
 		int i = 1;
 		ResenaDTO resena = new ResenaDTO();
 		resena.setEventoId(rs.getLong(i++));

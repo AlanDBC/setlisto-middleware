@@ -7,9 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.TicketCriteria;
+import com.setlisto.dao.DataException;
 import com.setlisto.dao.TicketDAO;
 import com.setlisto.model.Results;
 import com.setlisto.model.TicketDTO;
+import com.setlisto.service.ServiceException;
 import com.setlisto.service.TicketService;
 import com.setlisto.utils.JDBCUtils;
 
@@ -27,7 +29,7 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public TicketDTO findById(Long id) throws Exception {
+	public TicketDTO findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -36,16 +38,19 @@ public class TicketServiceImpl implements TicketService {
 			TicketDTO ticket = ticketDAO.findById(c, id);
 			commit = true;
 			return ticket;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar ticket con id {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public TicketDTO findByCode(String code) throws Exception {
+	public TicketDTO findByCode(String code) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -54,16 +59,19 @@ public class TicketServiceImpl implements TicketService {
 			TicketDTO ticket = ticketDAO.findByCode(c, code);
 			commit = true;
 			return ticket;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar ticket con codigo {}: {}", code, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por codigo de ticket {}: {}", code, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<TicketDTO> findByPaymentId(Long paymentId) throws Exception {
+	public List<TicketDTO> findByPaymentId(Long paymentId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -72,16 +80,19 @@ public class TicketServiceImpl implements TicketService {
 			List<TicketDTO> tickets = ticketDAO.findByPaymentId(c, paymentId);
 			commit = true;
 			return tickets;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar tickets con pago Id {}: {}", paymentId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por id de pago {}: {}", paymentId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<TicketDTO> findByClienteId(Long clienteId) throws Exception {
+	public List<TicketDTO> findByClienteId(Long clienteId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -90,16 +101,19 @@ public class TicketServiceImpl implements TicketService {
 			List<TicketDTO> tickets = ticketDAO.findByClienteId(c, clienteId);
 			commit = true;
 			return tickets;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar tickets con cliente Id {}: {}", clienteId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por cliente con id {}: {}", clienteId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<TicketDTO> findByEventoId(Long musicalEventId) throws Exception {
+	public List<TicketDTO> findByEventoId(Long musicalEventId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -108,16 +122,19 @@ public class TicketServiceImpl implements TicketService {
 			List<TicketDTO> tickets = ticketDAO.findByEventoId(c, musicalEventId);
 			commit = true;
 			return tickets;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar tickets con evento Id {}: {}", musicalEventId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por evento con id {}: {}", musicalEventId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public TicketDTO create(TicketDTO ticket) throws Exception {
+	public TicketDTO create(TicketDTO ticket) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -129,16 +146,19 @@ public class TicketServiceImpl implements TicketService {
 			}
 			commit = true;
 			return ticket;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al crear ticket {}: {}", ticket, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Creando ticket {}: {}", ticket, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public Results<TicketDTO> findByCriteria(TicketCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<TicketDTO> findByCriteria(TicketCriteria criteria, int from, int pageSize) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -147,16 +167,19 @@ public class TicketServiceImpl implements TicketService {
 			Results<TicketDTO> resultados = ticketDAO.findByCriteria(c, criteria, from, pageSize);
 			commit = true;
 			return resultados;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar tickets con criteria {}: {}", criteria, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por evento con criteria {}: {}", criteria, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public boolean existsBySeatOfEventId(Long seatOfMusicalEventId) throws Exception {
+	public boolean existsBySeatOfEventId(Long seatOfMusicalEventId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -165,16 +188,19 @@ public class TicketServiceImpl implements TicketService {
 			boolean existe = ticketDAO.existsBySeatOfEventId(c, seatOfMusicalEventId);
 			commit = true;
 			return existe;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar existencia de ticket por plaza en evento id {}: {}", seatOfMusicalEventId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando ticket existente para plaza del evento con id {}: {}", seatOfMusicalEventId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public long countByEventoId(Long musicalEventId) throws Exception {
+	public long countByEventoId(Long musicalEventId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -183,9 +209,12 @@ public class TicketServiceImpl implements TicketService {
 			long total = ticketDAO.countByEventoId(c, musicalEventId);
 			commit = true;
 			return total;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al contar tickets por evento con Id {}: {}", musicalEventId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando total de tickets para evento con id {}: {}", musicalEventId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

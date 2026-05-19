@@ -6,9 +6,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.setlisto.dao.DataException;
 import com.setlisto.dao.MonedaPagoDAO;
 import com.setlisto.model.MonedaPago;
 import com.setlisto.service.MonedaPagoService;
+import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
 /**
@@ -28,7 +30,7 @@ public class MonedaPagoServiceImpl implements MonedaPagoService {
 	 * Recupera la moneda delegando al DAO, que consulta la tabla payment_currency.
 	 */
 	@Override
-	public MonedaPago findById(Long id) throws Exception {
+	public MonedaPago findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -37,9 +39,12 @@ public class MonedaPagoServiceImpl implements MonedaPagoService {
 			MonedaPago moneda = monedaPagoDAO.findById(c, id);
 			commit = true;
 			return moneda;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar moneda con id {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
@@ -49,7 +54,7 @@ public class MonedaPagoServiceImpl implements MonedaPagoService {
 	 * Obtiene todas las monedas registradas (EUR, USD, GBP, etc.).
 	 */
 	@Override
-	public List<MonedaPago> findAll() throws Exception {
+	public List<MonedaPago> findAll() throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -58,9 +63,12 @@ public class MonedaPagoServiceImpl implements MonedaPagoService {
 			List<MonedaPago> monedas = monedaPagoDAO.findAll(c);
 			commit = true;
 			return monedas;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar todas las monedas: {}", e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando todas", e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

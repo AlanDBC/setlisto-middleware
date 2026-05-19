@@ -7,8 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.dao.ArtistaDAO;
+import com.setlisto.dao.DataException;
 import com.setlisto.model.Artista;
 import com.setlisto.service.ArtistaService;
+import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
 public class ArtistaServiceImpl implements ArtistaService {
@@ -22,25 +24,29 @@ public class ArtistaServiceImpl implements ArtistaService {
 	}
 
 	@Override
-	public Artista findById(Long id) throws Exception {
+	public Artista findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
 			c = JDBCUtils.getConnection();
 			c.setAutoCommit(false);
-			Artista art = artistaDAO.findById(c, id);
+			Artista artista = artistaDAO.findById(c, id); // Lanza DataException
 			commit = true;
-			return art;
+			return artista;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar artista {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
-			logger.error("Buscando por id {}: {}", id, e.getMessage(), e);
-			throw e;
+			logger.error("Error inesperado en ArtistaService.findById: {}", e.getMessage());
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
+
 	@Override
-	public List<Artista> findByMusicalEvent(Long eventId) throws Exception {
+	public List<Artista> findByMusicalEvent(Long eventId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -49,35 +55,41 @@ public class ArtistaServiceImpl implements ArtistaService {
 			List<Artista> artistas = artistaDAO.findByMusicalEventId(c, eventId);
 			commit = true;
 			return artistas;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar evento musical {}: {}", eventId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e){
 			logger.error("Buscando por evento id {}: {}", eventId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
-		
+
 	}
 
 	@Override
-	public Artista create(Artista artista) throws Exception {	
-		Connection c = null; 												// declara la conexion a null
-		boolean commit = false; 											// declara la bandera por defecto false (no hace commit)
+	public Artista create(Artista artista) throws ServiceException {	
+		Connection c = null; 												
+		boolean commit = false; 											
 		try {
-			c = JDBCUtils.getConnection(); 									// abre la conexion			
-			c.setAutoCommit(false); 										// desactiva el autocommit para controlar la transaccion manualmente
-			Artista created = artistaDAO.create(c, artista); 				// llamado normal al DAO
-			commit = true; 													// Si todo va bien se levanta la bandera (Se hace commit)
-			return created; 												// retorna en caso exitoso
+			c = JDBCUtils.getConnection(); 												
+			c.setAutoCommit(false); 										
+			Artista created = artistaDAO.create(c, artista); 				
+			commit = true; 													
+			return created; 												
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar artista {}: {}", artista, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
-			logger.error("Creando {}: {}", artista, e.getMessage(), e); 	// log del error
-			throw e; 														// lanza excepcion hacia arriba en caso no exitoso
+			logger.error("Creando {}: {}", artista, e.getMessage(), e); 	
+			throw new ServiceException(e);												
 		} finally {
-			JDBCUtils.close(c, commit); 									// se cierra la conexion y se hace o no el commid
+			JDBCUtils.close(c, commit); 									
 		}
 	}
 
 	@Override
-	public List<Artista> findAll() throws Exception {
+	public List<Artista> findAll() throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -86,9 +98,12 @@ public class ArtistaServiceImpl implements ArtistaService {
 			List<Artista> artistas = artistaDAO.findAll(c);			
 			commit = true;
 			return artistas;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar todos los artista: {}", e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando todos los artistas", e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);		
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

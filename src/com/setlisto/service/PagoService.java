@@ -16,25 +16,25 @@ public interface PagoService {
      * Procesa y registra un nuevo pago en el sistema.
      * Devuelve el objeto enriquecido con su ID generado.
      */
-    public Pago processPayment(Pago pago) throws Exception;
+    public Pago processPayment(Pago pago) throws ServiceException;
 
     /**
      * Recupera la información detallada de un pago por su ID.
      */
-    public PagoDTO findById(Long id) throws Exception;
+    public PagoDTO findById(Long id) throws ServiceException;
 
     /**
      * Actualiza el estado de un pago (ej. de PENDIENTE a APROBADO).
      */
-    public boolean updateStatus(Long paymentId, Long statusId) throws Exception;
+    public boolean updateStatus(Long paymentId, Long statusId) throws ServiceException;
 
     /**
      * Realiza búsquedas dinámicas de pagos por cliente, moneda, fechas o métodos.
      */
-    public Results<PagoDTO> findByCriteria(PagoCriteria criteria, int page, int size) throws Exception;
+    public Results<PagoDTO> findByCriteria(PagoCriteria criteria, int page, int size) throws ServiceException;
 
     /**
      * Calcula el monto total que un cliente ha pagado en reservas aprobadas.
      */
-    public BigDecimal getTotalApprovedByCustomer(Long customerId) throws Exception;
+    public BigDecimal getTotalApprovedByCustomer(Long customerId) throws ServiceException;
 }

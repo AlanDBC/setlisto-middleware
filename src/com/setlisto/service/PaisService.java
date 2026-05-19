@@ -14,11 +14,11 @@ public interface PaisService {
      * @param id Identificador del país.
      * @return El objeto Pais o null si no se encuentra.
      */
-    public Pais findById(Long id) throws Exception;
+    public Pais findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de países ordenados alfabéticamente.
      * @return Lista de objetos Pais.
      */
-    public List<Pais> findAll() throws Exception;
+    public List<Pais> findAll() throws ServiceException;
 }

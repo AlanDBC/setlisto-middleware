@@ -21,7 +21,7 @@ public class ArtistaDAO {
 
     private static final String BASE_QUERY = " SELECT id, name, description FROM artist ";
 
-    public Artista findById(Connection c, Long id) throws Exception {    
+    public Artista findById(Connection c, Long id) throws DataException {    
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -32,8 +32,9 @@ public class ArtistaDAO {
             if (rs.next()) {
                 return loadNext(rs);
             }
-        } catch (Exception e) {
-        	throw e;
+        } catch (SQLException e) {
+        	logger.error("Error en ArtistaDAO.findById con ID {}: {}", id, e.getMessage());
+            throw new DataException(e);
         } finally {
             JDBCUtils.close(rs, ps);
         }
@@ -43,7 +44,7 @@ public class ArtistaDAO {
     /**
      * Recupera todos los artistas que participan en un evento musical concreto.
      */
-    public List<Artista> findByMusicalEventId(Connection c,Long eventId) throws Exception {
+    public List<Artista> findByMusicalEventId(Connection c,Long eventId) throws DataException {
         List<Artista> artistas = new ArrayList<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -58,20 +59,20 @@ public class ArtistaDAO {
             while (rs.next()) {
                 artistas.add(loadNext(rs));
             }
-        } catch (Exception e) {
-            throw e;
+        } catch (SQLException e) {
+        	logger.error("Error buscando por evento con id {}: {}", eventId, e.getMessage(), e);
+        	throw new DataException(e);
         } finally {
             JDBCUtils.close(rs, ps);
         }
         return artistas;
     }
 
-    public Artista create(Connection c,Artista artista) throws Exception {
+    public Artista create(Connection c,Artista artista) throws DataException {
         
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-        
             String sql = " INSERT INTO artist (name, description) VALUES (?, ?) ";
             ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             DAOUtils.setParameters(ps, artista.getNombre(), artista.getDescripcion());
@@ -83,15 +84,16 @@ public class ArtistaDAO {
                 }
                 return artista;
             }
-        } catch (Exception e) {
-        	throw e;
+        } catch (SQLException e) {
+        	logger.error("Error al crear artista {}: {}", artista.getNombre(), e.getMessage());
+            throw new DataException(e);
         } finally {
         	JDBCUtils.close(rs, ps);
         }
         return null;
     }
     
-    public List<Artista> findAll(Connection c) throws Exception {
+    public List<Artista> findAll(Connection c) throws DataException {
         List<Artista> artistas = new ArrayList<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -103,15 +105,15 @@ public class ArtistaDAO {
             while (rs.next()) {
                 artistas.add(loadNext(rs));
             }
-        } catch (Exception e) {
-        	throw e;
+        } catch (SQLException e) {
+        	logger.error("Error en ArtistaDAO.findAll: {}", e.getMessage());
+            throw new DataException(e);
         } finally {
         	JDBCUtils.close(rs, ps);
         }
 
         return artistas;
     }
-
 
     private Artista loadNext(ResultSet rs) throws SQLException {
         Artista a = new Artista();

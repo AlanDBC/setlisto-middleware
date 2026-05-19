@@ -11,7 +11,7 @@ public class LugarCriteria {
 	private Long regionId = null;
 	private Long ciudadId= null;
 	private String orderBy;
-    private Boolean ascDesc = true; // true para ascendente, false para descendente
+    private Boolean ascDesc = true;
     
     private String lugarNombre = null;
     private String lugarDireccion = null;

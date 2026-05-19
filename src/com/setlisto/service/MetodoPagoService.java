@@ -14,12 +14,12 @@ public interface MetodoPagoService {
      * @param id Identificador del método de pago.
      * @return El objeto MetodoPago o null si no existe.
      */
-    public MetodoPago findById(Long id) throws Exception;
+    public MetodoPago findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de métodos de pago activos en el sistema.
      * @return Lista de objetos MetodoPago.
      */
-    public List<MetodoPago> findAll() throws Exception;
+    public List<MetodoPago> findAll() throws ServiceException;
     
 }

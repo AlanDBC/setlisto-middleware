@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.EventoMusicalCriteria;
 import com.setlisto.model.Artista;
+import com.setlisto.model.ZonaEvento;
 import com.setlisto.model.EventoMusical;
 import com.setlisto.model.EventoMusicalDTO;
 import com.setlisto.model.GeneroMusical;
@@ -22,23 +24,16 @@ import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
-/**
- * Ultimos cambios: Se agregaron campos de List<> para artistas, generos y subgéneros en EventoMusicalDTO.
- * Se modificó el SQL para traer esta información utilizando GROUP_CONCAT y se agregaron 
- * métodos para parsear estas cadenas concatenadas y llenar las listas correspondientes en el DTO. 
- * Además, se mejoró la construcción dinámica del SQL en el método findByCriteria para manejar correctamente los filtros
- * por artista, género y subgénero sin excluir otros posibles valores relacionados al evento.
- */
-
 public class EventoMusicalDAO {
 
 	private static Logger logger = LogManager.getLogger(EventoMusicalDAO.class.getName()); // TODO
-	private EventZoneDAO eventZoneDAO = new EventZoneDAO();
+	private ZonaEventoDAO eventZoneDAO = new ZonaEventoDAO();
 
 	private final String BASE_QUERY =
 			" SELECT me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
 					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
 					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, tz.id, tz.name, "
+					+ " me.map_image_path, "
 					// Artistas
 					+ " GROUP_CONCAT(DISTINCT art.id ORDER BY art.id SEPARATOR ';;') AS artist_ids, " // order by para asegurar que los IDs y Nombres correspondan en orden siempre
 					+ " GROUP_CONCAT(DISTINCT art.name ORDER BY art.id SEPARATOR ';;') AS artist_names, "
@@ -72,12 +67,13 @@ public class EventoMusicalDAO {
 	private final String BASE_GROUP_BY = 
 			" GROUP BY me.id, me.name, me.description, me.start_date, me.end_date, me.organizer_id, "
 					+ " org.business_name, me.site_id, st.name, st.address, ct.id, ct.name, es.event_type_id, "
-					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, tz.id, tz.name ";
+					+ " et.name, me.event_subtype_id, es.name, me.capacity, evs.id, evs.name, tz.id, tz.name, "
+					+ " me.map_image_path ";
 
 	public EventoMusicalDAO() {
 	}
 
-	public EventoMusicalDTO findById(Connection c, Long id) throws Exception {
+	public EventoMusicalDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -92,23 +88,30 @@ public class EventoMusicalDAO {
 			EventoMusicalDTO em = null;
 			if (rs.next()) {
 				em = loadNext(rs);
-				em.setZonas(eventZoneDAO.findByEventId(c, id));
+				List<ZonaEvento> zonas = null;
+				try {
+					zonas = eventZoneDAO.findByEventId(c, id);					
+				} catch (DataException e) {
+					throw new DataException(e);
+				}
+				em.setZonas(zonas);
 			}
 			return em;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en EventoMusicalDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<EventoMusicalDTO> findByCriteria(Connection c, EventoMusicalCriteria criteria, int from, int pageSize) throws Exception {
-		logger.info("Criteria: {}", criteria); // TODO 
+	public Results<EventoMusicalDTO> findByCriteria(Connection c, EventoMusicalCriteria criteria, int from, int pageSize) throws DataException {
+		logger.info("Criteria: {}", criteria);
 		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		Results<EventoMusicalDTO> results = new Results<EventoMusicalDTO>(); // TODO
+		Results<EventoMusicalDTO> results = new Results<EventoMusicalDTO>();
 
 		try {
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
@@ -179,18 +182,18 @@ public class EventoMusicalDAO {
 			} else {
 				sql.append(orderBy);
 			}
-			sql.append(criteria.getAscDesc() ? " ASC " : " DESC "); // TODO
+			sql.append(criteria.getAscDesc() ? " ASC " : " DESC ");
 
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
-			} // TODO
+			}
 
-			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); // TODO
+			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
 			DAOUtils.setParameters(ps, parametros);
 
 			rs = ps.executeQuery();
-			List<EventoMusicalDTO> resultsPage = new ArrayList<EventoMusicalDTO>(); // TODO
+			List<EventoMusicalDTO> resultsPage = new ArrayList<EventoMusicalDTO>();
 
 			int filaInicial = Math.max(1, from + 1); // El ResultSet es 1-based, por comodidad en los criteria usaré  0-based, por eso se suma 1. Además, se asegura que no sea menor a 1 para evitar errores.
 
@@ -204,24 +207,25 @@ public class EventoMusicalDAO {
 			int totalResults = SQLUtils.getTotalRows(rs);
 
 			results.setPage(resultsPage); // Se setea la página de resultados (subconjunto de resultados)
-			results.setTotal(totalResults); // Se setea el total de resultados // TODO
+			results.setTotal(totalResults); // Se setea el total de resultados
 
-			return results; // TODO
-		} catch (Exception e) {
-			throw e;
+			return results;
+		} catch (SQLException e) {
+			logger.error("Error en EventoMusicalDAO.findByCriteria con Criteria {}: {}", criteria, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public EventoMusicalDTO create(Connection c, EventoMusicalDTO evento) throws Exception {
+	public EventoMusicalDTO create(Connection c, EventoMusicalDTO evento) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			StringBuilder sql = new StringBuilder(); // Datos propios de la tabla
 			sql.append(" INSERT INTO musical_event (name, description, start_date, end_date, ");
-			sql.append(" organizer_id, site_id, event_subtype_id, capacity, event_status_id) ");
-			sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1) "); // 1 = Borrador
+			sql.append(" organizer_id, site_id, event_subtype_id, capacity, map_image_path, event_status_id) ");
+			sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1) "); // 1 = [Estado Borrador]
 
 			ps = c.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -233,7 +237,8 @@ public class EventoMusicalDAO {
 					evento.getIdOrganizador(),
 					evento.getIdLugar(),
 					evento.getIdSubtipo(),
-					evento.getCapacidad()
+					evento.getCapacidad(),
+					evento.getRutaImagenPlano()
 					// event_status es puesto por base de datos
 					);
 
@@ -243,7 +248,7 @@ public class EventoMusicalDAO {
 			if (rs.next()) {
 				evento.setId(rs.getLong(1));
 			} else {
-				throw new Exception("No se pudo obtener el ID generado para el evento musical.");
+				throw new DataException("No se pudo obtener el ID generado para el evento musical.");
 			}
 
 			// Insercion de  sus listas asociacadas
@@ -253,20 +258,21 @@ public class EventoMusicalDAO {
 
 			return findById(c, evento.getId()); // Se retorna el evento recién creado con toda su información, incluyendo las listas de artistas y subgéneros que se acaban de insertar.
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en EventoMusicalDAO.create con evento{}: {}", evento, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public void update(Connection c, EventoMusical evento) throws Exception {
+	public void update(Connection c, EventoMusical evento) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE MUSICAL_EVENT SET name = ?, description = ?, start_date = ?, end_date = ?, ");
-			sql.append(" organizer_id = ?, site_id = ?, capacity = ?, event_subtype_id = ?, event_status_id = ? ");
+			sql.append(" organizer_id = ?, site_id = ?, capacity = ?, event_subtype_id = ?, event_status_id = ?, map_image_path = ? ");
 			sql.append(" WHERE id = ? ");
 
 			ps = c.prepareStatement(sql.toString());
@@ -281,22 +287,27 @@ public class EventoMusicalDAO {
 					evento.getCapacidad(),
 					evento.getIdSubtipo(),
 					evento.getIdEstado(),
+					evento.getRutaImagenPlano(),
 					evento.getId()
 					);
 
 			ps.executeUpdate();
 			if (evento instanceof EventoMusicalDTO) {
-				eventZoneDAO.replaceByEventId(c, evento.getId(), ((EventoMusicalDTO) evento).getZonas());
+				EventoMusicalDTO dto = (EventoMusicalDTO) evento;
+				reemplazarSubGeneros(c, evento.getId(), dto.getSubGeneros());
+				reemplazarArtistas(c, evento.getId(), dto.getArtistas());
+				eventZoneDAO.replaceByEventId(c, evento.getId(), dto.getZonas());
 			}
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en EventoMusicalDAO.update para evento {}: {}", evento, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public void delete(Connection c, Long id) throws Exception {
+	public void delete(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -306,50 +317,79 @@ public class EventoMusicalDAO {
 			DAOUtils.setParameters(ps, id);
 			ps.executeUpdate();
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en EventoMusicalDAO.delete con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private void insertarSubGeneros(Connection c, Long eventoId, List<SubGeneroMusical> subGeneros) throws Exception {
-		if (subGeneros == null || subGeneros.isEmpty()) {
-			return;
-		}
-		String sql = " INSERT INTO musical_event_subgenre (musical_event_id, musical_subgenre_id) VALUES (?, ?) ";
-		
-		try (PreparedStatement ps = c.prepareStatement(sql)) {
-			for (SubGeneroMusical subGenero : subGeneros) {
-				if (subGenero == null || subGenero.getId() == null) {
-					continue;
-				}
-				DAOUtils.setParameters(ps, eventoId, subGenero.getId());
-				ps.addBatch();
-			}
-			ps.executeBatch();
-		}
+	private void insertarSubGeneros(Connection c, Long eventoId, List<SubGeneroMusical> subGeneros) throws DataException {
+	    if (subGeneros == null || subGeneros.isEmpty()) {
+	        return;
+	    }
+	    String sql = " INSERT INTO musical_event_subgenre (musical_event_id, musical_subgenre_id) VALUES (?, ?) ";
+	    
+	    try (PreparedStatement ps = c.prepareStatement(sql)) {
+	        for (SubGeneroMusical subGenero : subGeneros) {
+	            if (subGenero == null || subGenero.getId() == null) {
+	                continue;
+	            }
+	            DAOUtils.setParameters(ps, eventoId, subGenero.getId());
+	            ps.addBatch();
+	        }
+	        ps.executeBatch();
+	    } catch (SQLException e) {
+
+	        logger.error("Error en insertarSubGeneros para el evento {}: {}", eventoId, e.getMessage());
+	        throw new DataException(e);
+	    }
 	}
 
-	private void insertarArtistas(Connection c, Long eventoId, List<Artista> artistas) throws Exception {
-		if (artistas == null || artistas.isEmpty()) {
-			return;
-		}
+	private void reemplazarSubGeneros(Connection c, Long eventoId, List<SubGeneroMusical> subGeneros) throws DataException {
+	    try (PreparedStatement ps = c.prepareStatement(" DELETE FROM musical_event_subgenre WHERE musical_event_id = ? ")) {
+	        DAOUtils.setParameters(ps, eventoId);
+	        ps.executeUpdate();
+	    } catch (SQLException e) {
+	        logger.error("Error al limpiar subgéneros previos del evento {}: {}", eventoId, e.getMessage());
+	        throw new DataException(e);
+	    }
+	    // Si el borrado fue exitoso, procedemos a insertar los nuevos
+	    insertarSubGeneros(c, eventoId, subGeneros);
+	}
 
-		String sql = " INSERT INTO musical_event_artist (musical_event_id, artist_id) VALUES (?, ?) ";
+	private void insertarArtistas(Connection c, Long eventoId, List<Artista> artistas) throws DataException {
+	    if (artistas == null || artistas.isEmpty()) {
+	        return;
+	    }
 
-		try (PreparedStatement ps = c.prepareStatement(sql)) {
-			for (Artista artista : artistas) {
-				if (artista == null || artista.getId() == null) {
-					continue;
-				}
+	    String sql = " INSERT INTO musical_event_artist (musical_event_id, artist_id) VALUES (?, ?) ";
 
-				DAOUtils.setParameters(ps, eventoId, artista.getId());
-				ps.addBatch();
-			}
+	    try (PreparedStatement ps = c.prepareStatement(sql)) {
+	        for (Artista artista : artistas) {
+	            if (artista == null || artista.getId() == null) {
+	                continue;
+	            }
+	            DAOUtils.setParameters(ps, eventoId, artista.getId());
+	            ps.addBatch();
+	        }
+	        ps.executeBatch();
+	    } catch (SQLException e) {
+	        logger.error("Error en insertarArtistas para el evento {}: {}", eventoId, e.getMessage());
+	        throw new DataException(e);
+	    }
+	}
 
-			ps.executeBatch();
-		}
+	private void reemplazarArtistas(Connection c, Long eventoId, List<Artista> artistas) throws DataException {
+	    try (PreparedStatement ps = c.prepareStatement(" DELETE FROM musical_event_artist WHERE musical_event_id = ? ")) {
+	        DAOUtils.setParameters(ps, eventoId);
+	        ps.executeUpdate();
+	    } catch (SQLException e) {
+	        logger.error("Error al limpiar artistas previos del evento {}: {}", eventoId, e.getMessage());
+	        throw new DataException(e);
+	    }
+	    insertarArtistas(c, eventoId, artistas);
 	}
 
 	/*
@@ -376,7 +416,7 @@ public class EventoMusicalDAO {
 		return lista;
 	}
 
-	private EventoMusicalDTO loadNext(ResultSet rs)  throws Exception {
+	private EventoMusicalDTO loadNext(ResultSet rs)  throws SQLException {
 		int i = 1;
 		EventoMusicalDTO em = new EventoMusicalDTO();
 		em.setId(rs.getLong(i++));
@@ -400,6 +440,7 @@ public class EventoMusicalDAO {
 		em.setEstadoNombre(rs.getString(i++));
 		em.setIdZonaHoraria(rs.getLong(i++));
 		em.setZonaHorariaNombre(rs.getString(i++));
+		em.setRutaImagenPlano(rs.getString(i++));
 		// --- LÓGICA PARA LLENAR LAS LISTAS ---
 		// 1. Artistas
 		String artistIds = rs.getString("artist_ids");

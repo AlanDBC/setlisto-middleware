@@ -3,6 +3,7 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class ClienteDAO {
 	public ClienteDAO() {
 	}
 
-	public Cliente findById (Connection c, Long id) throws Exception {
+	public Cliente findById (Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -45,14 +46,15 @@ public class ClienteDAO {
 				cli = loadNext(rs);
 			}
 			return cli;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+		    logger.error("Error en ClienteDAO.findById al intentar recuperar el cliente con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Cliente findByEmail(Connection c, String email) throws Exception {
+	public Cliente findByEmail(Connection c, String email) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -68,14 +70,15 @@ public class ClienteDAO {
 				cli = loadNext(rs);
 			}
 			return cli;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.findByEmail al intentar recuperar el cliente con Email {}: {}", email, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean emailExists(Connection c, String email) throws Exception {
+	public boolean emailExists(Connection c, String email) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
@@ -87,14 +90,15 @@ public class ClienteDAO {
 			rs = ps.executeQuery();
 
 			return rs.next();
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.emailExists al ver existencia de email {}: {}", email, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public List<Cliente> findAll(Connection c) throws Exception {
+	public List<Cliente> findAll(Connection c) throws DataException {
 		List<Cliente> clientes = new ArrayList<>(); 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -109,15 +113,16 @@ public class ClienteDAO {
 			while (rs.next()) {
 				clientes.add(loadNext(rs));
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.findall al intentar recuperar todos los clientes: {}", e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return clientes;
 	}
 
-	public boolean isVerified(Connection c, Long id) throws Exception {
+	public boolean isVerified(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -130,15 +135,16 @@ public class ClienteDAO {
 			if (rs.next()) {
 				return rs.getBoolean(1);
 			}
-		}catch (Exception e) {
-			throw e;
+		}catch (SQLException e) {
+			logger.error("Error en ClienteDAO.isVerified con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public boolean setVerify(Connection c, boolean verified, Long id) throws Exception {
+	public boolean setVerify(Connection c, boolean verified, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -149,14 +155,15 @@ public class ClienteDAO {
 
 			int rows = ps.executeUpdate();
 			return rows > 0;
-		}catch (Exception e) {
-			throw e;
+		}catch (SQLException e) {
+			logger.error("Error en ClienteDAO.setVerify con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean setActive(Connection c, boolean active, Long customerId) throws Exception {
+	public boolean setActive(Connection c, boolean active, Long customerId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null; 
 		try {
@@ -168,14 +175,15 @@ public class ClienteDAO {
 			int rows = ps.executeUpdate();
 			return rows > 0;
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.setActive con cliente ID {} y activo {}: {}", customerId, active, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public int countReviews(Connection c, Long id) throws Exception {
+	public int countReviews(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null; 
 		int total = 0;
@@ -190,15 +198,16 @@ public class ClienteDAO {
 				total = rs.getInt(1); 
 			}
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.countReviews con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return total;
 	}
 
-	public boolean hasReviewedEvent(Connection c, Long customerId, Long eventId) throws Exception {
+	public boolean hasReviewedEvent(Connection c, Long customerId, Long eventId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -213,15 +222,16 @@ public class ClienteDAO {
 				return count > 0;
 			}
 
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.hasReviewedEvent para evento con ID {} y cliente con ID {}: {}", eventId, customerId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return false;
 	}
 
-	public Cliente create(Connection c, Cliente cliente) throws Exception {
+	public Cliente create(Connection c, Cliente cliente) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -254,21 +264,22 @@ public class ClienteDAO {
 				}
 				return cliente; // Se devuelve el objeto completo
 			}
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.create al intentar registrar al cliente {}: {}", cliente.getEmail(), e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		return null;
 	}
 
-	public boolean update(Connection c, Cliente cliente) throws Exception {
+	public boolean update(Connection c, Cliente cliente) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append(" UPDATE customer SET preferences = ?, email = ?, password = ?, ");
-			sql.append(" name = ?, phone = ?, surname1 = ?, birth_date = ? WHERE id = ? ");
+			sql.append(" name = ?, phone = ?, surname1 = ?, active = ?, verified = ?, birth_date = ? WHERE id = ? ");
 
 			ps = c.prepareStatement(sql.toString());
 			DAOUtils.setParameters(ps,
@@ -278,20 +289,23 @@ public class ClienteDAO {
 					cliente.getNombre(),
 					cliente.getTelefono(),
 					cliente.getApellido(),
+					cliente.getActivo(),
+					cliente.getVerificado(),
 					cliente.getFechaNacimiento(),
 					cliente.getId()
 					);
 
 			int rows = ps.executeUpdate();
 			return rows > 0;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.update para cliente {}: {}", cliente, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public boolean delete(Connection c, Long id) throws Exception {
+	public boolean delete(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -303,14 +317,15 @@ public class ClienteDAO {
 
 			int rows = ps.executeUpdate();
 			return rows > 0;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.delete para cliente con ID {}: {}", id, e.getMessage());
+			throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	public Results<Cliente> findByCriteria(Connection c, ClienteCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<Cliente> findByCriteria(Connection c, ClienteCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria);
 
 		PreparedStatement ps = null;
@@ -369,14 +384,15 @@ public class ClienteDAO {
 			results.setTotal(totalResults);
 
 			return results;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en ClienteDAO.findByCriteria con los filtros {}: {}", criteria, e.getMessage());
+		    throw new DataException(e);
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private static Cliente loadNext(ResultSet rs) throws Exception {
+	private static Cliente loadNext(ResultSet rs) throws SQLException {
 		int i = 1;
 		Cliente cli = new Cliente();
 		cli.setId(rs.getLong(i++));

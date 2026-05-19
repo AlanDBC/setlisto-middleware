@@ -7,13 +7,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.OrganizadorCriteria;
+import com.setlisto.dao.DataException;
 import com.setlisto.dao.OrganizadorDAO;
-import com.setlisto.model.Cliente;
 import com.setlisto.model.Organizador;
 import com.setlisto.model.Results;
 import com.setlisto.service.EncryptionService;
 import com.setlisto.service.MailService;
 import com.setlisto.service.OrganizadorService;
+import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
 public class OrganizadorServiceImpl implements OrganizadorService {
@@ -31,7 +32,7 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 	}
 
 	@Override
-	public Organizador register(Organizador organizador) throws Exception {
+	public Organizador register(Organizador organizador) throws ServiceException {
 		// Cigrado y registro
 		String passwordEncrypted = encryptionService.encrypt(organizador.getContrasena());
 		organizador.setContrasena(passwordEncrypted);
@@ -46,13 +47,16 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			Organizador existeOrganizador = organizadorDAO.findByEmail(c, organizador.getEmail());
 
 			if (existeOrganizador != null) {
-				throw new Exception("El usuario ya existe");
+				throw new ServiceException("El usuario ya existe");
 			}
 			organizadorRegistrado = organizadorDAO.create(c, organizador);
 			commit = true;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al registrar organizador {}: {}", organizador, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Error registrando {}: {} ", organizador, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
@@ -78,7 +82,7 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 	}
 
 	@Override
-	public Organizador login(String email, String password) throws Exception {
+	public Organizador login(String email, String password) throws ServiceException {
 		Connection c = null;
 		boolean commit = false; 
 		try {
@@ -87,19 +91,22 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			Organizador organizador = organizadorDAO.findByEmail(c, email);
 
 			if (organizador == null) {
-				throw new Exception("Credenciales incorrectas");
+				throw new ServiceException("Credenciales incorrectas");
 			}
 
 			boolean isPasswordCorrect = encryptionService.checkEncryption(password,organizador.getContrasena());
 			if (!isPasswordCorrect) {
-				throw new Exception("Credenciales incorrectas");
+				throw new ServiceException("Credenciales incorrectas");
 			}
 
 			commit = true;
 			return organizador;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al logear organizador con correo {} y contrasena {}: {}", email, password, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Error en login para {}: {}", email, e.getMessage());
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
@@ -107,7 +114,7 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 	}
 
 	@Override
-	public Organizador findById(Long id) throws Exception {
+	public Organizador findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -116,16 +123,19 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			Organizador organizador = organizadorDAO.findById(c, id);
 			commit = true;
 			return organizador;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar organizador con id{}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public Results<Organizador> findByCriteria(OrganizadorCriteria criteria, int from, int pageSize) throws Exception {
+	public Results<Organizador> findByCriteria(OrganizadorCriteria criteria, int from, int pageSize) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -134,16 +144,19 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			Results<Organizador> resultados = organizadorDAO.findByCriteria(c, criteria, from, pageSize);
 			commit = true;
 			return resultados;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar con criteria {}: {}", criteria, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por criteria {}: {}", criteria, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public boolean update(Organizador organizador) throws Exception {
+	public boolean update(Organizador organizador) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -152,9 +165,12 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			boolean modificado = organizadorDAO.update(c, organizador);
 			commit = true;
 			return modificado;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al modificar organizador {}: {}", organizador, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Modificando organizador{}: {}", organizador, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
@@ -164,7 +180,7 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 	 * Cambia el valor entre verificado/NoVerificado para organizadores
 	 */
 	@Override
-	public boolean updateVerifiedStatus(Long id, boolean verificado) throws Exception {
+	public boolean updateVerifiedStatus(Long id, boolean verificado) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -173,16 +189,19 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			boolean cambiado = organizadorDAO.updateVerifiedStatus(c, id, verificado);
 			commit = true;
 			return cambiado;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al cambiar valor verificado para organizador con id {} y valor verificado {}: {}", id, verificado, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Modificando verificacion por id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public boolean delete(Long id) throws Exception {
+	public boolean delete(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -191,16 +210,19 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			boolean borrado = organizadorDAO.delete(c, id);
 			commit = true;
 			return borrado;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al borrar organizador con id {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Borrando por id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<Organizador> findAll() throws Exception {
+	public List<Organizador> findAll() throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -209,9 +231,12 @@ public class OrganizadorServiceImpl implements OrganizadorService {
 			List<Organizador> organizadores = organizadorDAO.findAll(c);
 			commit = true;
 			return organizadores;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar todos los organizadores: {}", e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando todos", e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

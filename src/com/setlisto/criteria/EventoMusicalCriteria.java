@@ -44,7 +44,7 @@ public class EventoMusicalCriteria extends AbstractValueObject {
     private Long zonaHorariaId = null;
     
     private String orderBy = ORDER_BY_NAME; // Por defecto ordenamos por nombre
-    private Boolean ascDesc = true; 		// true para ascendente, false para descendente
+    private Boolean ascDesc = true; 
 
 	public EventoMusicalCriteria() {
 	}

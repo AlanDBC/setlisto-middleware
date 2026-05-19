@@ -3,15 +3,20 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.setlisto.model.SubGeneroMusical;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.setlisto.model.SubGeneroMusicalDTO;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
 public class SubGeneroMusicalDAO {
+
+	private static Logger logger = LogManager.getLogger(SubGeneroMusicalDAO.class.getName());
 
 	private static String BASE_QUERY = "SELECT ms.id, ms.name, ms.musical_genre_id, mg.name FROM musical_subgenre ms "
 			+ " JOIN musical_genre mg ON ms.musical_genre_id = mg.id ";
@@ -19,7 +24,7 @@ public class SubGeneroMusicalDAO {
 	public SubGeneroMusicalDAO() {
 	}
 
-	public SubGeneroMusicalDTO findById(Connection c, Long id) throws Exception {
+	public SubGeneroMusicalDTO findById(Connection c, Long id) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -35,15 +40,16 @@ public class SubGeneroMusicalDAO {
 				sgm = loadNext(rs);
 			}
 			return sgm;	
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en SubGeneroMusicalDAO.findById con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 		
 	}
 
-	public List<SubGeneroMusicalDTO> findByGeneroId(Connection c, Long generoId) throws Exception {
+	public List<SubGeneroMusicalDTO> findByGeneroId(Connection c, Long generoId) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -61,14 +67,15 @@ public class SubGeneroMusicalDAO {
 				resultados.add(loadNext(rs));
 			}
 			return resultados;	
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en SubGeneroMusicalDAO.findByGeneroId con ID {}: {}", generoId, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 	
-	public List<SubGeneroMusicalDTO> findAll(Connection c) throws Exception {
+	public List<SubGeneroMusicalDTO> findAll(Connection c) throws DataException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -84,14 +91,15 @@ public class SubGeneroMusicalDAO {
 				resultados.add(loadNext(rs));
 			}
 			return resultados;	
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en SubGeneroMusicalDAO.findAll: {}", e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
 
-	private SubGeneroMusicalDTO loadNext(ResultSet rs) throws Exception {
+	private SubGeneroMusicalDTO loadNext(ResultSet rs) throws SQLException {
 		int i = 1; 
 		SubGeneroMusicalDTO sgm = new SubGeneroMusicalDTO();
 		sgm.setId(rs.getLong(i++));

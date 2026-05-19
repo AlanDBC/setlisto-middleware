@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.setlisto.dao.DataException;
 import com.setlisto.dao.SubGeneroMusicalDAO;
 import com.setlisto.model.SubGeneroMusicalDTO;
+import com.setlisto.service.ServiceException;
 import com.setlisto.service.SubGeneroMusicalService;
 import com.setlisto.utils.JDBCUtils;
 
@@ -25,7 +27,7 @@ public class SubGeneroMusicalServiceImpl implements SubGeneroMusicalService {
 	}
 
 	@Override
-	public SubGeneroMusicalDTO findById(Long id) throws Exception {
+	public SubGeneroMusicalDTO findById(Long id) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -34,16 +36,19 @@ public class SubGeneroMusicalServiceImpl implements SubGeneroMusicalService {
 			SubGeneroMusicalDTO subgenero = subGeneroDAO.findById(c, id);
 			commit = true;
 			return subgenero;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar subgenero musical con id {}: {}", id, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando subgenero con id {}: {}", id, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
-	public List<SubGeneroMusicalDTO> findByGenero(Long generoId) throws Exception {
+	public List<SubGeneroMusicalDTO> findByGenero(Long generoId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -52,16 +57,19 @@ public class SubGeneroMusicalServiceImpl implements SubGeneroMusicalService {
 		List<SubGeneroMusicalDTO> subgeneros = subGeneroDAO.findByGeneroId(c, generoId);
 		commit = true;
 		return subgeneros;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar subgenero musical por genero con id {}: {}", generoId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando subgenero de genero musical con id {}: {}", generoId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}	
 	}
 
 	@Override
-	public List<SubGeneroMusicalDTO> findAll() throws Exception {
+	public List<SubGeneroMusicalDTO> findAll() throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -70,9 +78,12 @@ public class SubGeneroMusicalServiceImpl implements SubGeneroMusicalService {
 		List<SubGeneroMusicalDTO> subgeneros = subGeneroDAO.findAll(c);
 		commit = true;
 		return subgeneros;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar todos los subgenero musicales: {}", e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando todos los subgenero: {}", e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

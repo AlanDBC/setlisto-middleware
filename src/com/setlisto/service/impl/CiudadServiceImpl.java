@@ -7,8 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.dao.CiudadDAO;
+import com.setlisto.dao.DataException;
 import com.setlisto.model.Ciudad;
 import com.setlisto.service.CiudadService;
+import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
 public class CiudadServiceImpl implements CiudadService {
@@ -20,11 +22,8 @@ public class CiudadServiceImpl implements CiudadService {
 		this.ciudadDAO = new CiudadDAO();
 	}
 
-	/**
-	 * Delega la búsqueda de ciudades por región al DAO correspondiente.
-	 */
 	@Override
-	public List<Ciudad> findByRegionId(Long regionId) throws Exception {
+	public List<Ciudad> findByRegionId(Long regionId) throws ServiceException {
 		Connection c = null;
 		boolean commit = false;
 		try {
@@ -33,9 +32,12 @@ public class CiudadServiceImpl implements CiudadService {
 			List<Ciudad> ciudades = ciudadDAO.findByRegionId(c, regionId);
 			commit = true;
 			return ciudades;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar ciudad por region con id {}: {}", regionId, e.getMessage());
+			throw new ServiceException(e);
 		} catch (Exception e) {
 			logger.error("Buscando por region id {}: {}",regionId, e.getMessage(), e);
-			throw e;
+			throw new ServiceException(e);
 		} finally {
 			JDBCUtils.close(c, commit);
 		}

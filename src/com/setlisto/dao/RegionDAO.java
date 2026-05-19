@@ -3,19 +3,25 @@ package com.setlisto.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.Region;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
 public class RegionDAO {
+	
+	private static Logger logger = LogManager.getLogger(RegionDAO.class.getName());
 
 	public RegionDAO() {
 	}
 	
-	public List<Region> findByPaisId(Connection c, Long id)  throws Exception{
+	public List<Region> findByPaisId(Connection c, Long id)  throws DataException{
 		List<Region> resultados = new ArrayList<Region>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -35,8 +41,9 @@ public class RegionDAO {
 				resultados.add(region);
 			}
 			return resultados;
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			logger.error("Error en RegionDAO.findByPaisId con ID {}: {}", id, e.getMessage());
+		    throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}

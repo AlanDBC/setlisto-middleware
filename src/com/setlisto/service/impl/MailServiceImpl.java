@@ -3,16 +3,21 @@ package com.setlisto.service.impl;
 import java.util.List;
 
 import org.apache.commons.mail.HtmlEmail;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import com.setlisto.service.MailException;
 import com.setlisto.service.MailService;
 
 
 public class MailServiceImpl implements MailService {
+	
+	private static final Logger logger = LogManager.getLogger(MailServiceImpl.class.getName());
 
 	public MailServiceImpl() {
 	}
 
-	public void sendEmail(String para, String asunto, String contenido) {
+	public void sendEmail(String para, String asunto, String contenido) throws MailException {
 		try {
 			//            Email email = new SimpleEmail();
 			HtmlEmail email = new HtmlEmail();
@@ -29,12 +34,13 @@ public class MailServiceImpl implements MailService {
 			email.send();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al enviar correo a {}: {}", para, e.getMessage());
+            throw new MailException(e);
 		}
 	}
 
 	@Override
-	public void sendEmail(List<String> clientes, String asunto, String contenido) {
+	public void sendEmail(List<String> clientes, String asunto, String contenido) throws MailException {
 		for (String destinatario: clientes ) {
 			sendEmail(destinatario, asunto, contenido);
 		}

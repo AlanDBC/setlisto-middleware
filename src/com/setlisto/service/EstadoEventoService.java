@@ -11,10 +11,10 @@ public interface EstadoEventoService {
     /**
      * Recupera un estado específico por su ID.
      */
-    public EstadoEvento findById(Long id) throws Exception;
+    public EstadoEvento findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de estados registrados.
      */
-    public List<EstadoEvento> findAll() throws Exception;
+    public List<EstadoEvento> findAll() throws ServiceException;
 }

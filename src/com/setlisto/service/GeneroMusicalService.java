@@ -12,10 +12,10 @@ public interface GeneroMusicalService {
     /**
      * Recupera un género musical por su ID.
      */
-    public GeneroMusical findById(Long id) throws Exception;
+    public GeneroMusical findById(Long id) throws ServiceException;
 
     /**
      * Obtiene todos los géneros musicales disponibles ordenados por nombre.
      */
-    public List<GeneroMusical> findAll() throws Exception;
+    public List<GeneroMusical> findAll() throws ServiceException;
 }

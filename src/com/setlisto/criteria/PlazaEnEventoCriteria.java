@@ -12,7 +12,7 @@ public class PlazaEnEventoCriteria {
 	private Long estatusId;
 	private Long plazaId;
 	private String orderBy;
-    private Boolean ascDesc = true; // true para ascendente, false para descendente
+    private Boolean ascDesc = true;
 
 	public PlazaEnEventoCriteria() {
 	}

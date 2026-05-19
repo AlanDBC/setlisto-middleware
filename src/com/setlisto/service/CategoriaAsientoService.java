@@ -14,12 +14,12 @@ public interface CategoriaAsientoService {
 	 * @param id Identificador de la categoría.
 	 * @return El objeto CategoriaAsiento o null si no existe.
 	 */
-	public CategoriaAsiento findById(Long id) throws Exception;
+	public CategoriaAsiento findById(Long id) throws ServiceException;
 
 	/**
 	 * Obtiene el listado completo de todas las categorías de asientos registradas en el sistema.
 	 * @return Lista de objetos CategoriaAsiento.
 	 */
-	public List<CategoriaAsiento> findAll() throws Exception;
+	public List<CategoriaAsiento> findAll() throws ServiceException;
 	
 }

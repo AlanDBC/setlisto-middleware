@@ -10,7 +10,7 @@ public interface MailService {
 	 * @param asunto titulo mail
 	 * @param contenido informacion
 	 */
-	public void sendEmail(String para, String asunto, String contenido);
+	public void sendEmail(String para, String asunto, String contenido) throws MailException ;
 
 	/**
 	 * Envia un email a un varios destinatarios
@@ -18,5 +18,5 @@ public interface MailService {
 	 * @param asunto titulo mail
 	 * @param contenido informacion
 	 */
-	public void sendEmail(List<String> clientes, String asunto, String contenido);
+	public void sendEmail(List<String> clientes, String asunto, String contenido) throws MailException ;
 }

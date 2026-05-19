@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 
 public class ClienteCriteria {
-	
 	private final String ORDER_BY_ID = " id ";
 	private final String ORDER_BY_EMAIL = " email ";
 	private final String ORDER_BY_NOMBRE = " name ";

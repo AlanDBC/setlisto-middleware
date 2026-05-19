@@ -14,11 +14,11 @@ public interface EstadoPagoService {
      * @param id Identificador del estado de pago.
      * @return El objeto EstadoPago o null si no existe.
      */
-    public EstadoPago findById(Long id) throws Exception;
+    public EstadoPago findById(Long id) throws ServiceException;
 
     /**
      * Obtiene todos los estados de pago registrados en el sistema.
      * @return Lista de objetos EstadoPago.
      */
-    public List<EstadoPago> findAll() throws Exception;
+    public List<EstadoPago> findAll() throws ServiceException;
 }

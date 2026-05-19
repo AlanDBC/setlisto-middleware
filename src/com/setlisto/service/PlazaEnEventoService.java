@@ -12,25 +12,25 @@ public interface PlazaEnEventoService {
     /**
      * Recupera el detalle de una plaza específica en un evento por su ID.
      */
-    public PlazaEnEventoDTO findById(Long id) throws Exception;
+    public PlazaEnEventoDTO findById(Long id) throws ServiceException;
 
     /**
      * Busca plazas filtrando por evento o por estado (AVAILABLE, SOLD, DISABLED).
      */
-    public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int page, int size) throws Exception;
+    public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int page, int size) throws ServiceException;
 
     /**
      * Comprueba si una plaza específica está marcada como AVAILABLE (ID 1).
      */
-    public boolean isSeatAvailable(Long plazaEnEventoId) throws Exception;
+    public boolean isSeatAvailable(Long plazaEnEventoId) throws ServiceException;
 
     /**
      * Actualiza el estado de una plaza (fundamental para el proceso de compra).
      */
-    public boolean updateStatus(Long plazaEnEventoId, Long statusId) throws Exception;
+    public boolean updateStatus(Long plazaEnEventoId, Long statusId) throws ServiceException;
 
     /**
      * Obtiene el número total de asientos disponibles para un evento concreto.
      */
-    public int getAvailableCount(Long eventId) throws Exception;
+    public int getAvailableCount(Long eventId) throws ServiceException;
 }
