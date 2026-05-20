@@ -10,17 +10,28 @@ import com.setlisto.model.SubGeneroMusicalDTO;
 public interface SubGeneroMusicalService {
 
     /**
-     * Recupera un subgénero específico por su ID.
+     * Recupera un subgenero musical por su id
+     * 
+     * @param id del subgenero
+     * @return Subgenero encontrado
+     * @throws ServiceException
      */
     public SubGeneroMusicalDTO findById(Long id) throws ServiceException;
 
     /**
-     * Recupera todos los subgéneros asociados a un género padre (ej. todos los de 'Rock').
+     * Recupera la lista de subgeneros de un genero musical en concreto
+     * 
+     * @param generoId
+     * @return Lista de subgeneros correspondientes
+     * @throws ServiceException
      */
     public List<SubGeneroMusicalDTO> findByGenero(Long generoId) throws ServiceException;
     
     /**
-     * Recupera todos los subgéneros disponibles en el sistema.
+     * Recupera todos los subgeneros musicales dentro de la aplicacion
+     * 
+     * @return
+     * @throws ServiceException
      */
     public List<SubGeneroMusicalDTO> findAll() throws ServiceException;
 }

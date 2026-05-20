@@ -22,10 +22,13 @@ public class TicketCriteria {
 	private Long clienteId = null;
 	private Long eventoId = null;
 	private Long pagoId = null;
+	private String codigo = null;
+	
 	private LocalDateTime desde = null;
 	private LocalDateTime hasta = null;
+	
 	private String orderBy;
-	private Boolean ascDesc = true; // true para ascendente, false para descendente
+	private Boolean ascDesc = true;
 
 	public String getOrderBy() {
 		return orderBy;
@@ -85,5 +88,13 @@ public class TicketCriteria {
 
 	public void setHasta(LocalDateTime hasta) {
 		this.hasta = hasta;
+	}
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 }

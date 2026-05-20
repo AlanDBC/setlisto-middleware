@@ -10,8 +10,11 @@ import com.setlisto.model.Region;
 public interface RegionService {
 
     /**
-     * Obtiene las regiones que pertenecen a un país concreto.
-     * @param countryId ID del país (Foreign Key).
+     * Busca las regiones para un pais especifico
+     * 
+     * @param paisId
+     * @return Lista de regiones del pais
+     * @throws ServiceException
      */
-    public List<Region> findByPaisId(Long countryId) throws ServiceException;
+    public List<Region> findByPaisId(Long paisId) throws ServiceException;
 }

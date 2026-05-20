@@ -18,11 +18,14 @@ public class OrganizadorCriteria {
 	private Boolean verificado = null;
 	private String email = null;
 	private String telefono = null;
+	
 	private String nombre = null;
 	private String apellido1 = null;
 	private String apellido2 = null;
+	
 	private Date fechaNacimientoDesde = null;
 	private Date fechaNacimientoHasta = null;
+	
 	private String orderBy;
     private Boolean ascDesc = true;
 	

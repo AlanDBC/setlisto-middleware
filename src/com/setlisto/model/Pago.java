@@ -13,7 +13,6 @@ public class Pago extends AbstractValueObject {
 	private LocalDateTime fechaCreacion;
 	private Long metodoPagoId;
 	private Long monedaId;
-
 	
 	public Pago() {	
 	}

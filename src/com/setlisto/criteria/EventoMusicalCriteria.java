@@ -20,26 +20,26 @@ public class EventoMusicalCriteria extends AbstractValueObject {
     private LocalDateTime fechaFin = null;
     private Integer capacidadDesde = null;
     private Integer capacidadHasta = null;
-    // Filtrados de tipo
+
     private Long subtipoEventoId = null;
     private Long tipoEventoId = null;
-    // Filtrados de géneros
+
     private Long subGeneroMusicalId = null;
     private Long generoMusicalId = null;
-    // Filtrado por Artista
+
     private Long artistaId = null;
     private String artistaNombre = null;
-    // Filtrado por Organizador y Recinto
+
     private Long organizadorId = null;
     private Long lugarId = null;
-    // Filtrados Geográficos (derivados de lugar)
+
     private Long ciudadId = null;
     private Long regionId = null;
     private Long paisId = null;
-    // Filtrados de precio
+
     private Integer precioDesde = null;
     private Integer precioHasta = null;
-    // filtrado de estado
+
     private Long estadoId = null;
     private Long zonaHorariaId = null;
     

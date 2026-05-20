@@ -23,9 +23,6 @@ public class EstadoPlazaDAO {
     public EstadoPlazaDAO() {
     }
 
-    /**
-     * Busca un estado de plaza por su ID (1=AVAILABLE, 2=SOLD, 3=DISABLED)
-     */
     public EstadoPlaza findById(Connection c, Long id)  throws DataException {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -50,9 +47,6 @@ public class EstadoPlazaDAO {
         }
     }
 
-    /**
-     * Recupera todos los estados de plaza disponibles.
-     */
     public List<EstadoPlaza> findAll(Connection c) throws DataException {
         List<EstadoPlaza> resultados = new ArrayList<>();
         PreparedStatement ps = null;
@@ -73,10 +67,6 @@ public class EstadoPlazaDAO {
         }
     }
 
-    /**
-     * Mapea el ResultSet al objeto de modelo EstadoPlaza.
-     * Nota: Se usa ep.setEstado() porque así está definido en tu POJO
-     */
     private EstadoPlaza loadNext(ResultSet rs) throws SQLException {
         int i = 1;
         EstadoPlaza ep = new EstadoPlaza();

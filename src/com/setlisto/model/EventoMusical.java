@@ -1,11 +1,11 @@
 package com.setlisto.model;
 
 import java.time.LocalDateTime;
+
 /**
- * POJO (Plain Old Java Object) para la entidad EventoMusical.
+ * POJO para la entidad EventoMusical.
  */
-public class EventoMusical extends AbstractValueObject {
-	
+public class EventoMusical extends AbstractValueObject {	
 	private Long id = null;
 	private String nombre = null;
 	private String descripcion = null;

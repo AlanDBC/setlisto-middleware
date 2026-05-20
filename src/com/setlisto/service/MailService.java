@@ -6,17 +6,21 @@ public interface MailService {
 
 	/**
 	 * Envia un email a un destinatario
+	 * 
 	 * @param para destinatario
 	 * @param asunto titulo mail
 	 * @param contenido informacion
+	 * @throws MailException
 	 */
 	public void sendEmail(String para, String asunto, String contenido) throws MailException ;
 
 	/**
 	 * Envia un email a un varios destinatarios
+	 * 
 	 * @param clientes a los que se va a enviar el mail
 	 * @param asunto titulo mail
 	 * @param contenido informacion
+	 * @throws MailException
 	 */
 	public void sendEmail(List<String> clientes, String asunto, String contenido) throws MailException ;
 }

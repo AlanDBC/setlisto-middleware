@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
 public class SubGeneroEnEventoMusical extends AbstractValueObject {
-
 	private Long eventoMusicalId;
 	private Long subgeneroMusicalId;
 

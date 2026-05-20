@@ -6,20 +6,20 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.setlisto.dao.CategoriaAsientoDAO;
+import com.setlisto.dao.CategoriaPlazaDAO;
 import com.setlisto.dao.DataException;
 import com.setlisto.model.CategoriaAsiento;
-import com.setlisto.service.CategoriaAsientoService;
+import com.setlisto.service.CategoriaPlazaService;
 import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
-public class CategoriaAsientoServiceImpl implements CategoriaAsientoService {
+public class CategoriaPlazaServiceImpl implements CategoriaPlazaService {
 
-	private static final Logger logger = LogManager.getLogger(CategoriaAsientoServiceImpl.class.getName());
-	private CategoriaAsientoDAO categoriaAsientoDAO = null;
+	private static final Logger logger = LogManager.getLogger(CategoriaPlazaServiceImpl.class.getName());
+	private CategoriaPlazaDAO categoriaAsientoDAO = null;
 
-	public CategoriaAsientoServiceImpl() throws Exception {
-		this.categoriaAsientoDAO = new CategoriaAsientoDAO();
+	public CategoriaPlazaServiceImpl() throws Exception {
+		this.categoriaAsientoDAO = new CategoriaPlazaDAO();
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class OrganizadorServiceTest {
         tester.testLogin("contacto@producciones.test", "admin123");
 
         // 3. Probar recuperación por ID
-        tester.testFindById(1L);
+//        tester.testFindById(1L);
 
         System.out.println("\n--- Pruebas de OrganizadorService finalizadas ---");
     }

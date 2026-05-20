@@ -10,12 +10,19 @@ import com.setlisto.model.GeneroMusical;
 public interface GeneroMusicalService {
 
     /**
-     * Recupera un género musical por su ID.
+     * Recupera un genero musical por su id
+     * 
+     * @param id del genero musical
+     * @return Genero musical encontrado
+     * @throws ServiceException
      */
     public GeneroMusical findById(Long id) throws ServiceException;
 
     /**
-     * Obtiene todos los géneros musicales disponibles ordenados por nombre.
+     * Trae todos los generos musicales dentro de la aplicacion
+     * 
+     * @return Lista de generos musicales
+     * @throws ServiceException
      */
     public List<GeneroMusical> findAll() throws ServiceException;
 }

@@ -11,14 +11,18 @@ public interface MonedaPagoService {
 
     /**
      * Recupera una moneda específica por su ID.
-     * @param id Identificador de la moneda (ej. 1 para EUR).
-     * @return El objeto MonedaPago o null si no existe.
+     * 
+     * @param id de la moneda 
+     * @return Moneda de pago encontrada
+     * @throws ServiceException
      */
     public MonedaPago findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de monedas registradas en el sistema.
-     * @return Lista de objetos MonedaPago.
+     * 
+     * @return Lista monedas de pago
+     * @throws ServiceException
      */
     public List<MonedaPago> findAll() throws ServiceException;
 }

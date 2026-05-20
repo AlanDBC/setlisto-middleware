@@ -11,14 +11,18 @@ public interface EstadoPlazaService {
 
     /**
      * Recupera un estado de plaza por su ID.
-     * @param id Identificador del estado (1=AVAILABLE, 2=SOLD, 3=DISABLED).
-     * @return El objeto EstadoPlaza o null si no existe.
+     * 
+     * @param id del estado (1=Disponible, 2=Vendido, 3=Deshabilitado).
+     * @return Estado encontrado
+     * @throws ServiceException
      */
     public EstadoPlaza findById(Long id) throws ServiceException;
 
     /**
      * Obtiene el listado completo de estados de plaza disponibles.
-     * @return Lista de objetos EstadoPlaza.
+     * 
+     * @return Lista estados
+     * @throws ServiceException
      */
     public List<EstadoPlaza> findAll() throws ServiceException;
 }

@@ -10,32 +10,55 @@ import com.setlisto.model.Results;
 public interface LugarService {
 
     /**
-     * Recupera un lugar específico por su ID.
+     * Recupera un lugar por su id
+     * 
+     * @param id del lugar
+     * @return Lugar encontrado
+     * @throws ServiceException
      */
     public LugarDTO findById(Long id) throws ServiceException;
 
     /**
-     * Obtiene todos los lugares registrados.
+     * Encuentra todos los lugares registrados en la aplicacion
+     * 
+     * @return Lista de lugares
+     * @throws ServiceException
      */
     public List<LugarDTO> findAll() throws ServiceException;
 
     /**
-     * Realiza búsquedas de lugares mediante criterios geográficos (País, Región, Ciudad).
+     * Permite buscar lugares por criterios especificos
+     * 
+     * @param criteria
+     * @param from desde
+     * @param pageSize tamaño de pagina
+     * @return Lista (Results<>) con los lugares correspondientes a los criterios
+     * @throws ServiceException
      */
     public Results<LugarDTO> findByCriteria(LugarCriteria criteria, int from, int pageSize) throws ServiceException;
 
     /**
-     * Registra un nuevo recinto en el sistema.
+     * Crea un lugar (recinto) para un evento musical
+     * 
+     * @param lugar a crear
+     * @return Lugar creado
+     * @throws ServiceException
      */
     public Lugar create(Lugar lugar) throws ServiceException;
 
     /**
-     * Actualiza la información de un recinto existente.
+     * Actualiza la informacion referente a un lugar
+     * 
+     * @param lugar a modificar
+     * @throws ServiceException
      */
     public void update(Lugar lugar) throws ServiceException;
 
     /**
-     * Elimina un recinto del sistema.
+     * Elimina un lugar (recinto) del sistema
+     * 
+     * @param id del recinto a borrar
+     * @throws ServiceException
      */
     public void delete(Long id) throws ServiceException;
 }

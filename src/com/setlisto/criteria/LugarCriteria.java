@@ -6,7 +6,7 @@ public class LugarCriteria {
 	private final String ORDER_BY_CITY = "c.name";
 	private final String ORDER_BY_REGION = "r.name";
 	private final String ORDER_BY_DIRECCION = "s.address";
-	// Geograficos
+
 	private Long paisId = null;
 	private Long regionId = null;
 	private Long ciudadId= null;

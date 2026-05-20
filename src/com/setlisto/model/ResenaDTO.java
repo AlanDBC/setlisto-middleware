@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
 public class ResenaDTO extends Resena {	
-	
 	private String nombreEvento;
 	private String nombreUsuario;
 	

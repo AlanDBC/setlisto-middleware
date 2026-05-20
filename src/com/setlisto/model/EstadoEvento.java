@@ -1,7 +1,7 @@
 package com.setlisto.model;
 
 /**
- * Representa los estados maestros de un evento musical (BORRADOR, PROGRAMADO, etc.).
+ * Representa los estados maestros de un evento musical (Borrador, Programado, Cancelado etc.).
  */
 public class EstadoEvento extends AbstractValueObject {
     private Long id;

@@ -48,4 +48,4 @@ public class RegionDAO {
 			JDBCUtils.close(rs, ps);
 		}
 	}
-} // class
+}

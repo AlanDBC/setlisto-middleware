@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
-public class Plaza extends AbstractValueObject {
-	
+public class Plaza extends AbstractValueObject {	
 	private Long id;
 	private Integer fila;
 	private Integer numeroAsiento;
@@ -49,8 +48,5 @@ public class Plaza extends AbstractValueObject {
 
 	public void setCategoriaId(Long categoriaId) {
 		this.categoriaId = categoriaId;
-	}
-	
-	
-	
+	}	
 }

@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
 public class EstadoPlaza extends AbstractValueObject {
-
 	private Long id;
 	private String nombre;
 	

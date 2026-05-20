@@ -7,64 +7,98 @@ import com.setlisto.model.Results;
 public interface ClienteService {
 	
 	/**
-	 * Registra un usuario dentro de la aplicacion
-	 * @param correo
-	 * @param contrasena
-	 * @return id del cliente registrado
+	 * Registra un cliente dentro de la aplicacion cifrando su contraseña y enviando email de bienvenida
+	 * 
+	 * @param cliente
+	 * @return Cliente registrado
+	 * @throws ServiceException
 	 */
 	public Cliente register (Cliente cliente) throws ServiceException;
 	
 	/**
-	 * Logea un usuario dentro de la aplicacion 
+	 * Autentica a un cliente comparando su contraseña con la encriptada en base de datos
+	 *  
 	 * @param correo
 	 * @param contrasena
-	 * @return Cliente llogeado para pintar o null si no se ha podido logear
+	 * @return Cliente logeado para pintar o null si no se ha podido logear
+	 * @throws ServiceException
 	 */
 	public Cliente login (String correo, String contrasena) throws ServiceException;	
 	
 	/**
 	 * Busca un cliente por su email
+	 * 
 	 * @param email
-	 * @return
+	 * @return Cliente encontrado
+	 * @throws ServiceException
 	 */
 	Cliente findByEmail(String email) throws ServiceException;
 	
 	/**
 	 * Busca un cliente por su id
+	 * 
 	 * @param id
-	 * @return
+	 * @return Cliente encontrado
+	 * @throws ServiceException
 	 */
 	public Cliente findById(Long id) throws ServiceException;
 	
 	/**
-	 * Modifica los datos de un usuario
+	 * Modifica los datos de un Cliente
+	 * 
 	 * @param cliente
+	 * @return true si se modifico, false en caso contrario
+	 * @throws ServiceException
 	 */
 	public boolean update (Cliente cliente) throws ServiceException;
 
-	public boolean setActive(boolean active, Long customerId) throws ServiceException;
+	/**
+	 * Cambia el valor de "activo" para un cliente
+	 * 
+	 * @param activo (true para activar / false para desactivar)
+	 * @param clienteId
+	 * @return true si se cambio el valor, false en cado contrario
+	 * @throws ServiceException
+	 */
+	public boolean setActive(boolean activo, Long clienteId) throws ServiceException;
 
-	public boolean setVerify(boolean verified, Long customerId) throws ServiceException;
+	/**
+	 * Cammbia el valor de "verificado" para un cliente
+	 * 
+	 * @param verificado (true para verificar / false para quitar verificado)
+	 * @param clienteId
+	 * @return true si se cambio el valor, false en caso contrario
+	 * @throws ServiceException
+	 */
+	public boolean setVerify(boolean verificado, Long clienteId) throws ServiceException;
 	
 	/**
-	 * Actualiza la contrase��a de un cliente
-	 * @param id
-	 * @param oldPassword
-	 * @param newPassword
-	 * @return
+	 * Actualiza la contraseña de un cliente
+	 * 
+	 * @param id del cliente
+	 * @param oldPassword contraseña antigua
+	 * @param newPassword contraseña nueva
+	 * @return true si se cambio la contraseña, false en caso contrario
+	 * @throws ServiceException
 	 */
 	boolean updatePassword(Long id, String oldPassword, String newPassword) throws ServiceException;
 	
 	/**
-	 * Elimina un cliente de la aplicacion
-	 * @param id
+	 * Borrado fisico de un cliente 
+	 * 
+	 * @param id del cliente
+	 * @throws ServiceException
 	 */
 	public void delete (Long id) throws ServiceException;
 	
 	/**
 	 * Busca clientes segun los criterios indicados
+	 * 
 	 * @param criteria
-	 * @return
+	 * @param from desde
+	 * @param pageSize tamaño de la pagina
+	 * @return Lista (Results<>) con los clientes que corresponten con los criterios
+	 * @throws ServiceException
 	 */
 	public Results<Cliente> findByCriteria(ClienteCriteria criteria, int from, int pageSize) throws ServiceException;
 	

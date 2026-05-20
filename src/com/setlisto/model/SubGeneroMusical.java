@@ -36,5 +36,4 @@ public class SubGeneroMusical {
 	public void setGeneroMusicalId(Long generoMusicalId) {
 		this.generoMusicalId = generoMusicalId;
 	}
-
 }

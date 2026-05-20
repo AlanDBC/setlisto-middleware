@@ -1,5 +1,9 @@
 package com.setlisto.model;
 
+/*
+ * Corresponde a el mismo "seat" en base de datos, pero en un evento especifico, el seat existirá a lo largo del tiempo en el recinto
+ * con este objeto controlamos la compra de esta plaza en particular, asi como su estado, entre otras cosas.
+ */
 public class PlazaEnEventoDTO extends AbstractValueObject {
 	private Long id;
 	private Long eventoMusicalId;

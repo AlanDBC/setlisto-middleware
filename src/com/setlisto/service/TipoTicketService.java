@@ -10,15 +10,19 @@ import com.setlisto.model.TipoTicket;
 public interface TipoTicketService {
 
     /**
-     * Recupera un tipo de ticket específico por su ID.
-     * @param id Identificador del tipo de ticket.
-     * @return El objeto TipoTicket o null si no existe.
+     * Recupera un tipo de ticket por su id
+     * 
+     * @param id del tipo de ticket
+     * @return
+     * @throws ServiceException
      */
     public TipoTicket findById(Long id) throws ServiceException;
 
     /**
      * Obtiene todos los tipos de tickets registrados en el sistema.
-     * @return Lista de objetos TipoTicket.
+     * 
+     * @return List<TipoTicket> tipos
+     * @throws ServiceException
      */
     public List<TipoTicket> findAll() throws ServiceException;
 }

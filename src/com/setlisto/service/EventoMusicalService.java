@@ -10,33 +10,48 @@ import com.setlisto.model.Results;
  */
 public interface EventoMusicalService {
 
-    /**
-     * Recupera la información detallada de un evento por su ID.
-     */
-    public EventoMusicalDTO findById(Long id) throws ServiceException;
+	/**
+	 * Recupera la informacion completa de un evento musical, buscando por su id
+	 * 
+	 * @param id del evento
+	 * @return Evento encontrado
+	 * @throws ServiceException
+	 */
+	public EventoMusicalDTO findById(Long id) throws ServiceException;
 
-    /**
-     * Realiza búsquedas dinámicas de eventos (por nombre, fechas, capacidad, géneros, etc.).
-     */
-    public Results<EventoMusicalDTO> findByCriteria(EventoMusicalCriteria criteria, int page, int size) throws ServiceException;
+	/**
+	 * Permite buscar eventos musicales dinamicamente por criterios
+	 * 
+	 * @param criteria
+	 * @param page desde
+	 * @param size tamaño de pagina
+	 * @return Lista de eventos (Result<>) correspondientes a los criterios
+	 * @throws ServiceException
+	 */
+	public Results<EventoMusicalDTO> findByCriteria(EventoMusicalCriteria criteria, int page, int size) throws ServiceException;
 
-//    /**
-//     * Obtiene el listado completo de eventos musicales.
-//     */
-//    public List<EventoMusicalDTO> findAll();
+	/**
+	 * Crea un evento musical 
+	 * 
+	 * @param evento a crear
+	 * @return EventoMusicalDTO para visualizacion a detalle
+	 * @throws ServiceException
+	 */
+	public EventoMusicalDTO create(EventoMusicalDTO evento) throws ServiceException;
 
-    /**
-     * Registra un nuevo evento musical en el sistema.
-     */
-    public EventoMusicalDTO create(EventoMusicalDTO evento) throws ServiceException;
+	/**
+	 * Modifica los datos (no primordiales) de un evento musical
+	 * 
+	 * @param evento a modificar
+	 * @throws ServiceException
+	 */
+	public void update(EventoMusicalDTO evento) throws ServiceException;
 
-    /**
-     * Actualiza los datos de un evento existente.
-     */
-    public void update(EventoMusicalDTO evento) throws ServiceException;
-
-    /**
-     * Elimina un evento del sistema.
-     */
-    public void delete(Long id) throws ServiceException;
+	/**
+	 * Borrado fisico de un evento musical
+	 * 
+	 * @param id del evento a borrar
+	 * @throws ServiceException
+	 */
+	public void delete(Long id) throws ServiceException;
 }

@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
-public class PagoDTO extends Pago {
-		
+public class PagoDTO extends Pago {		
 	private String metodoPagoNombre;
 	private String monedaSimbolo;
 	private String monedaCodigo;

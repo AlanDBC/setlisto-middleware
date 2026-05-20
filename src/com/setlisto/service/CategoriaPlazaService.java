@@ -7,18 +7,22 @@ import com.setlisto.model.CategoriaAsiento;
 /**
  * Servicio encargado de la gestión y consulta de las categorías de asientos disponibles.
  */
-public interface CategoriaAsientoService {
+public interface CategoriaPlazaService {
 
 	/**
-	 * Recupera una categoría específica por su identificador único.
-	 * @param id Identificador de la categoría.
-	 * @return El objeto CategoriaAsiento o null si no existe.
+	 * Encuentra una categoria por su id
+	 * 
+	 * @param id
+	 * @return Categoria encontrada
+	 * @throws ServiceException
 	 */
 	public CategoriaAsiento findById(Long id) throws ServiceException;
 
 	/**
-	 * Obtiene el listado completo de todas las categorías de asientos registradas en el sistema.
-	 * @return Lista de objetos CategoriaAsiento.
+	 * Trae todas las categorias que existen
+	 * 
+	 * @return Lista de categorias
+	 * @throws ServiceException
 	 */
 	public List<CategoriaAsiento> findAll() throws ServiceException;
 	

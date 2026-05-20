@@ -11,33 +11,58 @@ import com.setlisto.model.ResenaDTO;
 public interface ResenaService {
 
     /**
-     * Registra una nueva reseña en el sistema.
-     * Según las reglas de negocio, un usuario solo puede tener una reseña por evento
+     * Crea una reseña para un evento terminado
+     * 
+     * @param resena
+     * @return Reseña creada
+     * @throws ServiceException
      */
     public Resena create(Resena resena) throws ServiceException;
 
     /**
-     * Actualiza el contenido de una reseña existente (estrellas, comentario o favorito)
+     * Actualiza el contenido de una reseña
+     * 
+     * @param resena
+     * @return true si se actualizo, false en caso contrario
+     * @throws ServiceException
      */
     public boolean update(Resena resena) throws ServiceException;
 
     /**
-     * Elimina una reseña específica identificada por el evento y el usuario
+     * Elimina una reseña
+     * 
+     * @param eventoId
+     * @param usuarioId
+     * @return true si se borro, false en caso contrario
+     * @throws ServiceException
      */
     public boolean delete(Long eventoId, Long usuarioId) throws ServiceException;
 
     /**
-     * Recupera una reseña concreta para comprobar si el usuario ya ha valorado el evento
+     * Recupera una reseña buscando por id de cliente e id de evento
+     * 
+     * @param eventoId
+     * @param usuarioId
+     * @return Reseña encontrada
+     * @throws ServiceException
      */
     public ResenaDTO findById(Long eventoId, Long usuarioId) throws ServiceException;
 
     /**
-     * Obtiene todas las reseñas de un evento musical específico
+     * Recupera las reseñas de un evento musical
+     * 
+     * @param eventoId
+     * @return Lista de reseñas asociadas al evento
+     * @throws ServiceException
      */
     public List<ResenaDTO> findByMusicalEvent(Long eventoId) throws ServiceException;
 
     /**
-     * Obtiene el historial de reseñas publicadas por un cliente
+     * Recupera todas las reseñas hechas por un cliente
+     * 
+     * @param usuarioId
+     * @return Lista de reseñas
+     * @throws ServiceException
      */
     public List<ResenaDTO> findByCustomer(Long usuarioId) throws ServiceException;
 }

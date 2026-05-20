@@ -14,9 +14,9 @@ import com.setlisto.model.CategoriaAsiento;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
-public class CategoriaAsientoDAO {
+public class CategoriaPlazaDAO {
 
-	private static final Logger logger = LogManager.getLogger(CategoriaAsientoDAO.class.getName());
+	private static final Logger logger = LogManager.getLogger(CategoriaPlazaDAO.class.getName());
 
 	private static final String BASE_QUERY = " SELECT id, name FROM seat_category ";
 

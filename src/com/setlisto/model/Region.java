@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
-public class Region extends AbstractValueObject {
-	
+public class Region extends AbstractValueObject {	
 	private Long id;
 	private String nombre;
 	private Long paisId;
@@ -37,6 +36,4 @@ public class Region extends AbstractValueObject {
 	public void setPaisId(Long paisId) {
 		this.paisId = paisId;
 	}
-	
-
 }

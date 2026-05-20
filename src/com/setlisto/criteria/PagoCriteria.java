@@ -12,11 +12,14 @@ public class PagoCriteria {
 		private final String ORDER_BY_PAYMENT_STATUS_NAME = " ps.name ";
 	
 	    private Long clienteId;
+	    
 	    private Long monedaId ;
 	    private Long estadoPagoId;
 	    private Long metodoPagoId;
+	    
 	    private Date fechaDesde;
 	    private Date fechaHasta;
+	    
 	    private String orderBy;
 	    private Boolean ascDesc = true;
 

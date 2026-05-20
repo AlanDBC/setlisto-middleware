@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
 public class LugarDTO extends Lugar {
-
 	private String ciudadNombre;
 	private String zonaHorariaNombre;
 	

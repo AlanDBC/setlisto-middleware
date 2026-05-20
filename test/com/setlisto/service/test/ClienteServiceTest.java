@@ -128,7 +128,6 @@ public class ClienteServiceTest {
     public static void main(String[] args) {
         ClienteServiceTest tester = new ClienteServiceTest();
 
-        // Juan Pérez: juan.perez@email.com / passUser1
         tester.testLogin("sofiatest@gmail.es", "abc123.");
 
 //         2. Probar Login Fallido
@@ -141,7 +140,7 @@ public class ClienteServiceTest {
 //        tester.testFindByCriteria("Ana");
         
         // 5. Registro
-//        tester.testRegister();
+        tester.testRegister();
 
         System.out.println("\n--- Pruebas de ClienteService finalizadas ---");
     }

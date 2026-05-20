@@ -157,7 +157,7 @@ public class ResenaDAO {
 	/**
 	 * Busca todas las reseñas de un evento.
 	 * @param eventoId
-	 * @return Lista de ResenaDTO, null en caso de error o inexistencia
+	 * @return Lista de ResenaDTO
 	 */
 	public List<ResenaDTO> findByMusicalEvent(Connection c, Long eventoId) throws DataException {
 		PreparedStatement ps = null;
@@ -201,7 +201,6 @@ public class ResenaDAO {
 			DAOUtils.setParameters(ps, usuarioId);
 			rs = ps.executeQuery();
 
-			// Lista de reseñas
 			List<ResenaDTO> resenas = new ArrayList<>();
 
 			while (rs.next()) {

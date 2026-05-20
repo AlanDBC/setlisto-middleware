@@ -3,7 +3,6 @@ package com.setlisto.model;
 import java.time.LocalDateTime;
 
 public class Resena extends AbstractValueObject {
-
 	private Long eventoId;
 	private Long clienteId;
 	private Double estrellas;

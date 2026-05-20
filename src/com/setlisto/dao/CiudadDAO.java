@@ -24,13 +24,11 @@ public class CiudadDAO {
 		ResultSet rs = null;
 		try {
 			String sql = "SELECT id, name, region_id FROM city WHERE region_id = ? ORDER BY name ASC";
-
+			
 			ps = c.prepareStatement(sql);
-
 			DAOUtils.setParameters(ps, regionId);
-
 			rs = ps.executeQuery();
-
+			
 			while (rs.next()) {
 				resultados.add(loadNext(rs));
 			}

@@ -213,10 +213,9 @@ public class OrganizadorDAO {
 			if (rows > 0) {
 				rs = ps.getGeneratedKeys();
 				if (rs.next()) {
-					// Asignación del ID generado al POJO
 					organizador.setId(rs.getLong(1));
 				}
-				return organizador; // Retorno de la entidad enriquecida
+				return organizador;
 			}
 		} catch (SQLException e) {
 			logger.error("Error en OrganizadorDAO.create con organizador {}: {}", organizador, e.getMessage());

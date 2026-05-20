@@ -21,7 +21,7 @@ import com.setlisto.utils.JDBCUtils;
 import com.setlisto.utils.SQLUtils;
 
 public class TicketDAO {
-	
+
 	private static Logger logger = LogManager.getLogger(TicketDAO.class.getName());
 
 	private static String BASE_QUERY = " SELECT t.id, t.code, t.price, t.purchase_date, t.payment_id, c.id, c.name, me.id, me.name, me.start_date, ste.id, "
@@ -44,39 +44,39 @@ public class TicketDAO {
 	}
 
 	public Long create(Connection c, Ticket ticket) throws DataException {
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    try {
-	        String sql = "INSERT INTO ticket (code, price, purchase_date, payment_id, " +
-	                     "seat_of_musical_event_id, ticket_type_id, event_zone_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			String sql = "INSERT INTO ticket (code, price, purchase_date, payment_id, " +
+					"seat_of_musical_event_id, ticket_type_id, event_zone_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-	        ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-	        DAOUtils.setParameters(ps,
-	            ticket.getCodigo(),
-	            ticket.getPrecio(),
-	            Timestamp.valueOf(ticket.getFechaCompra()),
-	            ticket.getPagoId(),
-	            ticket.getPlazaEventoMusicalId(),
-	            ticket.getTipoTicketId(),
-	            ticket.getEventZoneId()
-	        );
+			DAOUtils.setParameters(ps,
+					ticket.getCodigo(),
+					ticket.getPrecio(),
+					Timestamp.valueOf(ticket.getFechaCompra()),
+					ticket.getPagoId(),
+					ticket.getPlazaEventoMusicalId(),
+					ticket.getTipoTicketId(),
+					ticket.getEventZoneId()
+					);
 
-	        int rows = ps.executeUpdate();
+			int rows = ps.executeUpdate();
 
-	        if (rows > 0) {
-	            rs = ps.getGeneratedKeys();
-	            if (rs.next()) {
-	                return rs.getLong(1);
-	            }
-	        }
-	    } catch (SQLException e) {
-	    	logger.error("Error en TicketDAO.create con ticket {}: {}", ticket, e.getMessage());
+			if (rows > 0) {
+				rs = ps.getGeneratedKeys();
+				if (rs.next()) {
+					return rs.getLong(1);
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.create con ticket {}: {}", ticket, e.getMessage());
 			throw new DataException(e); 
-	    } finally {
-	    	JDBCUtils.close(rs, ps);
-	    }
-	    return null;
+		} finally {
+			JDBCUtils.close(rs, ps);
+		}
+		return null;
 	}
 
 	public TicketDTO findById(Connection c, Long id) throws DataException {
@@ -109,16 +109,43 @@ public class TicketDAO {
 		try {
 			StringBuilder sql = new StringBuilder(BASE_QUERY);
 			sql.append(" WHERE t.code = ? ");
-
+			
 			ps = c.prepareStatement(sql.toString());
 			DAOUtils.setParameters(ps, code);
+			
 			rs = ps.executeQuery();
-
 			TicketDTO tck = null;
 			if (rs.next()) {
 				tck = loadNext(rs);
 			}
 			return tck;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByCode con code {}: {}", code, e.getMessage());
+			throw new DataException(e);
+		} finally {
+			JDBCUtils.close(rs, ps);
+		}
+	} 
+
+
+
+	public List<TicketDTO> findByCodeLike(Connection c, String code) throws DataException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<TicketDTO> tickets = new ArrayList<>();		
+		try {
+			StringBuilder sql = new StringBuilder(BASE_QUERY);
+			sql.append(" WHERE t.code LIKE ? ");
+			ps = c.prepareStatement(sql.toString());
+
+			String searchPattern = "%" + code + "%";
+			DAOUtils.setParameters(ps, searchPattern);
+
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				tickets.add(loadNext(rs));
+			}			
+			return tickets;
 		} catch (SQLException e) {
 			logger.error("Error en TicketDAO.findByCode con code {}: {}", code, e.getMessage());
 			throw new DataException(e); 
@@ -205,11 +232,11 @@ public class TicketDAO {
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT 1 FROM ticket WHERE seat_of_musical_event_id = ? ");
-			
+
 			ps = c.prepareStatement(sql.toString());
 			DAOUtils.setParameters(ps, seatOfMusicalEventId);
 			rs = ps.executeQuery();
-			
+
 			if (rs.next()) {
 				return true;
 			}
@@ -228,14 +255,14 @@ public class TicketDAO {
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append(" SELECT COUNT(*) FROM ticket t ");
-		sql.append(" LEFT JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id ");
-		sql.append(" LEFT JOIN event_zone ez ON ez.id = t.event_zone_id ");
-		sql.append(" WHERE COALESCE(stme.musical_event_id, ez.musical_event_id) = ? ");
-			
+			sql.append(" LEFT JOIN seat_of_musical_event stme ON stme.id = t.seat_of_musical_event_id ");
+			sql.append(" LEFT JOIN event_zone ez ON ez.id = t.event_zone_id ");
+			sql.append(" WHERE COALESCE(stme.musical_event_id, ez.musical_event_id) = ? ");
+
 			ps = c.prepareStatement(sql.toString());
 			DAOUtils.setParameters(ps, musicalEventId);
 			rs = ps.executeQuery();
-			
+
 			if (rs.next()) {
 				return rs.getLong(1);
 			}
@@ -250,63 +277,65 @@ public class TicketDAO {
 
 	public Results<TicketDTO> findByCriteria(Connection c, TicketCriteria criteria, int from, int pageSize) throws DataException {
 		logger.info("Criteria: {}", criteria); 
-	    
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    
-	    Results<TicketDTO> results = new Results<TicketDTO>();
-	    try {
-	        StringBuilder sql = new StringBuilder(BASE_QUERY);
-	        
-	        List<String> condiciones = new ArrayList<>();
-	        List<Object> parametros = new ArrayList<>();
 
-	        SQLUtils.addClause(criteria.getClienteId(), condiciones, " c.id = ? ", parametros, criteria.getClienteId());
-	        SQLUtils.addClause(criteria.getEventoId(), condiciones, " me.id = ? ", parametros, criteria.getEventoId());
-	        SQLUtils.addClause(criteria.getPagoId(), condiciones, " pmt.id = ? ", parametros, criteria.getPagoId());
-	        SQLUtils.addClause(criteria.getDesde(), condiciones, " t.purchase_date >= ? ", parametros, criteria.getDesde());
-	        SQLUtils.addClause(criteria.getHasta(), condiciones, " t.purchase_date <= ? ", parametros, criteria.getHasta());
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 
-	        if (!condiciones.isEmpty()) {
-	            sql.append(" WHERE ");
-	            sql.append(String.join(" AND ", condiciones));
-	        }
-	        
-	        sql.append(" ORDER BY ");
+		Results<TicketDTO> results = new Results<TicketDTO>();
+		try {
+			StringBuilder sql = new StringBuilder(BASE_QUERY);
+
+			List<String> condiciones = new ArrayList<>();
+			List<Object> parametros = new ArrayList<>();
+
+			SQLUtils.addClause(criteria.getClienteId(), condiciones, " c.id = ? ", parametros, criteria.getClienteId());
+			SQLUtils.addClause(criteria.getEventoId(), condiciones, " me.id = ? ", parametros, criteria.getEventoId());
+			SQLUtils.addClause(criteria.getPagoId(), condiciones, " pmt.id = ? ", parametros, criteria.getPagoId());
+			SQLUtils.addClause(criteria.getDesde(), condiciones, " t.purchase_date >= ? ", parametros, criteria.getDesde());
+			SQLUtils.addClause(criteria.getHasta(), condiciones, " t.purchase_date <= ? ", parametros, criteria.getHasta());
+			SQLUtils.addClause(criteria.getCodigo(), condiciones, " UPPER(t.code) LIKE UPPER(?) ", parametros, SQLUtils.like(criteria.getCodigo()));
+
+			if (!condiciones.isEmpty()) {
+				sql.append(" WHERE ");
+				sql.append(String.join(" AND ", condiciones));
+			}
+
+			sql.append(" ORDER BY ");
 			sql.append(criteria.getOrderBy());
 			sql.append(criteria.getAscDesc() ? " ASC " : " DESC "); 
-			
+
 			if (logger.isInfoEnabled()) {
 				logger.info("Criteria SQL: {}: {}:", criteria, sql);
 			} 
-			
+
 			ps = c.prepareStatement(sql.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-	        
+
 			DAOUtils.setParameters(ps, parametros);
 
-	        rs = ps.executeQuery();
-	        List<TicketDTO> resultsPage = new ArrayList<TicketDTO>();
+			rs = ps.executeQuery();
+			List<TicketDTO> resultsPage = new ArrayList<TicketDTO>();
 
-	        if (from>=1) {
+			int filaInicial = Math.max(1, from + 1);
+
+			if (rs.absolute(filaInicial)) { 
 				int count = 0;
-				rs.absolute(from);
 				do {
 					resultsPage.add(loadNext(rs));
 					count++;
-				} while (count<pageSize && rs.next()); 	// Mientras no se alcance el pageSize y haya más registros, se siguen cargando resultados
+				} while (count<pageSize && rs.next());
 			}
 			int totalResults = SQLUtils.getTotalRows(rs);
 			
-			results.setPage(resultsPage); // Se setea la página de resultados (subconjunto de resultados)
+			results.setPage(resultsPage);
 			results.setTotal(totalResults);
 
-	        return results;
-	    } catch (SQLException e) {
-	    	logger.error("Error en TicketDAO.findByCriteria con criteriaId {}: {}", criteria, e.getMessage());
+			return results;
+		} catch (SQLException e) {
+			logger.error("Error en TicketDAO.findByCriteria con criteriaId {}: {}", criteria, e.getMessage());
 			throw new DataException(e);
-	    } finally {
-	    	JDBCUtils.close(rs, ps);
-	    }
+		} finally {
+			JDBCUtils.close(rs, ps);
+		}
 	}
 
 	private TicketDTO loadNext(ResultSet rs) throws SQLException {
@@ -337,9 +366,9 @@ public class TicketDAO {
 		tck.setTipoTicketNombre(rs.getString(i++));
 		Long eventZoneId = rs.getLong(i++);
 		tck.setEventZoneId(rs.wasNull() ? null : eventZoneId);
-		tck.setEventZoneSectionName(rs.getString(i++));
+		tck.setZonaEventoNombre(rs.getString(i++));
 		int available = rs.getInt(i++);
-		tck.setEventZoneAvailableCapacity(rs.wasNull() ? null : available);
+		tck.setZonaEventoCapacidadDisponible(rs.wasNull() ? null : available);
 		return tck;
 	}
 }

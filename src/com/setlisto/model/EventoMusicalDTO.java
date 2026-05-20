@@ -3,15 +3,14 @@ package com.setlisto.model;
 import java.util.List;
 
 /**
- * Data Transfer Object (DTO) para representar un evento musical con información adicional.
+ * DTO para representar un evento musical con información adicional.
  * Este DTO extiende la clase EventoMusical y agrega campos para mostrar información relacionada
  * como el nombre del organizador, lugar, ciudad, tipo de evento, subtipo y estado.
  */
 public class EventoMusicalDTO extends EventoMusical {
-
 	// idOrganizador esta en EventoMusical
 	private String organizadorNombre = null;
-
+	
 	// idLugar esta en EventoMusical
 	private String lugarNombre = null;
 	private String lugarDireccion = null;
@@ -22,7 +21,8 @@ public class EventoMusicalDTO extends EventoMusical {
 	private Long idTipo = null;
 	private String tipoNombre = null;
 	
-	// idSubtipo esta en EventoMusical. por lo general solo habra un subtipo, en UI mostraremos dos comboBox, uno para el tipo y otro para el subtipo 
+	// idSubtipo esta en EventoMusical. por lo general solo habra un subtipo.
+	// en UI mostraremos dos comboBox, uno para el tipo y otro para el subtipo
 	private String subtipoNombre = null;
 
 	// idEstado esta en EventoMusical
@@ -33,13 +33,13 @@ public class EventoMusicalDTO extends EventoMusical {
 
 	private Integer entradasRestantes = null;
 	
-	private List<GeneroMusical> generos = null; // en caso de un tipo de evento con varios géneros musicales, se almacenarán aquí. Si solo hay uno, se almacenará solo uno
-	private List<SubGeneroMusical> subGeneros = null;  
+	private List<GeneroMusical> generos = null; // en caso de un tipo de evento con varios géneros musicales, se almacenarán aquí. 
+	private List<SubGeneroMusical> subGeneros = null; // Si solo hay uno, se almacenará solo uno
 
 	private List<Artista> artistas = null;
 	private List<ZonaEvento> zonas = null;
-	// guardamos en listas para poder poner en UI, JScrollPane + JList y mostrar varios géneros y subgéneros
-	
+	// interesa guardar en listas para poder poner en UI, JScrollPane + JList, mostrar varios artistas, géneros y subgéneros.
+	// Permitiendo edicion y visualizacion mas detallada 
 
 	public EventoMusicalDTO() {
 	}

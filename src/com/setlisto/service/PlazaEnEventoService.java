@@ -10,27 +10,50 @@ import com.setlisto.model.Results;
 public interface PlazaEnEventoService {
 
     /**
-     * Recupera el detalle de una plaza específica en un evento por su ID.
+     * Recupera el detalle de una plaza de un evento especifico
+     * 
+     * @param id de la plaza
+     * @return Plaza encontrada
+     * @throws ServiceException
      */
     public PlazaEnEventoDTO findById(Long id) throws ServiceException;
 
     /**
-     * Busca plazas filtrando por evento o por estado (AVAILABLE, SOLD, DISABLED).
+     * Busca plazas de un evento especifico por criterios
+     * 
+     * @param criteria
+     * @param page desde 
+     * @param size tamaño de pagina
+     * @return Lista (Results<>) de plazas correspondientes a los criterios 
+     * @throws ServiceException
      */
     public Results<PlazaEnEventoDTO> findByCriteria(PlazaEnEventoCriteria criteria, int page, int size) throws ServiceException;
 
     /**
-     * Comprueba si una plaza específica está marcada como AVAILABLE (ID 1).
+     * Verifica si la plaza esta disponible dentro de ese evento
+     * 
+     * @param plazaEnEventoId
+     * @return true si esta disponible, false en caso contrario
+     * @throws ServiceException
      */
     public boolean isSeatAvailable(Long plazaEnEventoId) throws ServiceException;
 
     /**
-     * Actualiza el estado de una plaza (fundamental para el proceso de compra).
+     * Actualiza el estado de una plaza especifica de un evento
+     * 
+     * @param plazaEnEventoId
+     * @param estadoId
+     * @return true si se actualizo, false en caso contrario
+     * @throws ServiceException
      */
-    public boolean updateStatus(Long plazaEnEventoId, Long statusId) throws ServiceException;
+    public boolean updateStatus(Long plazaEnEventoId, Long estadoId) throws ServiceException;
 
     /**
-     * Obtiene el número total de asientos disponibles para un evento concreto.
+     * Obtiene el numero de plazas disponibles dento de un evento especifico 
+     * 
+     * @param eventId
+     * @return Total de plazas disponibles
+     * @throws ServiceException
      */
     public int getAvailableCount(Long eventId) throws ServiceException;
 }

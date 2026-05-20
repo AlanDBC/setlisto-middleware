@@ -64,5 +64,4 @@ public class PlazaEnEventoCriteria {
 	public void setAscDesc(Boolean ascDesc) {
 		this.ascDesc = ascDesc;
 	}
-
 }

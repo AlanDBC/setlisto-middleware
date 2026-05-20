@@ -3,8 +3,7 @@ package com.setlisto.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class Ticket extends AbstractValueObject {
-	
+public class Ticket extends AbstractValueObject {	
 	private Long id;
 	private String codigo;
 	private String tipo;

@@ -63,9 +63,9 @@ public class PagoDAO {
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
 	    try {
-	        // 1. Verificación de reglas de negocio (Código de transacción único)
+	        // erificación de reglas de negocio (Código de transacción único)
 	        if (existsByReference(c,pago.getCodigoTransaccion())) {
-	            return null;
+	            throw new DataException("Ya existe un pago con esta referencia");
 	        }
 	        StringBuilder sql = new StringBuilder();
 	        sql.append(" INSERT INTO payment (amount, transaction_code, payment_date, ");
@@ -90,7 +90,7 @@ public class PagoDAO {
 	            if (rs.next()) {
 	                pago.setId(rs.getLong(1));
 	            }
-	            return pago; // Devolvemos el objeto completo enriquecido
+	            return pago;
 	        }
 	    } catch (SQLException e) {
 	    	logger.error("Error en PagoDAO.create con pago {}: {}", pago, e.getMessage());
@@ -301,7 +301,7 @@ public class PagoDAO {
 			}
 			int totalResults = SQLUtils.getTotalRows(rs);
 			
-			results.setPage(resultsPage); // Se setea la página de resultados (subconjunto de resultados)
+			results.setPage(resultsPage);
 			results.setTotal(totalResults);
 			
 			return results;

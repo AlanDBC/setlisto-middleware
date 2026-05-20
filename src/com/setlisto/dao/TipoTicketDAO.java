@@ -23,9 +23,6 @@ public class TipoTicketDAO {
     public TipoTicketDAO() {
     }
 
-    /**
-     * Recupera un tipo de ticket específico por su ID
-     */
     public TipoTicket findById(Connection c, Long id) throws DataException {
         PreparedStatement ps = null;
         ResultSet rs = null;

@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
-public class Lugar extends AbstractValueObject {
-	
+public class Lugar extends AbstractValueObject {	
 	private Long id;
 	private String nombre;
 	private String direccion;

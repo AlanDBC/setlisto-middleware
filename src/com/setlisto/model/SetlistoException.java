@@ -13,6 +13,5 @@ public class SetlistoException extends Exception {
 	
 	public SetlistoException(String message, Throwable cause) { 
 		super(message, cause); 
-	}
-	
+	}	
 }

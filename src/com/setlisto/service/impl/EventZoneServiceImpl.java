@@ -9,11 +9,11 @@ import org.apache.logging.log4j.Logger;
 import com.setlisto.dao.DataException;
 import com.setlisto.dao.ZonaEventoDAO;
 import com.setlisto.model.ZonaEvento;
-import com.setlisto.service.EventZoneService;
+import com.setlisto.service.ZonaEventoService;
 import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;
 
-public class EventZoneServiceImpl implements EventZoneService {
+public class EventZoneServiceImpl implements ZonaEventoService {
 
 	private static final Logger logger = LogManager.getLogger(EventZoneServiceImpl.class.getName());
 	private ZonaEventoDAO eventZoneDAO = new ZonaEventoDAO();

@@ -1,7 +1,6 @@
 package com.setlisto.model;
 
-public class PlazaDTO extends Plaza {
-	
+public class PlazaDTO extends Plaza {	
 	private String categoriaNombre;
 	private String lugarNombre;
 

@@ -219,4 +219,27 @@ public class TicketServiceImpl implements TicketService {
 			JDBCUtils.close(c, commit);
 		}
 	}
+
+	@Override
+	public List<TicketDTO> findByCodeLike(String code) throws ServiceException {
+		Connection c = null;
+		boolean commit = false;
+		try {
+			c = JDBCUtils.getConnection();
+			c.setAutoCommit(false); 
+			List<TicketDTO> tickets = ticketDAO.findByCodeLike(c, code);
+			commit = true;
+			return tickets;
+		} catch (DataException e) {
+			logger.error("Error de persistencia al buscar tickets por codigo contenido en {}: {}", code, e.getMessage());
+			throw new ServiceException(e);
+		} catch (Exception e) {
+			logger.error("Buscando tickets para con codigo contenido en {}: {}", code, e.getMessage(), e);
+			throw new ServiceException(e);
+		} finally {
+			JDBCUtils.close(c, commit);
+		}
+
+
+	}
 }

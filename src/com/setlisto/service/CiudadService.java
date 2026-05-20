@@ -9,10 +9,12 @@ import com.setlisto.model.Ciudad;
  */
 public interface CiudadService {
 
-    /**
-     * Obtiene el listado de ciudades pertenecientes a una región específica.
-     * @param regionId Identificador de la región (provincia/estado).
-     * @return Lista de objetos Ciudad.
-     */
+	/**
+	 * Encuentra las ciudades de la region con el id proporcionado
+	 * 
+	 * @param regionId
+	 * @return Lista de ciudades en esa region
+	 * @throws ServiceException
+	 */
     public List<Ciudad> findByRegionId(Long regionId) throws ServiceException;
 }

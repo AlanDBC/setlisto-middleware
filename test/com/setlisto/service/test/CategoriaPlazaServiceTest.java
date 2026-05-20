@@ -5,17 +5,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.model.CategoriaAsiento;
-import com.setlisto.service.CategoriaAsientoService;
-import com.setlisto.service.impl.CategoriaAsientoServiceImpl;
+import com.setlisto.service.CategoriaPlazaService;
+import com.setlisto.service.impl.CategoriaPlazaServiceImpl;
 
-public class CategoriaAsientoServiceTest {
+public class CategoriaPlazaServiceTest {
 
-    private static final Logger logger = LogManager.getLogger(CategoriaAsientoServiceTest.class);
-    private CategoriaAsientoService categoriaService;
+    private static final Logger logger = LogManager.getLogger(CategoriaPlazaServiceTest.class);
+    private CategoriaPlazaService categoriaService;
 
-    public CategoriaAsientoServiceTest() {
+    public CategoriaPlazaServiceTest() {
         try {
-            this.categoriaService = new CategoriaAsientoServiceImpl();
+            this.categoriaService = new CategoriaPlazaServiceImpl();
         } catch (Exception e) {
             logger.error("Error crítico al inicializar el servicio: {}", e.getMessage());
         }
@@ -73,7 +73,7 @@ public class CategoriaAsientoServiceTest {
      * Punto de entrada principal para ejecutar las pruebas.
      */
     public static void main(String[] args) {
-        CategoriaAsientoServiceTest tester = new CategoriaAsientoServiceTest();
+        CategoriaPlazaServiceTest tester = new CategoriaPlazaServiceTest();
 
         // 1. Probar búsqueda por ID (ID 1 es 'General' según datos maestros) [3]
         tester.testFindById(1L);

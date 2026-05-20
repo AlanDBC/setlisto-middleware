@@ -4,17 +4,23 @@ import java.util.List;
 
 import com.setlisto.model.EstadoEvento;
 
-/**
- * Servicio para la gestión y consulta de los estados de un evento.
- */
+
 public interface EstadoEventoService {
-    /**
-     * Recupera un estado específico por su ID.
-     */
+
+	/**
+	 * Busca un estado por su id
+	 * 
+	 * @param id del estado
+	 * @return Estado encontrado
+	 * @throws ServiceException
+	 */
     public EstadoEvento findById(Long id) throws ServiceException;
 
     /**
-     * Obtiene el listado completo de estados registrados.
+     * Trae todos los estados de evento dentro de la aplicacion
+     * 
+     * @return Lista de estados
+     * @throws ServiceException
      */
     public List<EstadoEvento> findAll() throws ServiceException;
 }

@@ -4,7 +4,6 @@ package com.setlisto.model;
  * Representa a un artista o banda musical.
  */
 public class Artista extends AbstractValueObject {
-
     private Long id;
     private String nombre;
     private String descripcion;

@@ -3,7 +3,6 @@ package com.setlisto.model;
 import java.time.LocalDateTime;
 
 public class TicketDTO extends Ticket {
-
 	// Quien compra el ticket
 	private Long clienteId;
 	private String clienteNombre;
@@ -19,8 +18,8 @@ public class TicketDTO extends Ticket {
 	private Long plazaNumero;
 	private Long plazaCategoriaId;
 	private String plazaCategoriaNombre;
-	private String eventZoneSectionName;
-	private Integer eventZoneAvailableCapacity;
+	private String zonaEventoNombre; 
+	private Integer zonaEventoCapacidadDisponible; 
 	// Tipo de ticket
 	private String tipoTicketNombre;
 	
@@ -131,20 +130,19 @@ public class TicketDTO extends Ticket {
 		this.tipoTicketNombre = tipoTicketNombre;
 	}
 
-	public String getEventZoneSectionName() {
-		return eventZoneSectionName;
+	public String getZonaEventoNombre() {
+		return zonaEventoNombre;
 	}
 
-	public void setEventZoneSectionName(String eventZoneSectionName) {
-		this.eventZoneSectionName = eventZoneSectionName;
+	public Integer getZonaEventoCapacidadDisponible() {
+		return zonaEventoCapacidadDisponible;
 	}
 
-	public Integer getEventZoneAvailableCapacity() {
-		return eventZoneAvailableCapacity;
+	public void setZonaEventoNombre(String zonaEventoNombre) {
+		this.zonaEventoNombre = zonaEventoNombre;
 	}
 
-	public void setEventZoneAvailableCapacity(Integer eventZoneAvailableCapacity) {
-		this.eventZoneAvailableCapacity = eventZoneAvailableCapacity;
+	public void setZonaEventoCapacidadDisponible(Integer zonaEventoCapacidadDisponible) {
+		this.zonaEventoCapacidadDisponible = zonaEventoCapacidadDisponible;
 	}
-	
 }

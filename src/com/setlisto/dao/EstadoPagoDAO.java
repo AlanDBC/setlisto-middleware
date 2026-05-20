@@ -15,9 +15,9 @@ import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;
 
 public class EstadoPagoDAO {
-	
+
 	private static Logger logger = LogManager.getLogger(EstadoPagoDAO.class.getName());
-	
+
 	private static final String BASE_QUERY = " SELECT id, name FROM payment_status ";
 
 	public EstadoPagoDAO() {
@@ -42,7 +42,7 @@ public class EstadoPagoDAO {
 			return ep;
 		} catch (SQLException e) {
 			logger.error("Error en EstadoPago.findById con ID {}: {}", id, e.getMessage());
-		    throw new DataException(e); 
+			throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
@@ -54,7 +54,7 @@ public class EstadoPagoDAO {
 		ResultSet rs = null;
 		try {
 			String sql = BASE_QUERY;
-			
+
 			ps = c.prepareStatement(sql);
 			rs = ps.executeQuery();
 
@@ -64,12 +64,12 @@ public class EstadoPagoDAO {
 			return resultados;
 		} catch (SQLException e) {
 			logger.error("Error en EstadoPago.findAll: {}", e.getMessage());
-		    throw new DataException(e); 
+			throw new DataException(e); 
 		} finally {
 			JDBCUtils.close(rs, ps);
 		}
 	}
-	
+
 	private EstadoPago loadNext(ResultSet rs) throws SQLException {
 		int i = 1;
 		EstadoPago ep = new EstadoPago();
