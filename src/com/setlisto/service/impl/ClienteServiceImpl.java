@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.ClienteCriteria;
 import com.setlisto.dao.ClienteDAO;
-import com.setlisto.dao.DataException;
 import com.setlisto.model.Cliente;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Results;
 import com.setlisto.service.ClienteService;
 import com.setlisto.service.EncryptionService;

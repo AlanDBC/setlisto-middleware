@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.TicketCriteria;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Results;
 import com.setlisto.model.Ticket;
 import com.setlisto.model.TicketDTO;

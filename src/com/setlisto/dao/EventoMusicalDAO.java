@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.EventoMusicalCriteria;
 import com.setlisto.model.Artista;
+import com.setlisto.model.DataException;
 import com.setlisto.model.ZonaEvento;
 import com.setlisto.model.EventoMusical;
 import com.setlisto.model.EventoMusicalDTO;

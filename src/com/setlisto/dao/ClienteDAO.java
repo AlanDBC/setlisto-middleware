@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.ClienteCriteria;
 import com.setlisto.model.Cliente;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
 import com.setlisto.utils.JDBCUtils;

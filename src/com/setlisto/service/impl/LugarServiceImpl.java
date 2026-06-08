@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.LugarCriteria;
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.LugarDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Lugar;
 import com.setlisto.model.LugarDTO;
 import com.setlisto.model.Results;

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.PlazaEnEventoCriteria;
+import com.setlisto.model.DataException;
 import com.setlisto.model.PlazaEnEventoDTO;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;

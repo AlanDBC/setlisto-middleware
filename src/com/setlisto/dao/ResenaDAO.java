@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.setlisto.model.DataException;
 import com.setlisto.model.Resena;
 import com.setlisto.model.ResenaDTO;
 import com.setlisto.service.test.EstadoEventoServiceTest;

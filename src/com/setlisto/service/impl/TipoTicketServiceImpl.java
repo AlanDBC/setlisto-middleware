@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.TipoTicketDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.TipoTicket;
 import com.setlisto.service.ServiceException;
 import com.setlisto.service.TipoTicketService;

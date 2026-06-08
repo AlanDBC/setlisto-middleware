@@ -10,10 +10,10 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.PagoDAO;
 import com.setlisto.dao.TicketDAO;
 import com.setlisto.dao.ZonaEventoDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Pago;
 import com.setlisto.model.TicketDTO;
 import com.setlisto.model.ZonaEvento;

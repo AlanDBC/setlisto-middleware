@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.EstadoPagoDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.EstadoPago;
 import com.setlisto.service.EstadoPagoService;
 import com.setlisto.service.ServiceException;

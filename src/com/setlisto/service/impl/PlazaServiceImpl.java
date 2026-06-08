@@ -6,8 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.PlazaCriteria;
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.PlazaDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.PlazaDTO;
 import com.setlisto.model.Results;
 import com.setlisto.service.PlazaService;

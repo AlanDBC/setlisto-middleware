@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.TicketCriteria;
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.TicketDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Results;
 import com.setlisto.model.TicketDTO;
 import com.setlisto.service.ServiceException;

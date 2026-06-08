@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.PagoCriteria;
-import com.setlisto.dao.DataException;
 import com.setlisto.dao.PagoDAO;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Pago;
 import com.setlisto.model.PagoDTO;
 import com.setlisto.model.Results;

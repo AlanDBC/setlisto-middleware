@@ -1,6 +1,4 @@
-package com.setlisto.dao;
-
-import com.setlisto.model.SetlistoException;
+package com.setlisto.model;
 
 public class DataException extends SetlistoException {
 

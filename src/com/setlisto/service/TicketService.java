@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.setlisto.criteria.TicketCriteria;
-import com.setlisto.dao.DataException;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Results;
 import com.setlisto.model.TicketDTO;
 

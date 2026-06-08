@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.dao.CategoriaPlazaDAO;
-import com.setlisto.dao.DataException;
 import com.setlisto.model.CategoriaAsiento;
+import com.setlisto.model.DataException;
 import com.setlisto.service.CategoriaPlazaService;
 import com.setlisto.service.ServiceException;
 import com.setlisto.utils.JDBCUtils;

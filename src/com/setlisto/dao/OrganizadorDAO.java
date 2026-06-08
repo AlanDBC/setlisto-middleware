@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.setlisto.criteria.OrganizadorCriteria;
+import com.setlisto.model.DataException;
 import com.setlisto.model.Organizador;
 import com.setlisto.model.Results;
 import com.setlisto.utils.DAOUtils;
