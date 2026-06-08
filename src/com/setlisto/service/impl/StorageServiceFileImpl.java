@@ -20,7 +20,7 @@ public class StorageServiceFileImpl implements StorageService {
 	
 	// c:\\setlisto-storage\\musical-event\\51341\\51341-main-image.jpg
 	/**
-	 * Implementa la convenci�n de nombrado para la carpeta 
+	 * Implementa la convencion de nombrado para la carpeta 
 	 * en la que se guarda los datos para un id.
 	 * @param id
 	 * @param metadata
