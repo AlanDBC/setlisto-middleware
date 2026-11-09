@@ -23,7 +23,7 @@ public class ContentServiceImpl implements ContentService {
 	private static final String CMS_BASE_FOLDER = "c:/t/cms";
 	
 	
-	public ContentServiceImpl() {
+	public ContentServiceImpl() { 
 		
 	}
 
